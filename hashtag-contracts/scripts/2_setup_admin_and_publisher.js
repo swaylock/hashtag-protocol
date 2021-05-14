@@ -1,6 +1,6 @@
 const prompt = require('prompt-sync')();
 const web3 = require('web3');
-const AccessControlsABI = require('../artifacts/AccessControl.json').abi
+const AccessControlsABI = require('../artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json').abi
 
 async function main() {
   const [deployer] = await ethers.getSigners();

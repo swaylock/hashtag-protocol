@@ -1,8 +1,10 @@
+require('dotenv').config();
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 const MNEMONIC = process.env.PROTOTYPE_BR_KEY || '';
 const INFURA_KEY = process.env.PROTOTYPE_BR_INFURA_KEY || '';
 const ETHERSCAN_KEY = process.env.ETHERSCAN_KEY || '';
+const MATICVIGIL_PROJECT_ID = process.env.MATICVIGIL_PROJECT_ID;
 
 module.exports = {
     compilers: {
@@ -37,6 +39,16 @@ module.exports = {
             port: 8555,         // <-- If you change this, also set the port option in .solcover.js.
             gas: 0xfffffffffff, // <-- Use this high gas value
             gasPrice: 0x01      // <-- Use this low gas price
+        },
+        mumbai: {
+            provider: function () {
+                return new HDWalletProvider(MNEMONIC, `https://rpc-mumbai.maticvigil.com/v1/${MATICVIGIL_PROJECT_ID}`);
+            },
+            network_id: 80001,
+            gasPrice: 5000000000, // 5 gwei
+            confirmations: 2,
+            timeoutBlocks: 200,
+            skipDryRun: true
         },
         rinkeby: {
             provider: function () {
