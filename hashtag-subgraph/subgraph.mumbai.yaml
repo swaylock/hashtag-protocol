@@ -6,9 +6,9 @@ dataSources:
     name: HashtagProtocol
     network: mumbai
     source:
-      address: "0x6a39EA4D539Ae6626ce29eA3d3CCE76c7684Af1E"
+      address: "0xb2ed2ccBEA697976c4015c0a978705b0B0cF72F3"
       abi: HashtagProtocol
-      startBlock: 13880981
+      startBlock: 13890354
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -26,9 +26,9 @@ dataSources:
     name: ERC721HashtagRegistry
     network: mumbai
     source:
-      address: "0x9430Ffa1Ec4dde07413c251EcC1c646bDf66128c"
+      address: "0x2BFf292C84520Fd13Ca94852e6f1D53640dF92a7"
       abi: ERC721HashtagRegistry
-      startBlock: 13881019
+      startBlock: 13890395
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -48,9 +48,9 @@ dataSources:
     name: HashtagAccessControls
     network: mumbai
     source:
-      address: "0xa009E3C7446519Fb2aD11c7437DF8a4985CF4E68"
+      address: "0xE58497d48018CB780b6FcC7662B93E2ca8Fe8E36"
       abi: HashtagAccessControls
-      startBlock: 13880916
+      startBlock: 13890267
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3

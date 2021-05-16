@@ -6,8 +6,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npx hardhat test",
-    "deploy:mumbai": "hardhat --network mumbai deploy"
+    "test": "npx hardhat test"
   },
   "author": "BlockRocket.tech",
   "license": "MIT",

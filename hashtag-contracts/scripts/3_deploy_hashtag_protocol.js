@@ -8,7 +8,7 @@ async function main() {
   );
 
   const accessControlsAddress = prompt('Access Controls Address? ');
-  const platform = '0xa275523cfd4018784Ada3833aFdB9ac99Ab66Dc6'
+  const platform = '0xE9FBC1a1925F6f117211C59b89A55b576182e1e9';
 
   console.log('\nAccess Controls Address: ', accessControlsAddress)
   console.log('Platform Address: ', platform)

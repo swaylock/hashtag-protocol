@@ -63,7 +63,7 @@ module.exports = {
     mumbai: {
       url: `https://rpc-mumbai.maticvigil.com/v1/${MATICVIGIL_PROJECT_ID}`,
       accounts: [`0x${PRIVATE_KEY}`],
-      gasPrice: 5000000000, // 5 gwei
+      gasPrice: 2000000000, // 2 gwei
     },
     coverage: {
       url: 'http://localhost:8555',
