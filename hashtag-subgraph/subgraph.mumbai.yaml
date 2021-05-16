@@ -1,0 +1,66 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: HashtagProtocol
+    network: mumbai
+    source:
+      address: "0x6a39EA4D539Ae6626ce29eA3d3CCE76c7684Af1E"
+      abi: HashtagProtocol
+      startBlock: 13880981
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - MintHashtag
+      abis:
+        - name: HashtagProtocol
+          file: ./abis/HashtagProtocol.json
+      eventHandlers:
+        - event: MintHashtag(indexed uint256,string,indexed address,address)
+          handler: handleMintHashtag
+      file: ./src/protocol-mapping.ts
+  - kind: ethereum/contract
+    name: ERC721HashtagRegistry
+    network: mumbai
+    source:
+      address: "0x9430Ffa1Ec4dde07413c251EcC1c646bDf66128c"
+      abi: ERC721HashtagRegistry
+      startBlock: 13881019
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - HashtagRegistered
+      abis:
+        - name: ERC721HashtagRegistry
+          file: ./abis/ERC721HashtagRegistry.json
+        - name: HashtagProtocol
+          file: ./abis/HashtagProtocol.json
+      eventHandlers:
+        - event: HashtagRegistered(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256)
+          handler: handleHashtagRegistered
+      file: ./src/erc721-hashtag-registry.ts
+  - kind: ethereum/contract
+    name: HashtagAccessControls
+    network: mumbai
+    source:
+      address: "0xa009E3C7446519Fb2aD11c7437DF8a4985CF4E68"
+      abi: HashtagAccessControls
+      startBlock: 13880916
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - RoleGranted
+      abis:
+        - name: HashtagAccessControls
+          file: ./abis/HashtagAccessControls.json
+      eventHandlers:
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+      file: ./src/access-control-mapping.ts

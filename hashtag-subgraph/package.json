@@ -5,6 +5,7 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ blockrockettech/hashtag",
+    "deploy:mumbai": "graph deploy hashtag-protocol/hashtag-polygon-mumbai subgraph.mumbai.yaml --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "create-local": "graph create --node http://localhost:8020/ hashtag-protocol/hashtag-rinkby",
     "remove-local": "graph remove --node http://localhost:8020/ hashtag-protocol/hashtag-rinkby",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 hashtag-protocol/hashtag",
