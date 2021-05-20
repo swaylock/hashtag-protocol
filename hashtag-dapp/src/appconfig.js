@@ -13,6 +13,7 @@ const appConfig = {
   ),
   blocknativeApiKey: parse("VUE_APP_BLOCKNATIVE_API_KEY", "string"),
   onboardNetworkID: parse("VUE_APP_ONBOARD_NETWORK_ID", 4),
+  onboardNetworkName: parse("VUE_APP_ONBOARD_NETWORK_NAME", "Rinkeby"),
   publisherWalletAddress: parse(
     "VUE_APP_PUBLISHER_ADDRESS",
     "0xD677AEd0965AC9B54e709F01A99cEcA205aebC4B"
