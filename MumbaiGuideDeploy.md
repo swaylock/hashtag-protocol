@@ -55,7 +55,8 @@ Create a file .env.local in hashtag-frontend.
 VUE_APP_HASHTAG_SUBGRAPH_URL=https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-polygon-mumbai
 VUE_APP_PUBLISHER_ADDRESS=
 VUE_APP_BLOCKNATIVE_API_KEY=
-VUE_APP_ONBOARD_NETWORK_ID=
+VUE_APP_ONBOARD_NETWORK_ID=80001
+VUE_APP_ONBOARD_NETWORK_NAME=mumbai
 VUE_APP_TOP_NFTS_SUBGRAPH_URL=
 ```
 
