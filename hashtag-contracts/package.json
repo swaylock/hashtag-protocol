@@ -6,7 +6,6 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npx hardhat test"
   },
   "author": "BlockRocket.tech",
   "license": "MIT",
