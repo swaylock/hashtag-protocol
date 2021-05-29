@@ -15,9 +15,9 @@ task("accounts", "Prints the list of accounts", async () => {
   }
 });
 
-const INFURA_PROJECT_ID = process.env.PROTOTYPE_BR_INFURA_KEY;
-const PRIVATE_KEY = process.env.HASHTAG_PRIVATE_KEY;
-const MATICVIGIL_PROJECT_ID = process.env.MATICVIGIL_PROJECT_ID;
+const INFURA_PROJECT_ID = process.env.PROTOTYPE_BR_INFURA_KEY || '';
+const PRIVATE_KEY = process.env.HASHTAG_PRIVATE_KEY || '0000000000000000000000000000000000000000000000000000000000000000';
+const MATICVIGIL_PROJECT_ID = process.env.MATICVIGIL_PROJECT_ID || '';
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
