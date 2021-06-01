@@ -220,6 +220,7 @@ const actions = {
     const ready = await dispatch("readyToTransact");
     if (!ready) return;
 
+    console.log("mint", state.web3Objects);
     const { contracts, publisher } = state.web3Objects;
     const { hashtagProtocolContract } = contracts;
 
