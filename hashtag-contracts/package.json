@@ -6,7 +6,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npx buidler test"
+    "test": "hardhat test"
   },
   "author": "BlockRocket.tech",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/contracts": "3.3.0",
     "@openzeppelin/test-helpers": "^0.5.9",
-    "buidler-gas-reporter": "^0.1.3",
+    "@truffle/hdwallet-provider": "^1.4.0",
     "chai": "^4.3.4",
     "dotenv": "^8.2.0",
     "ethereum-waffle": "^3.3.0",

@@ -40,7 +40,7 @@
         <div class="level-item has-text-centered">
           <a :href="this.addressUrl" target="_blank">
             <b-icon icon="ethereum" size="is-small"> </b-icon>
-            View on Etherscan
+            View on Explorer
           </a>
         </div>
         <div class="level-item has-text-centered">

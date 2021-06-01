@@ -70,6 +70,7 @@ const actions = {
     onboard = Onboard({
       dappId: AppConfig.blocknativeApiKey,
       networkId: AppConfig.onboardNetworkID,
+      networkName: AppConfig.onboardNetworkName,
       subscriptions: {
         address: (address) => {
           commit("setWalletAddress", address);
@@ -94,6 +95,7 @@ const actions = {
     blocknative = new BlocknativeSdk({
       dappId: AppConfig.blocknativeApiKey,
       networkId: AppConfig.onboardNetworkID,
+      name: AppConfig.onboardNetworkName,
     });
 
     dispatch("reconnectWallet");

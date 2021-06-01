@@ -12,6 +12,12 @@ const state = {
       registration: "https://#",
       website: "https://hashtag-protocol.org",
     },
+    {
+      address: "0xcF38E38DA8C9921f39DC8E9327Bc03bA514D4C37",
+      name: "Hashtag Protocol on Mumbai",
+      registration: "https://#",
+      website: "https://mumbai.hashtag-protocol.org",
+    },
   ],
 };
 
