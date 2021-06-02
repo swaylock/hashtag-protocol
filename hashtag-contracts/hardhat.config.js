@@ -31,7 +31,7 @@ module.exports = {
   },
   networks: {
     hardhat: {
-      //gasPrice: 00000000000, // 0 gwei
+      gasPrice: 8000000000, // 8 gwei
     },
     localhost: {
       url: "http://127.0.0.1:8545",
