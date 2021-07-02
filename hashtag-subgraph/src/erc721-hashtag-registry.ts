@@ -61,7 +61,7 @@ export function handleHashtagRegistered(event: HashtagRegistered): void {
   // this is a pre-auction state if true or post-auction if false
   if (owner.equals(platformAddress)) {
     hashtag.creatorRevenue = hashtag.creatorRevenue.plus(remainingFee);
-    
+
     //  Update creator counts and fees
     let creator = protocolContract.getCreatorAddress(hashtagId);
     let creatorEntity = safeLoadCreator(creator.toHexString());
