@@ -58,31 +58,39 @@ variables](https://cli.vuejs.org/guide/mode-and-env.html#modes-and-environment-v
 
 ## Local development
 
-For developing the entire tech stack locally, there's a great article that will
-get you quite far here:
-
-<https://medium.com/blockrocket/dapp-development-with-a-local-subgraph-ganache-setup-566a4d4cbb>
-
-There's a few gotchas and items missing items in that article, so here's a
-summary below of the steps. One thing I found useful, is to have 5 different
+One thing I found useful, is to have 5 different
 terminal tabs open for each of the steps below. I'll indicate where to open a
 new terminal tab. 
 
-1. Open a new terminal tab and install Truffle and Ganache globally:
+::: tip
+Two useful resources for smart contract development on Hardhat are [Open
+Zeppelin](https://docs.openzeppelin.com/learn/developing-smart-contracts) and
+the [Hardhat documentation](https://hardhat.org/getting-started/#quick-start).
+:::
+
+1. Open terminal tab 1 and install Hardhat:
 
 ``` bash
-# NPM
-$ npm install -g truffle ganache-cli
 
 # Yarn
-$ yarn global add truffle ganache-cli
+yarn install -D hardhat
 ```
 
-2. In the same tab, start a local blockchain using ganache-cli
+Confirm hardhat is installed by running the following:
+
+``` bash
+npx hardhat
+```
+
+Note: you can find additional resources for setting up and using hardhat [here](https://hardhat.org/getting-started/#installation).
+
+2. In the same tab, start a local blockchain hardhat
 
 ``` zsh
-ganache-cli -h 0.0.0.0 -m "worth grunt bridge trade chuckle stand lamp jealous snow order pluck mobile" -i 5777 --chainId 5777 -b 20
+npx hardhat node
 ```
+
+Hardhat Network will print out its address, <http://127.0.0.1:8545>, along with a list of available accounts and their private keys.
 
 3. Open another tab (tab #2). Navigate to the hashtag-contracts directory and
    compile and migrate the solidity contracts to the local blockchain we just
@@ -90,24 +98,124 @@ ganache-cli -h 0.0.0.0 -m "worth grunt bridge trade chuckle stand lamp jealous s
 
 ``` bash
 cd hashtag-contracts
-truffle compile
-truffle migrate --network development
+npx hardhat compile
 ```
 
-4. Add network & contract information to /src/truffleconf files. These will get
+4. Replace Admin address, Publisher address with your Admin and Publisher
+   address in `scripts/2_setup_admin_and_publisher.js`
+
+Replace Platform address with your Platform address in scripts/3_deploy_hashtag_protocol.js
+
+These addresses can be found in the tab in which you started the local
+blockchain in step 2 above. The addresses will look something like:
+
+```
+Accounts
+========
+Account #0: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 (10000 ETH)
+Private Key: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+Account #1: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 (10000 ETH)
+Private Key: 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+
+Account #2: 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc (10000 ETH)
+Private Key: 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
+```
+
+Use Account #0 for the "Admin address" and Account #1 for the Publisher address
+and Account #2 for the Platform address.
+
+Note that you should also import and label these addresses into your local
+wallet such as Metamask for UI/UX testing the dApp.
+
+
+5. Open a new tab and run all sorted scripts on below to deploy contract on your local testnet.
+
+npx hardhat --network localhost run scripts/1_deploy_access_controls.js
+npx hardhat --network localhost run scripts/2_setup_admin_and_publisher.js
+npx hardhat --network localhost run scripts/3_deploy_hashtag_protocol.js
+npx hardhat --network localhost run scripts/4_deploy_hashtag_registry.js
+
+Note that after you run 1_deploy_access_controls.js you will be shown the access
+controls contract address as follows:
+
+```
+Deploying access controls with the account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+Access controls deployed at:  0x5FbDB2315678afecb367f032d93F642f64180aa3
+Finished!
+```
+
+You will need to copy this and paste into the command
+line prompt in the next three scripts, as follows:
+
+```
+npx hardhat run scripts/2_setup_admin_and_publisher.js
+Setting up access controls with the account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+Access Controls Address? [paste access controls address here]
+
+Access Controls Address:  0x5FbDB2315678afecb367f032d93F642f64180aa3
+
+```
+
+Remember to save 3 deployed contract addresses output in the hardhat node tab
+(step 2). It should look something like this: 
+
+```
+eth_sendTransaction
+  Contract deployment: HashtagAccessControls
+  Contract address:    0x5fbdb2315678afecb367f032d93f642f64180aa3 <--
+  Transaction:         0xdd4444f80fa6aae2da7562a2eab9d162833a24d9eeff64d6729a01766fec6d5a
+  From:                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+  Value:               0 ETH
+  Gas used:            600091 of 600091
+  Block #1:            0x5da063e16bea8d328db2975fd863d628093affac8113d5f7861feac1bb1c8d72
+
+eth_chainId
+eth_getTransactionByHash
+web3_clientVersion (2)
+eth_accounts
+eth_chainId
+eth_accounts
+eth_chainId
+eth_estimateGas
+eth_gasPrice
+eth_sendTransaction
+  Contract deployment: HashtagProtocol
+  Contract address:    0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9 <--
+  Transaction:         0xf653634e580966ec27957477ef02b88c2c0ba4c95fff16f4c150c0fdcabf9233
+  From:                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+  Value:               0 ETH
+  Gas used:            2711291 of 2711291
+  Block #4:            0xe8107a7ee41be74608496bba652d54539b244b07eaec86ffb6f1f37fdfc28c6e
+
+eth_chainId
+eth_getTransactionByHash
+eth_blockNumber
+eth_chainId (2)
+eth_getTransactionReceipt
+web3_clientVersion (2)
+eth_accounts
+eth_chainId
+net_version
+eth_accounts
+eth_chainId
+eth_estimateGas
+eth_gasPrice
+eth_sendTransaction
+  Contract deployment: ERC721HashtagRegistry
+  Contract address:    0xdc64a140aa3e981100a9beca4e685f962f0cf6c9 <--
+  Transaction:         0xe384590761af3d89bdab0a3fcffd71e337b066b9f14e997d5e178bf7a0df0c7c
+  From:                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+  Value:               0 ETH
+  Gas used:            1676246 of 1676246
+  Block #5:            0x7bfcc967cbb603f808dcfe0d15307062889d81683d232c4fc5dd7366d0264f1e
+
+```
+
+We will use these in the next steps.
+
+4. Add network & contract information to /hashtag-dapp/src/truffleconf files. These will get
    picked up when we start the dapp.
-
-``` bash
-# get the contract information
-truffle networks
-
-# you should see a print out as follows:
-Network: UNKNOWN (id: 5777)
-  ERC721HashtagRegistry: 0xa0510213237582f08E4AD636F56894900a65dC48
-  HashtagAccessControls: 0x4b9B7CAD4e6B0F96E47D33305D369344439d9e2D
-  HashtagProtocol: 0xeE9168c1C4DCf88F69ac11901A37D14369261692
-  Migrations: 0x54e27a63a8B5a2a04E8cC2DF1EBE0Cd59F459601
-```
 
 In your editor, open `/src/truffleconf/HashtagProtocol.json` and
 `/src/truffleconf/ERC721HashtagRegistry.json`. In each file, scroll down to the
@@ -124,6 +232,9 @@ In your editor, open `/src/truffleconf/HashtagProtocol.json` and
   },
   "5777": {
     "address": "0x38238AC79c0DA146cadd64acb5597517961817a7"
+  },
+  "31337": {
+    "address": "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9"
   }
 },
 
@@ -137,12 +248,18 @@ In your editor, open `/src/truffleconf/HashtagProtocol.json` and
   },
   "5777": {
     "address": "0x5c467525c449C54cE1880CA368814c2dbff87836"
+  },
+  "31337": {
+    "address": "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9"
   }
 },
 ```
 
-5. Open another tab (tab #3). You need docker running on your machine; if you
-   don't have it, install it now. Once installed, do the following:
+5. Add the three contract addresses above to the appropriate section of the
+   `/hashtag-subgraph/subgraph.yaml` configuration file.
+
+6. Start Docker desktop on your machine. If you don't have it, install it now.
+7. Once Docker is running, open another tab and start up the subgraph node as follows:
 
 ``` bash
 # navigate into the hashtag-subgraph graph-node directory.
@@ -152,7 +269,8 @@ cd hashtag-subgraph/graph-node
 ./run-graph-node.sh
 ```
 
-6. Open another tab (tab #4). Deploy our subgraph code to it.
+8. Open another tab. Deploy our subgraph code to the graph node we started in
+   step 6. The following are performed in the `/hashtag-subgraph` directory.
 
 ``` bash
 # Perform the following commands.
@@ -183,4 +301,15 @@ VUE_APP_ONBOARD_NETWORK_ID=5777
 VUE_APP_PUBLISHER_ADDRESS=0xfc5b19737950da71573EC38e7B4579608cdE4E65
 VUE_APP_ONBOARD_LOCALSTORAGE_WALLET_KEY=HashtagSelectedWallet
 ```
+
+8. Open another tab and try starting the dapp.
+
+```
+cd hashtag-protocol/hashtag-dapp
+yarn install
+yarn serve
+```
+
+If everything was set up properly, you should be able to mint tokens and tag
+nfts using a local blockchain and a local subgraph.
 
