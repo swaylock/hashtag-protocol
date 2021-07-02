@@ -10,5 +10,9 @@
   "5777": {
     "Name": "Localdev",
     "url": "https://rinkeby.etherscan.io"
+  },
+  "31337": {
+    "Name": "Localdev Hardhat",
+    "url": "https://rinkeby.etherscan.io"
   }
 }
