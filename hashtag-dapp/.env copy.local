@@ -1,7 +1,0 @@
-VUE_APP_HASHTAG_SUBGRAPH_URL=http://localhost:8000/subgraphs/name/hashtag-protocol/hashtag-local
-VUE_APP_TOP_NFTS_SUBGRAPH_URL=https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens
-VUE_APP_BLOCKNATIVE_API_KEY=371f97ec-05be-429d-b0a6-de74aa69c61c
-VUE_APP_ONBOARD_NETWORK_ID=5777
-VUE_APP_PUBLISHER_ADDRESS=0xfc5b19737950da71573EC38e7B4579608cdE4E65
-VUE_APP_ONBOARD_LOCALSTORAGE_WALLET_KEY=HashtagSelectedWallet
-VUE_APP_DISCORD_SERVER=https://discord.gg/EyTJFRm

@@ -104,23 +104,7 @@
       protocol: http
     commands:
       start:
-        echo "config = $(echo $PLATFORM_VARIABLES | base64 -d)" > /hashtag-dapp/tmp/config.js
-        sleep infinity
-    locations:
-      "/":
-        root: "hashtag-dapp/dist"
-        index:
-          - "index.html"
-        passthru: /index.html
-        expires: 300s
-        scripts: true
-        # Deny access to static files in this location.
-        allow: false
-        rules:
-          \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
-            allow: true
-          ^/robots\.txt$:
-            allow: true
+        yarn start
   disk: 512
   dependencies:
     nodejs:
@@ -131,22 +115,6 @@
       cd hashtag-dapp
       yarn install
       yarn build
-      # Building on platform.sh
-      if [ -d /app/.global ]; then
-        echo "--------------------------------------------------"
-        echo "Symlink /tmp/config.js to dist/config.js"
-        echo "--------------------------------------------------"
-        ln -fs /tmp/config.js dist/config.js
-      fi
-    #The deploy hook runs after your application has been deployed and started.
-    deploy: |
-      # Deploying on platform.sh
-      if [ -d /app/.global ]; then
-        echo "----------------------------------------------"
-        echo "Putting PLATFORM_VARIABLES into /tmp/config.js"
-        echo "----------------------------------------------"
-        echo "config = $(echo $PLATFORM_VARIABLES | base64 -d)" >| /tmp/config.js
-      fi
 
 - name: hashtag-website
   type: nodejs:14

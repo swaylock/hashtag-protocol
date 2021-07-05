@@ -1,0 +1,79 @@
+// Master scss file for Hashtag Dapp theme.
+@import "~bulma/sass/utilities/_all.sass";
+
+$primary: #24ae60;
+/* stylelint-disable function-name-case */
+$primary-invert: findColorInvert($primary);
+$primary-light: findLightColor($primary);
+
+$colors: (
+  "white": (
+    $white,
+    $black,
+  ),
+  "black": (
+    $black,
+    $white,
+  ),
+  "light": (
+    $light,
+    $light-invert,
+  ),
+  "dark": (
+    $dark,
+    $dark-invert,
+  ),
+  "primary": (
+    $primary,
+    $primary-invert,
+  ),
+  "info": (
+    $info,
+    $info-invert,
+  ),
+  "success": (
+    $success,
+    $success-invert,
+  ),
+  "warning": (
+    $warning,
+    $warning-invert,
+  ),
+  "danger": (
+    $danger,
+    $danger-invert,
+  ),
+);
+
+// Update Bulma's global variables
+$family-sans-serif: "Roboto", sans-serif;
+$body-family: $family-sans-serif;
+$body-background-color: $grey-lighter;
+$link: $primary;
+
+$navbar-breakpoint: $tablet;
+$navbar-item-color: $link;
+$navbar-item-active-color: $white;
+$navbar-burger-color: $link;
+$navbar-item-hover-background-color: transparent;
+$dropdown-item-active-color: $white;
+//$navbar-dropdown-background-color: $primary;
+
+//$title-color: $black-ter;
+//$subtitle-color: $black-ter;
+
+$divider-background-color: $grey;
+$footer-padding: 0 0 5rem;
+$footer-background-color: $grey-lighter;
+
+// Removes hamburger in global nav.
+//$navbar-breakpoint: 414px;
+
+$section-padding: 0.25rem 0.8rem;
+$border: $grey-dark;
+$modal-card-head-radius: $radius-large;
+$modal-card-foot-radius: $radius-large;
+$modal-card-head-background-color: $white;
+$modal-card-body-background-color: $white;
+$modal-card-head-border-bottom: 0;
+$modal-card-foot-border-top: 0;

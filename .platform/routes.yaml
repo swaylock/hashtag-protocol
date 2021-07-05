@@ -6,6 +6,7 @@
 "https://www.{default}/":
   type: upstream
   upstream: "hashtag-website:http"
+  id: "hashtag-web"
 
 "https://{default}/":
   type: upstream
@@ -22,15 +23,18 @@
 "https://docs.{default}/":
   type: upstream
   upstream: "hashtag-docs:http"
+  id: "hashtag-docs"
 
 "https://app.{default}/":
   type: upstream
   upstream: "hashtag-dapp:http"
+  id: "hashtag-dapp"
 
 # Hashtag API
 "https://api.hashtag-protocol.io/":
   type: upstream
   upstream: "hashtag-api:http"
+  id: "hashtag-api"
 
 "http://api.hashtag-protocol.io/":
   type: redirect

@@ -1,29 +1,29 @@
-# HASHTAG demonstration application
+# NuxtJS for Platform.sh
 
-## Installation
+<p align="center">
+<a href="https://console.platform.sh/projects/create-project?template=https://raw.githubusercontent.com/platformsh/template-builder/master/templates/nuxtjs/.platform.template.yaml&utm_content=nuxtjs&utm_source=github&utm_medium=button&utm_campaign=deploy_on_platform">
+    <img src="https://platform.sh/images/deploy/lg-blue.svg" alt="Deploy on Platform.sh" width="180px" />
+</a>
+</p>
 
-To run the Hashtag dApp locally, create a fork of this repository by clicking on the "fork" button on the upper right of the GitHub interface. Next clone the your forked copy locally and install its dependencies. You will need [yarn](https://yarnpkg.com/lang/en/docs/install/) or [npm](https://docs.npmjs.com/cli/install) installed.
+This template builds a simple application using the NuxtJS web framework that can be used a starting point.
 
-```
-git clone git@github.com:[your username or organization]/hashtag-protocol.git
-cd hashtag-dapp
-yarn install --lock-file # or `npm install`
-```
+NuxtJS is an open-source web framework based on Vue.js.
 
-### Running the Frontend
+## Features
 
-```
-yarn serve
-```
+* Node.js 14
+* Automatic TLS certificates
+* yarn-based build
 
-### Using
+## Customizations
 
-When running the application, it will be based at `localhost:8080`, go to `/hashtags` to view the main Hashtag View page.
+The following files and additions make the framework work on Platform.sh, modified from the `npx` command [`create-nuxt-app`](https://github.com/nuxt/create-nuxt-app). If using this project as a reference for your own existing project, replicate the changes below to your project.
 
-This project is currently using Vue and Vuex, with Semantic UI.
+* The `.platform.app.yaml`, `.platform/services.yaml`, and `.platform/routes.yaml` files have been added. These provide Platform.sh-specific configuration and are present in all projects on Platform.sh. You may customize them as you see fit.
+* An additional module, [`config-reader-nodejs`](https://github.com/platformsh/config-reader-nodejs), has been added.  It provides convenience wrappers for accessing the Platform.sh environment variables.
 
-#### Prettier
+## References
 
-Clean up after yourself ;)
-
-`prettier --write ./src`
+* [NuxtJS](https://nuxtjs.org/)
+* [Node.js on Platform.sh](https://docs.platform.sh/languages/nodejs.html)
