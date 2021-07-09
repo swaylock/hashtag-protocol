@@ -25,7 +25,7 @@ async function main() {
   prompt("If happy, hit enter to continue...");
 
   const ERC721HashtagRegistry = await hre.ethers.getContractFactory(
-    "contracts/ERC721HashtagRegistry.sol:ERC721HashtagRegistry"
+    "ERC721HashtagRegistry"
   );
 
   const registry = await ERC721HashtagRegistry.deploy(

@@ -27,7 +27,7 @@ async function main() {
   prompt("If happy, hit enter to continue...");
 
   const HashtagProtocol = await hre.ethers.getContractFactory(
-    "contracts/HashtagProtocol.sol:HashtagProtocol"
+    "HashtagProtocol"
   );
 
   const nft = await HashtagProtocol.deploy(accessControlsAddress, platform);

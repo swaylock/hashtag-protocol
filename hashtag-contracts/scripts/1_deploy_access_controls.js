@@ -11,7 +11,7 @@ async function main() {
   );
 
   const HashtagAccessControls = await hre.ethers.getContractFactory(
-    "contracts/HashtagAccessControls.sol:HashtagAccessControls"
+    "HashtagAccessControls"
   );
 
   const accessControls = await HashtagAccessControls.deploy();

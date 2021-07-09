@@ -73,7 +73,4 @@ module.exports = {
       gasPrice: 8000000000, // 8 gwei
     }
   },
-  abiExporter: {
-    path: './artifacts/abi',
-  }
 };
