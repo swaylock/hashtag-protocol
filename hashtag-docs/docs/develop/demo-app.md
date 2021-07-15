@@ -58,14 +58,23 @@ variables](https://cli.vuejs.org/guide/mode-and-env.html#modes-and-environment-v
 
 ## Local development
 
-One thing I found useful, is to have 5 different
-terminal tabs open for each of the steps below. I'll indicate where to open a
-new terminal tab. 
+The following details how to set up a complete development stack to experiment
+with the protocol and the dApp front-end.
+
+This includes a local Hardhat blockchain (evm compatible) emitting to be picked
+up by a local subgraph node, the exact setup that support the current
+demonstration application.
 
 ::: tip
 Two useful resources for smart contract development on Hardhat are [Open
 Zeppelin](https://docs.openzeppelin.com/learn/developing-smart-contracts) and
 the [Hardhat documentation](https://hardhat.org/getting-started/#quick-start).
+:::
+
+::: tip
+One thing I found useful, is to have 5 different
+terminal tabs open for each of the steps below. I'll indicate where to open a
+new terminal tab. 
 :::
 
 1. Open terminal tab 1 and install Hardhat:
@@ -90,7 +99,23 @@ Note: you can find additional resources for setting up and using hardhat [here](
 npx hardhat node
 ```
 
-Hardhat Network will print out its address, <http://127.0.0.1:8545>, along with a list of available accounts and their private keys.
+Hardhat Network will print out its address, <http://127.0.0.1:8545>, along with
+a list of available accounts and their private keys.
+
+The output will look something like this:
+
+```
+Accounts
+========
+Account #0: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 (10000 ETH)
+Private Key: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+Account #1: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 (10000 ETH)
+Private Key: 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+
+Account #2: 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc (10000 ETH)
+Private Key: 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
+```
 
 3. Open another tab (tab #2). Navigate to the hashtag-contracts directory and
    compile and migrate the solidity contracts to the local blockchain we just
@@ -107,23 +132,10 @@ npx hardhat compile
 Replace Platform address with your Platform address in scripts/3_deploy_hashtag_protocol.js
 
 These addresses can be found in the tab in which you started the local
-blockchain in step 2 above. The addresses will look something like:
+blockchain in step 2 above.
 
-```
-Accounts
-========
-Account #0: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 (10000 ETH)
-Private Key: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
-Account #1: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 (10000 ETH)
-Private Key: 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
-
-Account #2: 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc (10000 ETH)
-Private Key: 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
-```
-
-Use Account #0 for the "Admin address" and Account #1 for the Publisher address
-and Account #2 for the Platform address.
+Use Account #0 for the "Admin" address and Account #1 for the "Platform" address
+and Account #2 for the "Publisher" address.
 
 Note that you should also import and label these addresses into your local
 wallet such as Metamask for UI/UX testing the dApp.
@@ -219,7 +231,10 @@ We will use these in the next steps.
 
 In your editor, open `/src/truffleconf/HashtagProtocol.json` and
 `/src/truffleconf/ERC721HashtagRegistry.json`. In each file, scroll down to the
-"networks" section and edit them so they look like this:
+"networks" section and edit them so they look like this. Replace the addresses
+for network id 31337 with the respective HashtagProtocol and
+ERC721HashtagRegistry contract addresses emitted when you deployed the contracts
+above:
 
 ``` json
 // HashtagProtocol.json
