@@ -1,15 +1,24 @@
-const web3 = require('web3');
-const {expect} = require('chai');
+const hre = require("hardhat");
+const web3 = require("web3");
+const { expect } = require("chai");
 
-const {utils, BigNumber, constants} = ethers;
+const { utils, BigNumber, constants } = hre.ethers;
 
-describe('ERC721HashtagRegistry Tests', function () {
-
+describe("ERC721HashtagRegistry Tests", function () {
+  // eslint-disable-next-line no-unused-vars
   let platform, platformAddress, publisher, publisherAddress;
-  let buyer, buyerAddress, anotherAddress, random, randomAddress, tagger, taggerAddress;
+  let buyer,
+    another,
+    buyerAddress,
+    anotherAddress,
+    random,
+    randomAddress,
+    tagger,
+    taggerAddress;
+  let chainId;
 
   beforeEach(async function () {
-    const accounts = await ethers.getSigners();
+    const accounts = await hre.ethers.getSigners();
 
     platform = accounts[0];
     platformAddress = await accounts[0].getAddress();
@@ -24,70 +33,142 @@ describe('ERC721HashtagRegistry Tests', function () {
     tagger = accounts[7];
     taggerAddress = await accounts[7].getAddress();
 
-    const HashtagAccessControls = await ethers.getContractFactory('HashtagAccessControls');
-    const HashtagProtocol = await ethers.getContractFactory('HashtagProtocol');
-    const ERC721HashtagRegistry = await ethers.getContractFactory('ERC721HashtagRegistry');
-    const ERC721BurnableMock = await ethers.getContractFactory('ERC721BurnableMock');
+    chainId = 1;
 
+    const HashtagAccessControls = await hre.ethers.getContractFactory(
+      "HashtagAccessControls"
+    );
+    const HashtagProtocol = await hre.ethers.getContractFactory(
+      "HashtagProtocol"
+    );
+    const ERC721HashtagRegistry = await hre.ethers.getContractFactory(
+      "ERC721HashtagRegistry"
+    );
+    const ERC721BurnableMock = await hre.ethers.getContractFactory(
+      "ERC721BurnableMock"
+    );
+
+    // Deploy access controls.
+    // By default address[0] is the deployer.
     this.accessControls = await HashtagAccessControls.deploy();
-    this.hashtagProtocol = await HashtagProtocol.deploy(this.accessControls.address, platformAddress);
 
-    // add a publisher to the protocol
-    await this.accessControls.grantRole(web3.utils.sha3('PUBLISHER'), publisherAddress);
+    // Deploy HashtagProtocol token contract.
+    this.hashtagProtocol = await HashtagProtocol.deploy(
+      this.accessControls.address,
+      platformAddress
+    );
 
-    this.registry = await ERC721HashtagRegistry.deploy(this.accessControls.address, this.hashtagProtocol.address);
+    // Add a publisher to the protocol.
+    await this.accessControls.grantRole(
+      web3.utils.sha3("PUBLISHER"),
+      publisherAddress
+    );
 
-    this.nft = await ERC721BurnableMock.deploy('NFT', 'NFT');
+    // Deploy the tagging contract.
+    this.registry = await ERC721HashtagRegistry.deploy(
+      this.accessControls.address,
+      this.hashtagProtocol.address
+    );
+
+    // Mint some target NFTs.
+    this.nft = await ERC721BurnableMock.deploy("NFT", "NFT");
     await this.nft.mint(); //#1
     await this.nft.mint(); //#2
+
+    // Add Eth Mainnet to the permitted target tagging chains.
+    await this.registry.setPermittedChainId(1, true);
   });
 
-  describe('Validate setup', async function () {
-    it('should have total tags of zero', async function () {
+  describe("Validate setup", async function () {
+    it("should have total tags of zero", async function () {
       expect(await this.registry.totalTags()).to.be.equal(0);
     });
-  });
 
-  describe('admin access', async function () {
-    it('should set tag fee', async function () {
-      await this.registry.connect(platform).setTagFee(utils.parseEther('1'));
-      expect(await this.registry.tagFee()).to.be.equal(utils.parseEther('1'));
-
-      await expect(this.registry.connect(random).setTagFee(utils.parseEther('1'))).to.be.reverted;
+    it("should have Eth mainnet (chain id 1) permitted", async function () {
+      expect((await this.registry.getPermittedChainId(1)) == true);
     });
 
+    it("should have Polygon mainnet (chain id 137) not permitted", async function () {
+      expect((await this.registry.getPermittedChainId(137)) == false);
+    });
+  });
 
-    it('should update access controls', async function () {
+  describe("Only addresses with platform role", async function () {
+    it("should set tag fee", async function () {
+      // Try setting tag fee as platform address.
+      // Expect it to be set.
+      await this.registry.connect(platform).setTagFee(utils.parseEther("1"));
+      expect(await this.registry.tagFee()).to.be.equal(utils.parseEther("1"));
+
+      // Try setting tag fee as unprivileged ("random") address.
+      // Expect it to be reverted.
+      await expect(
+        this.registry.connect(random).setTagFee(utils.parseEther("1"))
+      ).to.be.reverted;
+    });
+
+    it("should update access controls contract address", async function () {
+      // Only platform should be able to updateAccessControls contract address.
       await this.registry.connect(platform).updateAccessControls(randomAddress);
       expect(await this.registry.accessControls()).to.be.equal(randomAddress);
 
-      await expect(this.registry.connect(random).updateAccessControls(randomAddress)).to.be.reverted;
+      // Fail if random address attempts to updateAccessControls.
+      await expect(
+        this.registry.connect(random).updateAccessControls(randomAddress)
+      ).to.be.reverted;
     });
 
-    it('should revert when updating access controls to zero address', async function () {
-      await expect(this.registry.connect(platform).updateAccessControls(constants.AddressZero))
-        .to.be.revertedWith("ERC721HashtagRegistry.updateAccessControls: Cannot be zero");
+    it("should revert when updating access controls to zero address", async function () {
+      await expect(
+        this.registry
+          .connect(platform)
+          .updateAccessControls(constants.AddressZero)
+      ).to.be.revertedWith(
+        "ERC721HashtagRegistry.updateAccessControls: Cannot be zero"
+      );
+    });
+
+    it("should be able to add target chain ids", async function () {
+      // Try adding a target chain id as platform address.
+      // Expect it to be set.
+      await this.registry.connect(platform).setPermittedChainId(4, true);
+      expect((await this.registry.getPermittedChainId(4)) == true);
+
+      // Try adding a target chain id as random address.
+      // Expect it to be reverted.
+      await expect(this.registry.connect(random).setPermittedChainId(4, true))
+        .to.be.reverted;
     });
   });
 
-  describe('Tag', async function () {
+  describe("Tagging contract", async function () {
     beforeEach(async function () {
-      await this.hashtagProtocol.connect(tagger).mint('#pussypower', publisherAddress, taggerAddress, {value: utils.parseEther('1')});
-      this.hashtagId = await this.hashtagProtocol.hashtagToTokenId('#pussypower');
+      await this.hashtagProtocol
+        .connect(tagger)
+        .mint("#kittycat", publisherAddress, taggerAddress, {
+          value: utils.parseEther("1"),
+        });
+      this.hashtagId = await this.hashtagProtocol.hashtagToTokenId("#kittycat");
     });
 
-    it('should be able to mint and tag', async function () {
+    it("should be able to mint and tag", async function () {
       const nftId = constants.One;
 
       const macbookHashtagValue = "#macbook";
-      await expect(this.registry.connect(tagger).mintAndTag(
-        macbookHashtagValue,
-        this.nft.address,
-        nftId,
-        publisherAddress,
-        taggerAddress,
-        {value: utils.parseEther('0.001')}
-      )).to.emit(this.registry, 'HashtagRegistered')
+      await expect(
+        this.registry
+          .connect(tagger)
+          .mintAndTag(
+            macbookHashtagValue,
+            this.nft.address,
+            nftId,
+            publisherAddress,
+            taggerAddress,
+            chainId,
+            { value: utils.parseEther("0.001") }
+          )
+      )
+        .to.emit(this.registry, "HashtagRegistered")
         .withArgs(
           taggerAddress,
           this.nft.address,
@@ -95,7 +176,8 @@ describe('ERC721HashtagRegistry Tests', function () {
           constants.Two,
           nftId,
           constants.One,
-          utils.parseEther('0.001'),
+          utils.parseEther("0.001"),
+          chainId
         );
 
       const {
@@ -104,7 +186,8 @@ describe('ERC721HashtagRegistry Tests', function () {
         _nftId,
         _tagger,
         _tagstamp,
-        _publisher
+        _publisher,
+        _chainId,
       } = await this.registry.getTagInfo(nftId);
 
       expect(_hashtagId).to.be.equal(constants.Two);
@@ -114,24 +197,37 @@ describe('ERC721HashtagRegistry Tests', function () {
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
       expect(_publisher).to.be.equal(publisherAddress);
+      expect(_chainId).to.be.equal(chainId);
 
       // check accrued values
-      expect(await this.registry.accrued(publisherAddress)).to.be.equal(utils.parseEther('0.0003')); // 30%
-      expect(await this.registry.accrued(platformAddress)).to.be.equal(utils.parseEther('0.0002')); // 20%
-      expect(await this.registry.accrued(taggerAddress)).to.be.equal(utils.parseEther('0.0005')); // 50%
+      expect(await this.registry.accrued(publisherAddress)).to.be.equal(
+        utils.parseEther("0.0003")
+      ); // 30%
+      expect(await this.registry.accrued(platformAddress)).to.be.equal(
+        utils.parseEther("0.0002")
+      ); // 20%
+      expect(await this.registry.accrued(taggerAddress)).to.be.equal(
+        utils.parseEther("0.0005")
+      ); // 50%
     });
 
-    it('should be able to tag a cryptokittie with #pussypower (pre-auction of #pussypower)', async function () {
+    it("should be able to tag a cryptokittie with #kittycat (pre-auction of #kittycat)", async function () {
       const nftId = constants.One;
 
-      await expect(this.registry.connect(tagger).tag(
-        this.hashtagId,
-        this.nft.address,
-        nftId,
-        publisherAddress,
-        taggerAddress,
-        {value: utils.parseEther('0.001')}
-      )).to.emit(this.registry, 'HashtagRegistered')
+      await expect(
+        this.registry
+          .connect(tagger)
+          .tag(
+            this.hashtagId,
+            this.nft.address,
+            nftId,
+            publisherAddress,
+            taggerAddress,
+            chainId,
+            { value: utils.parseEther("0.001") }
+          )
+      )
+        .to.emit(this.registry, "HashtagRegistered")
         .withArgs(
           taggerAddress,
           this.nft.address,
@@ -139,7 +235,8 @@ describe('ERC721HashtagRegistry Tests', function () {
           this.hashtagId,
           nftId,
           constants.One,
-          utils.parseEther('0.001'),
+          utils.parseEther("0.001"),
+          chainId
         );
 
       expect(await this.registry.totalTags()).to.be.equal(1);
@@ -150,7 +247,8 @@ describe('ERC721HashtagRegistry Tests', function () {
         _nftId,
         _tagger,
         _tagstamp,
-        _publisher
+        _publisher,
+        _chainId,
       } = await this.registry.getTagInfo(this.hashtagId);
 
       expect(_hashtagId).to.be.equal(this.hashtagId);
@@ -160,98 +258,292 @@ describe('ERC721HashtagRegistry Tests', function () {
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
       expect(_publisher).to.be.equal(publisherAddress);
+      expect(_chainId).to.be.equal(chainId);
 
       // check accrued values
-      expect(await this.registry.accrued(publisherAddress)).to.be.equal(utils.parseEther('0.0003')); // 30%
-      expect(await this.registry.accrued(platformAddress)).to.be.equal(utils.parseEther('0.0002')); // 20%
-      expect(await this.registry.accrued(taggerAddress)).to.be.equal(utils.parseEther('0.0005')); // 50%
+      expect(await this.registry.accrued(publisherAddress)).to.be.equal(
+        utils.parseEther("0.0003")
+      ); // 30%
+      expect(await this.registry.accrued(platformAddress)).to.be.equal(
+        utils.parseEther("0.0002")
+      ); // 20%
+      expect(await this.registry.accrued(taggerAddress)).to.be.equal(
+        utils.parseEther("0.0005")
+      ); // 50%
     });
 
-    it('should be able to tag a cryptokittie with #pussypower (pre and post auction of #pussypower)', async function () {
+    it("should be able to tag a Polygon NFT with #kittycat (pre-auction of #kittycat)", async function () {
+      // Attempt to tag this actual Matic NFT
+      // https://opensea.io/assets/matic/0xd5a5ddd6f4e7d839db2978e8a4ee9923ac088cb3/9268
+      const nftAddress = utils.getAddress(
+        "0xd5a5ddd6f4e7d839db2978e8a4ee9923ac088cb3"
+      );
+      const nftId = 9368;
+      const matic = 137;
+      // Permit chain id 137. Obviously this is set globally for the contract
+      // ahead of time.
+      await this.registry.connect(platform).setPermittedChainId(137, true);
+      expect((await this.registry.getPermittedChainId(137)) == true);
+
+      await expect(
+        this.registry
+          .connect(tagger)
+          .tag(
+            this.hashtagId,
+            nftAddress,
+            nftId,
+            publisherAddress,
+            taggerAddress,
+            matic,
+            { value: utils.parseEther("0.001") }
+          )
+      )
+        .to.emit(this.registry, "HashtagRegistered")
+        .withArgs(
+          taggerAddress,
+          nftAddress,
+          publisherAddress,
+          this.hashtagId,
+          nftId,
+          constants.One,
+          utils.parseEther("0.001"),
+          matic
+        );
+
+      expect(await this.registry.totalTags()).to.be.equal(1);
+
+      const {
+        _hashtagId,
+        _nftContract,
+        _nftId,
+        _tagger,
+        _tagstamp,
+        _publisher,
+        _chainId,
+      } = await this.registry.getTagInfo(this.hashtagId);
+
+      expect(_hashtagId).to.be.equal(this.hashtagId);
+      expect(_nftContract).to.be.equal(nftAddress);
+      expect(_nftId).to.be.equal(nftId);
+      expect(_tagger).to.be.equal(taggerAddress);
+      expect(_tagstamp).to.exist;
+      expect(Number(_tagstamp.toString())).to.be.gt(0);
+      expect(_publisher).to.be.equal(publisherAddress);
+      expect(_chainId).to.be.equal(matic);
+
+      // check accrued values
+      expect(await this.registry.accrued(publisherAddress)).to.be.equal(
+        utils.parseEther("0.0003")
+      ); // 30%
+      expect(await this.registry.accrued(platformAddress)).to.be.equal(
+        utils.parseEther("0.0002")
+      ); // 20%
+      expect(await this.registry.accrued(taggerAddress)).to.be.equal(
+        utils.parseEther("0.0005")
+      ); // 50%
+    });
+
+    it("should be able to tag a cryptokittie with #kittycat (pre and post auction of #kittycat)", async function () {
       // Tag pre auction and make sure that accrued values are correct
       const nftOneId = constants.One;
-      await this.registry.connect(tagger).tag(
-        this.hashtagId,
-        this.nft.address,
-        nftOneId,
-        publisherAddress,
-        taggerAddress,
-        {value: utils.parseEther('0.001')}
-      );
+      await this.registry
+        .connect(tagger)
+        .tag(
+          this.hashtagId,
+          this.nft.address,
+          nftOneId,
+          publisherAddress,
+          taggerAddress,
+          chainId,
+          { value: utils.parseEther("0.001") }
+        );
 
       expect(await this.registry.totalTags()).to.be.equal(1);
 
       // check accrued values
-      expect(await this.registry.accrued(publisherAddress)).to.be.equal(utils.parseEther('0.0003')); // 430%
-      expect(await this.registry.accrued(platformAddress)).to.be.equal(utils.parseEther('0.0002')); // 20%
-      expect(await this.registry.accrued(taggerAddress)).to.be.equal(utils.parseEther('0.0005')); // 50%
+      expect(await this.registry.accrued(publisherAddress)).to.be.equal(
+        utils.parseEther("0.0003")
+      ); // 430%
+      expect(await this.registry.accrued(platformAddress)).to.be.equal(
+        utils.parseEther("0.0002")
+      ); // 20%
+      expect(await this.registry.accrued(taggerAddress)).to.be.equal(
+        utils.parseEther("0.0005")
+      ); // 50%
 
-      await this.hashtagProtocol.connect(platform).transferFrom(platformAddress, buyerAddress, this.hashtagId);
+      await this.hashtagProtocol
+        .connect(platform)
+        .transferFrom(platformAddress, buyerAddress, this.hashtagId);
 
       const nftTwoId = constants.Two;
-      await this.registry.connect(tagger).tag(
-        this.hashtagId,
-        this.nft.address,
-        nftTwoId,
-        publisherAddress,
-        taggerAddress,
-        {value: utils.parseEther('0.001')}
+      await this.registry
+        .connect(tagger)
+        .tag(
+          this.hashtagId,
+          this.nft.address,
+          nftTwoId,
+          publisherAddress,
+          taggerAddress,
+          chainId,
+          { value: utils.parseEther("0.001") }
+        );
+
+      expect(await this.registry.totalDue(publisherAddress)).to.be.equal(
+        utils.parseEther("0.0006")
+      );
+      expect(await this.registry.totalDue(platformAddress)).to.be.equal(
+        utils.parseEther("0.0004")
+      );
+      expect(await this.registry.totalDue(taggerAddress)).to.be.equal(
+        utils.parseEther("0.0005")
+      );
+      expect(await this.registry.totalDue(buyerAddress)).to.be.equal(
+        utils.parseEther("0.0005")
+      );
+    });
+
+    it("Reverts when hashtag does not exist", async function () {
+      await expect(
+        this.registry
+          .connect(publisher)
+          .tag(
+            BigNumber.from("4"),
+            this.nft.address,
+            constants.One,
+            publisherAddress,
+            taggerAddress,
+            chainId,
+            { value: utils.parseEther("1") }
+          )
+      ).to.be.revertedWith(
+        "The hashtag ID supplied is invalid - non-existent token!"
+      );
+    });
+
+    it("Reverts when hashtag nft contract address supplied for tag", async function () {
+      await expect(
+        this.registry
+          .connect(publisher)
+          .tag(
+            this.hashtagId,
+            this.hashtagProtocol.address,
+            this.hashtagId,
+            publisherAddress,
+            taggerAddress,
+            chainId,
+            { value: utils.parseEther("1") }
+          )
+      ).to.be.revertedWith(
+        "Invalid tag - you are attempting to tag another hashtag"
+      );
+    });
+
+    it("Reverts when sending zero value when mint and tagging", async function () {
+      await expect(
+        this.registry.mintAndTag(
+          "#hullo",
+          this.nft.address,
+          this.hashtagId,
+          publisherAddress,
+          taggerAddress,
+          chainId
+        )
+      ).to.be.revertedWith("Mint and tag: You must send the tag fee");
+    });
+
+    it("Reverts when sending zero value when tagging", async function () {
+      await expect(
+        this.registry.tag(
+          this.hashtagId,
+          this.nft.address,
+          this.hashtagId,
+          publisherAddress,
+          taggerAddress,
+          chainId
+        )
+      ).to.be.revertedWith("Tag: You must send the fee");
+    });
+
+    //it("Reverts when nft does not exist", async function () {
+    //  await expect(
+    //    this.registry.tag(
+    //      this.hashtagId,
+    //      this.nft.address,
+    //      BigNumber.from("3"),
+    //      publisherAddress,
+    //      taggerAddress,
+    //      { value: utils.parseEther("1") }
+    //    )
+    //  ).to.be.revertedWith("ERC721: owner query for nonexistent token");
+    //});
+
+    it("Reverts when non-whitelisted publisher attempts host mint and tag", async function () {
+      await expect(
+        this.registry.mintAndTag(
+          "#hullo",
+          this.nft.address,
+          this.hashtagId,
+          constants.AddressZero,
+          taggerAddress,
+          chainId,
+          { value: utils.parseEther("1") }
+        )
+      ).to.be.revertedWith("Mint and tag: The publisher must be whitelisted");
+    });
+
+    it("Reverts when non-whitelisted publisher attempts to host tagging", async function () {
+      await expect(
+        this.registry.tag(
+          this.hashtagId,
+          this.nft.address,
+          this.hashtagId,
+          constants.AddressZero,
+          taggerAddress,
+          chainId,
+          { value: utils.parseEther("1") }
+        )
+      ).to.be.revertedWith("Tag: The publisher must be whitelisted");
+    });
+
+    it("Reverts when target chain id is not permitted when mint and tagging", async function () {
+      const nonPermittedChainId = 5;
+      await expect(
+        this.registry.mintAndTag(
+          "#hullo",
+          this.nft.address,
+          this.hashtagId,
+          publisherAddress,
+          taggerAddress,
+          nonPermittedChainId,
+          { value: utils.parseEther("1") }
+        )
+      ).to.be.revertedWith("Mint and tag: Tagging target chain not permitted");
+    });
+
+    it("Reverts when target chain id is not permitted during tagging", async function () {
+      const nonPermittedChainId = 5;
+      await expect(
+        this.registry.tag(
+          this.hashtagId,
+          this.nft.address,
+          this.hashtagId,
+          publisherAddress,
+          taggerAddress,
+          nonPermittedChainId,
+          { value: utils.parseEther("1") }
+        )
+      ).to.be.revertedWith("Tag: Tagging target chain not permitted");
+    });
+
+    it("Reverts when previously permitted target chain id is no longer permitted", async function () {
+      const revertedChainId = 1;
+      await this.registry
+        .connect(platform)
+        .setPermittedChainId(revertedChainId, false);
+      expect(
+        (await this.registry.getPermittedChainId(revertedChainId)) == false
       );
 
-      expect(await this.registry.totalDue(publisherAddress)).to.be.equal(utils.parseEther('0.0006'));
-      expect(await this.registry.totalDue(platformAddress)).to.be.equal(utils.parseEther('0.0004'));
-      expect(await this.registry.totalDue(taggerAddress)).to.be.equal(utils.parseEther('0.0005'));
-      expect(await this.registry.totalDue(buyerAddress)).to.be.equal(utils.parseEther('0.0005'));
-    });
-
-    it('Reverts when hashtag does not exist', async function () {
-      await expect(
-        this.registry.connect(publisher).tag(
-          BigNumber.from('4'),
-          this.nft.address,
-          constants.One,
-          publisherAddress,
-          taggerAddress,
-          {value: utils.parseEther('1')}
-        )).to.be.revertedWith("The hashtag ID supplied is invalid - non-existent token!");
-    });
-
-    it('Reverts when zero address supplied as nft contract address', async function () {
-      await expect(
-        this.registry.connect(publisher).tag(
-          this.hashtagId,
-          constants.AddressZero,
-          constants.One,
-          publisherAddress,
-          taggerAddress,
-          {value: utils.parseEther('1')}
-        )).to.be.revertedWith("function call to a non-contract account");
-    });
-
-    it('Reverts when hashtag nft contract address supplied for tag', async function () {
-      await expect(
-        this.registry.connect(publisher).tag(
-          this.hashtagId,
-          this.hashtagProtocol.address,
-          this.hashtagId,
-          publisherAddress,
-          taggerAddress,
-          {value: utils.parseEther('1')}
-        )).to.be.revertedWith("Invalid tag - you are attempting to tag another hashtag");
-    });
-
-    it('Reverts when sending zero value when mint and tagging', async function () {
-      await expect(
-        this.registry.mintAndTag(
-          "#hullo",
-          this.nft.address,
-          this.hashtagId,
-          publisherAddress,
-          taggerAddress,
-        )).to.be.revertedWith("Mint and tag: You must send the tag fee");
-    });
-
-    it('Reverts when sending zero value when tagging', async function () {
       await expect(
         this.registry.tag(
           this.hashtagId,
@@ -259,108 +551,91 @@ describe('ERC721HashtagRegistry Tests', function () {
           this.hashtagId,
           publisherAddress,
           taggerAddress,
-        )).to.be.revertedWith("Tag: You must send the fee");
-    });
-
-    it('Reverts when nft does not exist', async function () {
-      await expect(
-        this.registry.tag(
-          this.hashtagId,
-          this.nft.address,
-          BigNumber.from('3'),
-          publisherAddress,
-          taggerAddress,
-          {value: utils.parseEther('1')}
-        )).to.be.revertedWith("ERC721: owner query for nonexistent token");
-    });
-
-    it('Reverts when unwhitelisted publisher when mint and tagging', async function () {
-      await expect(
-        this.registry.mintAndTag(
-          "#hullo",
-          this.nft.address,
-          this.hashtagId,
-          constants.AddressZero,
-          taggerAddress,
-          {value: utils.parseEther('1')}
-        )).to.be.revertedWith("Mint and tag: The publisher must be whitelisted");
-    });
-
-    it('Reverts when unwhitelisted publisher when tagging', async function () {
-      await expect(
-        this.registry.tag(
-          this.hashtagId,
-          this.nft.address,
-          this.hashtagId,
-          constants.AddressZero,
-          taggerAddress,
-          {value: utils.parseEther('1')}
-        )).to.be.revertedWith("Tag: The publisher must be whitelisted");
+          revertedChainId,
+          { value: utils.parseEther("1") }
+        )
+      ).to.be.revertedWith("Tag: Tagging target chain not permitted");
     });
   });
 
-  describe('Drawing down', async function () {
+  describe("Drawing down", async function () {
     beforeEach(async function () {
-      await this.hashtagProtocol.connect(tagger).mint('#pussypower', publisherAddress, taggerAddress, {value: utils.parseEther('1')});
-      this.hashtagId = await this.hashtagProtocol.hashtagToTokenId('#pussypower');
+      await this.hashtagProtocol
+        .connect(tagger)
+        .mint("#kittycat", publisherAddress, taggerAddress, {
+          value: utils.parseEther("1"),
+        });
+      this.hashtagId = await this.hashtagProtocol.hashtagToTokenId("#kittycat");
 
       const nftOneId = constants.One;
-      await this.registry.connect(tagger).tag(
-        this.hashtagId,
-        this.nft.address,
-        nftOneId,
-        publisherAddress,
-        taggerAddress,
-        {value: utils.parseEther('0.01')}
+      await this.registry
+        .connect(tagger)
+        .tag(
+          this.hashtagId,
+          this.nft.address,
+          nftOneId,
+          publisherAddress,
+          taggerAddress,
+          chainId,
+          { value: utils.parseEther("0.01") }
+        );
+    });
+
+    it("Can draw down on behalf of the platform", async function () {
+      const platformBalanceBefore = await platform.getBalance();
+      await this.registry.connect(tagger).drawDown(platformAddress);
+      const platformBalanceAfter = await platform.getBalance();
+
+      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(
+        utils.parseEther("0.002")
       );
     });
 
-    it('Can draw down on behalf of the platform', async function () {
-      const platformBalanceBefore = (await platform.getBalance());
-      await this.registry.connect(tagger).drawDown(platformAddress);
-      const platformBalanceAfter = (await platform.getBalance());
-
-      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(utils.parseEther('0.002'));
-    });
-
-    it('Can draw down as the platform', async function () {
-      const platformBalanceBefore = (await platform.getBalance());
+    it("Can draw down as the platform", async function () {
+      const platformBalanceBefore = await platform.getBalance();
       await this.registry.connect(platform).drawDown(platformAddress);
-      const platformBalanceAfter = (await platform.getBalance());
+      const platformBalanceAfter = await platform.getBalance();
 
-      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(utils.parseEther('0.002'));
+      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(
+        utils.parseEther("0.002")
+      );
     });
 
-    it('Does nothing after a double draw down', async function () {
-      const platformBalanceBefore = (await platform.getBalance());
+    it("Does nothing after a double draw down", async function () {
+      const platformBalanceBefore = await platform.getBalance();
       await this.registry.connect(tagger).drawDown(platformAddress);
-      const platformBalanceAfter = (await platform.getBalance());
+      const platformBalanceAfter = await platform.getBalance();
 
-      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(utils.parseEther('0.002'));
+      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(
+        utils.parseEther("0.002")
+      );
 
-      const balanceBeforeSecondDraw = (await platform.getBalance());
+      const balanceBeforeSecondDraw = await platform.getBalance();
       await this.registry.connect(tagger).drawDown(platformAddress);
-      const balanceAfterSecondDraw = (await platform.getBalance());
+      const balanceAfterSecondDraw = await platform.getBalance();
 
-      expect(balanceAfterSecondDraw.sub(balanceBeforeSecondDraw)).to.be.equal('0');
+      expect(balanceAfterSecondDraw.sub(balanceBeforeSecondDraw)).to.be.equal(
+        "0"
+      );
     });
   });
 
-  describe('Updating percentages', async function () {
-
-    it('Reverts if not admin', async function () {
+  describe("Updating percentages", async function () {
+    it("Reverts if not admin", async function () {
       await expect(
         this.registry.connect(tagger).updatePercentages(10, 10)
       ).to.be.revertedWith("Caller must be admin");
     });
 
-    it('Reverts if greater than 100', async function () {
+    it("Reverts if greater than 100", async function () {
       await expect(
         this.registry.connect(platform).updatePercentages(90, 11)
-      ).to.be.revertedWith("ERC721HashtagRegistry.updatePercentages: percentages must not be over 100");
+      ).to.be.revertedWith(
+        "ERC721HashtagRegistry.updatePercentages: percentages must not be over 100"
+      );
     });
 
-    it('With correct credentials can update percentages', async function () {
+    it("With correct credentials can update percentages", async function () {
       await this.registry.connect(platform).updatePercentages(30, 20);
 
       expect(await this.registry.platformPercentage()).to.be.equal(30);
