@@ -119,19 +119,19 @@ export default {
       supportMenuArr: {
         docs: {
           text: "Docs",
-          path: process.env.docs,
+          path: this.$config.docs,
         },
         discord: {
           text: "Discord",
-          path: process.env.discordServer,
+          path: this.$config.discordServer,
         },
         substack: {
           text: "Substack",
-          path: process.env.substack,
+          path: this.$config.substack,
         },
         website: {
           text: "Website",
-          path: process.env.website,
+          path: this.$config.website,
         },
       },
     };
