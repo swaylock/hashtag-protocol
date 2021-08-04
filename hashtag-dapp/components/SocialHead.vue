@@ -50,6 +50,11 @@ export default {
           content: this.title,
         },
         {
+          hid: "og:type",
+          property: "og:type",
+          content: this.website,
+        },
+        {
           hid: "og:title",
           property: "og:title",
           content: this.title,
