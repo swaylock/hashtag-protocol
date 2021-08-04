@@ -17,7 +17,7 @@ export default {
     },
     image: {
       type: String,
-      default: "https://nuxtjs.org/nuxt-card.png",
+      default: "",
     },
   },
 
@@ -33,6 +33,11 @@ export default {
           hid: "twitter:description",
           name: "twitter:description",
           content: this.description,
+        },
+        {
+          hid: "twitter:card",
+          name: "twitter:card",
+          content: "summary_large_image",
         },
         {
           hid: "twitter:image",
