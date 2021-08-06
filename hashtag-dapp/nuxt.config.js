@@ -3,6 +3,8 @@ import HashtagProtocolTruffleConf from "./truffleconf/HashtagProtocol";
 import ERC721HashtagRegistry from "./truffleconf/ERC721HashtagRegistry";
 import utils from "./common/utils";
 
+const platformConfig = require("platformsh-config").config();
+
 export default {
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
@@ -94,6 +96,10 @@ export default {
       "HashtagSelectedWallet",
     discordServer:
       process.env.VUE_APP_DISCORD_SERVER || "https://discord.gg/EyTJFRm",
+    testVariable: platformConfig.variable(
+      "TEST_VARIABLE",
+      process.env.TEST_VARIABLE
+    ),
   },
   privateRuntimeConfig: {},
 
