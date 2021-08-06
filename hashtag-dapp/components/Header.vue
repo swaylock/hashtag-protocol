@@ -4,14 +4,8 @@
       class="beta-warning has-background-primary has-text-white has-text-weight-medium has-text-centered"
     >
       <p>This protocol & interface is in beta. Use it at your own risk.</p>
-      <div v-if="variable3 == 'development'" class="is-size-7">
-        <div>{{ variable1 }}</div>
-        <div>{{ variable2 }}</div>
-        <div>Build type: {{ variable3 }}</div>
-      </div>
       <div>{{ variable1 }}</div>
-      <div>{{ variable2 }}</div>
-      <div>Build type: {{ variable3 }}</div>
+      <div>Build: {{ variable2 }}</div>
     </div>
     <div class="hero-head">
       <div class="container">
@@ -31,8 +25,7 @@ export default {
   data() {
     return {
       variable1: this.$config.testVariable,
-      variable2: process.env.TEST_VARIABLE,
-      variable3: process.env.NODE_ENV,
+      variable2: process.env.NODE_ENV,
     };
   },
 };

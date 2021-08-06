@@ -98,7 +98,7 @@ export default {
       process.env.VUE_APP_DISCORD_SERVER || "https://discord.gg/EyTJFRm",
     testVariable: platformConfig.variable(
       "TEST_VARIABLE",
-      process.env.TEST_VARIABLE
+      process.env.TEST_ENV_VARIABLE
     ),
   },
   privateRuntimeConfig: {},
