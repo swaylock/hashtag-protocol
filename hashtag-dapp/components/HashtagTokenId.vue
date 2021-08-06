@@ -26,7 +26,7 @@ export default {
     };
   },
   created() {
-    this.tokenUrl = `${process.env.etherscanBaseUrl}/token/${process.env.hashtagProtocolContractAddress}?a=${this.value}`;
+    this.tokenUrl = `${this.$config.etherscanBaseUrl}/token/${this.$config.hashtagProtocolContractAddress}?a=${this.value}`;
     this.label = `View ${this.hashtag} on Etherscan`;
   },
 };

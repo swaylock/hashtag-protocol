@@ -61,7 +61,7 @@ export default {
     scss: ["~/assets/css/variables.scss"],
   },
 
-  env: {
+  publicRuntimeConfig: {
     website: "https://www.hashtag-protocol.org",
     app: "https://app.hashtag-protocol.org",
     docs: "https://docs.hashtag-protocol.org",
@@ -95,6 +95,7 @@ export default {
     discordServer:
       process.env.VUE_APP_DISCORD_SERVER || "https://discord.gg/EyTJFRm",
   },
+  privateRuntimeConfig: {},
 
   gtm: {
     id: "GTM-MRK383F",

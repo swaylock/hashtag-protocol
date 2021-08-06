@@ -49,7 +49,7 @@ export default {
     ]),
     ...mapGetters("wallet", ["address", "transactionState"]),
     etherscanUrl: function () {
-      return `${process.env.etherscanBaseUrl}/tx/${this.transactionState.hash}`;
+      return `${this.$config.etherscanBaseUrl}/tx/${this.transactionState.hash}`;
     },
     /**
      * Show txn complete title & animation depending on transaction type.

@@ -379,13 +379,13 @@ export default {
     },
     copyToClipboard() {
       const cb = navigator.clipboard;
-      const url = process.env.app + this.$route.path;
+      const url = this.$config.app + this.$route.path;
       cb.writeText(url);
     },
   },
   computed: {
     image() {
-      return process.env.imageApi + this.hashtagsByName[0].id + ".png";
+      return this.$config.imageApi + this.hashtagsByName[0].id + ".png";
     },
     randomSharingMessage() {
       const messages = [
@@ -400,7 +400,7 @@ export default {
       const encodedString = encodeURIComponent(
         `Check out the hashtag ${
           this.hashtagsByName[0].displayHashtag
-        } on @HashtagProtoHQ\n\n${process.env.app + this.$route.path}`
+        } on @HashtagProtoHQ\n\n${this.$config.app + this.$route.path}`
       );
       return "https://twitter.com/intent/tweet?text=" + encodedString;
     },
@@ -408,7 +408,7 @@ export default {
       const encodedString = encodeURIComponent(
         `Check out the hashtag ${
           this.hashtagsByName[0].displayHashtag
-        } on Hashtag Protocol\n\n${process.env.app + this.$route.path}`
+        } on Hashtag Protocol\n\n${this.$config.app + this.$route.path}`
       );
       return "https://www.facebook.com/share.php?u=" + encodedString;
     },

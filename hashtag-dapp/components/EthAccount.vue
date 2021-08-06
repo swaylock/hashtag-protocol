@@ -56,7 +56,7 @@ export default {
     this.ens = this.homesteadProvider
       ? await this.homesteadProvider.lookupAddress(this.value)
       : null;
-    this.addressUrl = `${process.env.etherscanBaseUrl}/address/${this.value}`;
+    this.addressUrl = `${this.$config.etherscanBaseUrl}/address/${this.value}`;
   },
 };
 </script>
