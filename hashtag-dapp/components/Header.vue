@@ -9,6 +9,9 @@
         <div>{{ variable2 }}</div>
         <div>Build type: {{ variable3 }}</div>
       </div>
+      <div>{{ variable1 }}</div>
+      <div>{{ variable2 }}</div>
+      <div>Build type: {{ variable3 }}</div>
     </div>
     <div class="hero-head">
       <div class="container">
