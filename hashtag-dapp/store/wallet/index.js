@@ -13,8 +13,6 @@ let provider;
 let onboard = {};
 let blocknative = {};
 
-const localstorageWalletKey = process.env.localstorageWalletKey;
-
 /**
  * The Vuex 'state' object.
  * @name State
@@ -67,8 +65,8 @@ const actions = {
   async initOnboard({ dispatch, commit }) {
     // Initialize onboard.
     onboard = Onboard({
-      dappId: process.env.blocknativeApiKey,
-      networkId: process.env.onboardNetworkID,
+      dappId: this.$config.blocknativeApiKey,
+      networkId: this.$config.onboardNetworkID,
       subscriptions: {
         address: (address) => {
           commit("setWalletAddress", address);
@@ -91,8 +89,8 @@ const actions = {
 
     // Initialize blocknative SDK for mempool notifications.
     blocknative = new BlocknativeSdk({
-      dappId: process.env.blocknativeApiKey,
-      networkId: process.env.onboardNetworkID,
+      dappId: this.$config.blocknativeApiKey,
+      networkId: this.$config.onboardNetworkID,
     });
 
     dispatch("reconnectWallet");
@@ -132,7 +130,7 @@ const actions = {
         hashtagProtocolContract,
         erc721HashtagRegistryContract,
       },
-      publisher: process.env.publisherWalletAddress,
+      publisher: this.$config.publisherWalletAddress,
     });
 
     dispatch("getTaggingFee");
@@ -146,7 +144,7 @@ const actions = {
       const ethersProvider = new ethers.providers.Web3Provider(wallet.provider);
       provider = ethersProvider;
       // store the selected wallet name to be retrieved next time the app loads.
-      localStorage.setItem(localstorageWalletKey, wallet.name);
+      localStorage.setItem(this.$config.localstorageWalletKey, wallet.name);
     } else {
       provider = null;
       commit("setWalletName", "");
@@ -158,7 +156,7 @@ const actions = {
   // and checks the wallet.
   async reconnectWallet() {
     const previouslySelectedWallet = window.localStorage.getItem(
-      localstorageWalletKey
+      this.$config.localstorageWalletKey
     );
     if (!previouslySelectedWallet) {
       return false;
@@ -192,7 +190,7 @@ const actions = {
   },
 
   disconnectWallet({ state, commit }) {
-    localStorage.removeItem(localstorageWalletKey);
+    localStorage.removeItem(this.$config.localstorageWalletKey);
     onboard.walletReset();
     state.openModalCloseFn();
     commit("setOpenModalCloseFn", () => {});
