@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      variable1: this.$config.testVariable,
+      variable1: this.$hashtagConfig.testVariable,
       variable2: process.env.NODE_ENV,
     };
   },
