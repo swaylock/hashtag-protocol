@@ -32,6 +32,7 @@ export default {
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
+    { src: "~/plugins/hashtag-config" },
     "~/plugins/vue-axios",
     "~/plugins/vue-buefy",
     "~/plugins/vue-filter",
@@ -94,6 +95,7 @@ export default {
       "HashtagSelectedWallet",
     discordServer:
       process.env.VUE_APP_DISCORD_SERVER || "https://discord.gg/EyTJFRm",
+    testVariable: process.env.TEST_ENV_VARIABLE || "total fall back",
   },
   privateRuntimeConfig: {},
 
