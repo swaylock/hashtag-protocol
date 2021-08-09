@@ -105,6 +105,11 @@
     commands:
       start: |
         echo "$(echo $PLATFORM_VARIABLES | base64 -d)" > /tmp/config.json
+        if [ -d /app/.global ]; then
+          echo "--------------------------------------------------"
+          echo "Start nodejs"
+          echo "--------------------------------------------------"
+        fi
         yarn start
         sleep infinity
   disk: 512
@@ -119,9 +124,9 @@
       # Building on platform.sh
       if [ -d /app/.global ]; then
         echo "--------------------------------------------------"
-        echo "Symlink /tmp/config.json to dist/config.json"
+        echo "Symlink /tmp/config.json to static/config.json"
         echo "--------------------------------------------------"
-        ln -fs /tmp/config.json static/config.json
+        # ln -fs /tmp/config.json static/config.json
       fi
 
       yarn install
