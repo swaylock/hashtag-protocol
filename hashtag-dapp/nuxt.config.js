@@ -3,6 +3,12 @@ import HashtagProtocolTruffleConf from "./truffleconf/HashtagProtocol";
 import ERC721HashtagRegistry from "./truffleconf/ERC721HashtagRegistry";
 import utils from "./common/utils";
 
+import config from "./static/config.json";
+console.log("platform config:", config);
+
+//platform import configjs from "./static/config.js";
+// console.log("nuxt config:", configjs.config);
+
 export default {
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {

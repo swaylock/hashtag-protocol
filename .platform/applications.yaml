@@ -104,7 +104,7 @@
       protocol: http
     commands:
       start: |
-        echo "config = $(echo $PLATFORM_VARIABLES | base64 -d)" > /tmp/config.js
+        echo "$(echo $PLATFORM_VARIABLES | base64 -d)" > /tmp/config.json
         yarn start
         sleep infinity
   disk: 512
@@ -115,6 +115,15 @@
     build: |
       set -e
       cd hashtag-dapp
+
+      # Building on platform.sh
+      if [ -d /app/.global ]; then
+        echo "--------------------------------------------------"
+        echo "Symlink /tmp/config.json to dist/config.json"
+        echo "--------------------------------------------------"
+        ln -fs /tmp/config.json static/config.json
+      fi
+
       yarn install
       yarn build
 
