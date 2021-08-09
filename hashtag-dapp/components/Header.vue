@@ -20,6 +20,12 @@ export default {
   components: {
     Navbar,
   },
+  data() {
+    return {
+      variable1: this.$hashtagConfig.testVariable,
+      variable2: process.env.NODE_ENV,
+    };
+  },
 };
 </script>
 <style scoped lang="scss">
