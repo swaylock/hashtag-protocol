@@ -6,6 +6,8 @@ export default ({ app }, inject) => {
     testVariable: platformConfig.variable("TEST_PLATFORM_VARIABLE", "fallback"),
   };
 
+  // console.log(app);
+
   if (platformConfig.isValidPlatform()) {
     console.log(
       "hashtag-config plugin onProduction():",

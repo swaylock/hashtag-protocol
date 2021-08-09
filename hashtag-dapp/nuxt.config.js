@@ -2,16 +2,6 @@ import onBoardChainMap from "./data/onBoardChainMap.json";
 import HashtagProtocolTruffleConf from "./truffleconf/HashtagProtocol";
 import ERC721HashtagRegistry from "./truffleconf/ERC721HashtagRegistry";
 import utils from "./common/utils";
-const platformConfig = require("platformsh-config").config();
-
-if (platformConfig.isValidPlatform()) {
-  console.log("nuxt.config onProduction():", platformConfig.onProduction());
-  console.log("nuxt.config branch:", platformConfig.branch);
-  console.log(
-    "nuxt.config TEST_PLATFORM_VARIABLE",
-    platformConfig.variable("TEST_PLATFORM_VARIABLE")
-  );
-}
 
 export default {
   // Global page headers (https://go.nuxtjs.dev/config-head)
@@ -119,19 +109,13 @@ export default {
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint:
-          process.env.VUE_APP_HASHTAG_SUBGRAPH_URL ||
-          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-rinkeby",
+        httpEndpoint: process.env.VUE_APP_HASHTAG_SUBGRAPH_URL,
       },
       hashtagClient: {
-        httpEndpoint:
-          process.env.VUE_APP_HASHTAG_SUBGRAPH_URL ||
-          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-rinkeby",
+        httpEndpoint: process.env.VUE_APP_HASHTAG_SUBGRAPH_URL,
       },
       nftsClient: {
-        httpEndpoint:
-          process.env.VUE_APP_TOP_NFTS_SUBGRAPH_URL ||
-          "https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens",
+        httpEndpoint: process.env.VUE_APP_TOP_NFTS_SUBGRAPH_URL,
       },
     },
   },
