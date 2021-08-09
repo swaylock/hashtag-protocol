@@ -4,161 +4,161 @@
   type: nodejs:14
 
   source:
-    root: /
+      root: /
   # The configuration of app when it is exposed to the web.
   web:
-    commands:
-      start: "node hashtag-api/index.js"
+      commands:
+          start: "node hashtag-api/index.js"
 
-    # Specific parameters for different URL prefixes.
-    locations:
-      "/public/images":
-        # The folder from which to serve static assets, for this location.
-        #
-        # This is a filesystem path, relative to the application root.
-        root: "hashtag-api/public/images"
-        passthru: false
+      # Specific parameters for different URL prefixes.
+      locations:
+          "/public/images":
+              # The folder from which to serve static assets, for this location.
+              #
+              # This is a filesystem path, relative to the application root.
+              root: "hashtag-api/public/images"
+              passthru: false
 
-        # How long to allow static assets from this location to be cached.
-        #
-        # Can be a time in seconds, or -1 for no caching. Times can be
-        # suffixed with "s" (seconds), "m" (minutes), "h" (hours), "d"
-        # (days), "w" (weeks), "M" (months, as 30 days) or "y" (years, as
-        # 365 days).
-        expires: 1h
-        scripts: false
-        rules:
-          # Restrict access to markdown (.png) files.
-          \.(png)$:
-            allow: true
-          ^/robots\.txt$:
-            allow: false
+              # How long to allow static assets from this location to be cached.
+              #
+              # Can be a time in seconds, or -1 for no caching. Times can be
+              # suffixed with "s" (seconds), "m" (minutes), "h" (hours), "d"
+              # (days), "w" (weeks), "M" (months, as 30 days) or "y" (years, as
+              # 365 days).
+              expires: 1h
+              scripts: false
+              rules:
+                  # Restrict access to markdown (.png) files.
+                  \.(png)$:
+                      allow: true
+                  ^/robots\.txt$:
+                      allow: false
 
   relationships:
-    chromeheadlessbrowser: "headlessbrowser:http"
+      chromeheadlessbrowser: "headlessbrowser:http"
 
   # The size of the persistent disk of the application (in MB).
   disk: 512
 
   mounts:
-    "/hashtag-api/public/images":
-      source: local
-      source_path: images
+      "/hashtag-api/public/images":
+          source: local
+          source_path: images
 
   dependencies:
-    # Not totally sure if we need this as it appears that platform default build
-    # flavor is handing dependencies. But gonna leave it for now cause it's not
-    # hurting.
-    nodejs:
-      yarn: "*"
+      # Not totally sure if we need this as it appears that platform default build
+      # flavor is handing dependencies. But gonna leave it for now cause it's not
+      # hurting.
+      nodejs:
+          yarn: "*"
 
   hooks:
-    build: |
-      set -e
-      cd hashtag-api
-      yarn install
+      build: |
+          set -e
+          cd hashtag-api
+          yarn install
 
 - name: hashtag-docs
   type: nodejs:14
   source:
-    root: /
+      root: /
   build:
-    flavor: none
+      flavor: none
   web:
-    commands:
-      # Run a no-op process that uses no CPU resources, since this is a static site.
-      start: sleep infinity
-    locations:
-      "/":
-        root: "hashtag-docs/build"
-        index:
-          - "index.html"
-        expires: 300s
-        scripts: true
-        allow: true
-        rules:
-          \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
-            allow: true
-          ^/robots\.txt$:
-            allow: true
+      commands:
+          # Run a no-op process that uses no CPU resources, since this is a static site.
+          start: sleep infinity
+      locations:
+          "/":
+              root: "hashtag-docs/build"
+              index:
+                  - "index.html"
+              expires: 300s
+              scripts: true
+              allow: true
+              rules:
+                  \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
+                      allow: true
+                  ^/robots\.txt$:
+                      allow: true
   disk: 512
   dependencies:
-    nodejs:
-      yarn: "*"
+      nodejs:
+          yarn: "*"
   hooks:
-    build: |
-      set -e
-      cd hashtag-docs
-      yarn install
-      yarn build
+      build: |
+          set -e
+          cd hashtag-docs
+          yarn install
+          yarn build
 
 - name: hashtag-dapp
   type: nodejs:14
   source:
-    root: /
+      root: /
   build:
-    flavor: none
+      flavor: none
   disk: 512
   dependencies:
-    nodejs:
-      yarn: "*"
+      nodejs:
+          yarn: "*"
   hooks:
-    build: |
-      set -e
-      cd hashtag-dapp
+      build: |
+          set -e
+          cd hashtag-dapp
 
-      # Building on platform.sh
-      if [ -d /app/.global ]; then
-        echo "--------------------------------------------------"
-        echo "Symlink /tmp/config.json to static/config.json"
-        echo "--------------------------------------------------"
-        echo "$(echo $PLATFORM_VARIABLES | base64 -d)" > /tmp/config.json
-        # ln -fs /tmp/config.json static/config.json
-      fi
+          # Building on platform.sh
+          if [ -d /app/.global ]; then
+            echo "$(echo $PLATFORM_VARIABLES | base64 -d)" > /tmp/config.json
+            echo "--------------------------------------------------"
+            echo "Symlink /tmp/config.json to static/config.json"
+            echo "--------------------------------------------------"
+            ln -fs /tmp/config.json static/config.json
+          fi
 
-      yarn install
-      yarn build
+          yarn install
+          yarn build
   web:
-    upstream:
-      socket_family: tcp
-      protocol: http
-    commands:
-      start: |
-        echo "--------------------------------------------------"
-        echo "Start nodejs"
-        echo "--------------------------------------------------"
-        yarn start
-        sleep infinity
+      upstream:
+          socket_family: tcp
+          protocol: http
+      commands:
+          start: |
+              echo "--------------------------------------------------"
+              echo "Start nodejs"
+              echo "--------------------------------------------------"
+              yarn start
+              sleep infinity
 
 - name: hashtag-website
   type: nodejs:14
   source:
-    root: /
+      root: /
   build:
-    flavor: none
+      flavor: none
   web:
-    locations:
-      "/":
-        root: "hashtag-website/dist"
-        index:
-          - "index.html"
-        passthru: /index.html
-        expires: 300s
-        scripts: true
-        # Deny access to static files in this location.
-        allow: false
-        rules:
-          \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
-            allow: true
-          ^/robots\.txt$:
-            allow: true
+      locations:
+          "/":
+              root: "hashtag-website/dist"
+              index:
+                  - "index.html"
+              passthru: /index.html
+              expires: 300s
+              scripts: true
+              # Deny access to static files in this location.
+              allow: false
+              rules:
+                  \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
+                      allow: true
+                  ^/robots\.txt$:
+                      allow: true
   disk: 512
   dependencies:
-    nodejs:
-      yarn: "*"
+      nodejs:
+          yarn: "*"
   hooks:
-    build: |
-      set -e
-      cd hashtag-website
-      yarn install
-      yarn build
+      build: |
+          set -e
+          cd hashtag-website
+          yarn install
+          yarn build
