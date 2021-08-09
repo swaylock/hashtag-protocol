@@ -4,6 +4,8 @@
       class="beta-warning has-background-primary has-text-white has-text-weight-medium has-text-centered"
     >
       <p>This protocol & interface is in beta. Use it at your own risk.</p>
+      <div>{{ variable1 }}</div>
+      <div>Build: {{ variable2 }}</div>
     </div>
     <div class="hero-head">
       <div class="container">

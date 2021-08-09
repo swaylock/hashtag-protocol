@@ -3,12 +3,19 @@ const platformConfig = require("platformsh-config").config();
 export default ({ app }, inject) => {
   //console.log(app);
   const hashtagConfig = {
-    testVariable: platformConfig.variable("TEST_PLATFORM_VARIABLE"),
+    testVariable: platformConfig.variable("TEST_PLATFORM_VARIABLE", "fallback"),
   };
 
   if (platformConfig.isValidPlatform()) {
-    console.log("config.onProduction():", platformConfig.onProduction());
-    console.log("config.branch:", platformConfig.branch);
+    console.log(
+      "hashtag-config plugin onProduction():",
+      platformConfig.onProduction()
+    );
+    console.log("hashtag-config plugin branch:", platformConfig.branch);
+    console.log(
+      "hashtag-config plugin TEST_PLATFORM_VARIABLE",
+      platformConfig.variable("TEST_PLATFORM_VARIABLE")
+    );
   }
 
   let host = null;
