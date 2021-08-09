@@ -98,20 +98,6 @@
     root: /
   build:
     flavor: none
-  web:
-    upstream:
-      socket_family: tcp
-      protocol: http
-    commands:
-      start: |
-        echo "$(echo $PLATFORM_VARIABLES | base64 -d)" > /tmp/config.json
-        if [ -d /app/.global ]; then
-          echo "--------------------------------------------------"
-          echo "Start nodejs"
-          echo "--------------------------------------------------"
-        fi
-        yarn start
-        sleep infinity
   disk: 512
   dependencies:
     nodejs:
@@ -126,11 +112,23 @@
         echo "--------------------------------------------------"
         echo "Symlink /tmp/config.json to static/config.json"
         echo "--------------------------------------------------"
+        echo "$(echo $PLATFORM_VARIABLES | base64 -d)" > /tmp/config.json
         # ln -fs /tmp/config.json static/config.json
       fi
 
       yarn install
       yarn build
+  web:
+    upstream:
+      socket_family: tcp
+      protocol: http
+    commands:
+      start: |
+        echo "--------------------------------------------------"
+        echo "Start nodejs"
+        echo "--------------------------------------------------"
+        yarn start
+        sleep infinity
 
 - name: hashtag-website
   type: nodejs:14
