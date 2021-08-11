@@ -21914,7 +21914,7 @@ vuepress-plugin-table-of-contents@^1.1.7:
   resolved "https://registry.yarnpkg.com/vuepress-plugin-table-of-contents/-/vuepress-plugin-table-of-contents-1.1.7.tgz#e8b2d1b5e23a41902a4a44772a00eb7688ef6797"
   integrity sha512-zG35KYsuLSJaQiTavBN/Nk7/mYC4Kl7bTLXWusvcm0zs1wCzFZf78fkNWAmqc0V3z5W92H8HM3FR5vo4aT2w7w==
 
-vuepress@^1.7.1:
+vuepress@^1.8.2:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/vuepress/-/vuepress-1.8.2.tgz#97e8bf979630611fc7b621fc4cc35b798ee5e847"
   integrity sha512-BU1lUDwsA3ghf7a9ga4dsf0iTc++Z/l7BR1kUagHWVBHw7HNRgRDfAZBDDQXhllMILVToIxaTifpne9mSi94OA==
@@ -23082,7 +23082,7 @@ yargs@~3.10.0:
     decamelize "^1.0.0"
     window-size "0.1.0"
 
-yarn@^1.21.1, yarn@^1.22.10:
+yarn@^1.21.1:
   version "1.22.10"
   resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.10.tgz#c99daa06257c80f8fa2c3f1490724e394c26b18c"
   integrity sha512-IanQGI9RRPAN87VGTF7zs2uxkSyQSrSPsju0COgbsKQOOXr5LtcVPeyXWgwVa0ywG3d8dg6kSYKGBuYK021qeA==
