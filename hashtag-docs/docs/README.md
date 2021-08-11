@@ -33,6 +33,8 @@ harness the self-interest of participants to drive positive network growth.
 
 [Try out our demo - mint a HASHTAG token!](https://app.hashtag-protocol.org)
 
+[Follow us on Twitter](https://twitter.com/HashtagProtoHQ)
+
 [Join the conversation on Discord](https://discord.gg/rRXa8QG435)
 
 [Subscribe to our newsletter](https://hashtagprotocol.substack.com)

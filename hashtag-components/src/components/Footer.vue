@@ -24,6 +24,14 @@
               <span class="icon"><i class="mdi mdi-github mdi-24px"></i></span>
             </a>
             <a
+              href="https://twitter.com/0xHashtag"
+              target="_blank"
+              title="@0xHashtag"
+              class="is-dark navbar-item"
+            >
+              <span class="icon"><i class="mdi mdi-twitter mdi-24px"></i></span>
+            </a>
+            <a
               :href="discordUrl"
               target="_blank"
               title="Discord"
