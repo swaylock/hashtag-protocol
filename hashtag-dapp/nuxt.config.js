@@ -32,7 +32,6 @@ export default {
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
-    { src: "~/plugins/hashtag-config" },
     "~/plugins/vue-axios",
     "~/plugins/vue-buefy",
     "~/plugins/vue-filter",
