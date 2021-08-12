@@ -32,7 +32,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
 
     uint256 public tagFee = 0.001 ether;
 
-    mapping(uint256 => bool) public permittedChainIds;
+    mapping(uint256 => bool) public permittedNftChainIds;
 
     // Used to log that an NFT has been tagged
     event HashtagRegistered(
@@ -91,7 +91,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
      * @param _nftId ID of the nft to link from the above nft contract
      * @param _publisher the publisher attributed to the tagging
      * @param _tagger the ethereum account that made the original tagging request
-     * @param _chainId EVM compatible chain id
+     * @param _nftChainId EVM compatible chain id
      */
     function mintAndTag(
         string calldata _hashtag,
@@ -99,7 +99,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
         uint256 _nftId,
         address payable _publisher,
         address _tagger,
-        uint256 _chainId
+        uint256 _nftChainId
     ) external payable {
         require(
             accessControls.isPublisher(_publisher),
@@ -107,12 +107,12 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
         );
         require(msg.value >= tagFee, "Mint and tag: You must send the tag fee");
         require(
-            this.getPermittedChainId(_chainId),
+            this.getPermittedNftChainId(_nftChainId),
             "Mint and tag: Tagging target chain not permitted"
         );
 
         uint256 hashtagId = hashtagProtocol.mint(_hashtag, _publisher, _tagger);
-        _tag(hashtagId, _nftContract, _nftId, _publisher, _tagger, _chainId);
+        _tag(hashtagId, _nftContract, _nftId, _publisher, _tagger, _nftChainId);
     }
 
     /**
@@ -122,7 +122,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
      * @param _nftContract address of nft contract
      * @param _nftId ID of the nft to link from the above nft contract
      * @param _tagger the ethereum account that made the original tagging request
-     * @param _chainId EVM compatible chain id
+     * @param _nftChainId EVM compatible chain id
      */
     function tag(
         uint256 _hashtagId,
@@ -130,7 +130,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
         uint256 _nftId,
         address _publisher,
         address _tagger,
-        uint256 _chainId
+        uint256 _nftChainId
     ) public payable nonReentrant {
         require(
             accessControls.isPublisher(_publisher),
@@ -142,11 +142,18 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
             "Tag: The hashtag ID supplied is invalid - non-existent token!"
         );
         require(
-            this.getPermittedChainId(_chainId),
+            this.getPermittedNftChainId(_nftChainId),
             "Tag: Tagging target chain not permitted"
         );
 
-        _tag(_hashtagId, _nftContract, _nftId, _publisher, _tagger, _chainId);
+        _tag(
+            _hashtagId,
+            _nftContract,
+            _nftId,
+            _publisher,
+            _tagger,
+            _nftChainId
+        );
     }
 
     /**
@@ -194,7 +201,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
             address _tagger,
             uint256 _tagstamp,
             address _publisher,
-            uint256 _chainId
+            uint256 _nftChainId
         )
     {
         Tag storage tagInfo = tagIdToTag[_tagId];
@@ -254,27 +261,27 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
 
     /**
      * @notice Admin functionality for enabling/disabling target chains.
-     * @param _chainId EVM compatible chain id.
+     * @param _nftChainId EVM compatible chain id.
      * @param _setting Boolean, set true for enabled, false for disabled.
      */
-    function setPermittedChainId(uint256 _chainId, bool _setting)
+    function setPermittedNftChainId(uint256 _nftChainId, bool _setting)
         external
         onlyAdmin
     {
-        permittedChainIds[_chainId] = _setting;
+        permittedNftChainIds[_nftChainId] = _setting;
     }
 
     /**
      * @notice Check if a target chain is permitted for tagging.
-     * @param _chainId EVM compatible chain id.
+     * @param _nftChainId EVM compatible chain id.
      * @return true for enabled, false for disabled.
      */
-    function getPermittedChainId(uint256 _chainId)
+    function getPermittedNftChainId(uint256 _nftChainId)
         external
         view
         returns (bool)
     {
-        return permittedChainIds[_chainId];
+        return permittedNftChainIds[_nftChainId];
     }
 
     function _tag(
@@ -283,7 +290,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
         uint256 _nftId,
         address _publisher,
         address _tagger,
-        uint256 _chainId
+        uint256 _nftChainId
     ) private {
         require(
             _nftContract != address(hashtagProtocol),
@@ -306,11 +313,11 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
             tagger: _tagger,
             tagstamp: now,
             publisher: _publisher,
-            chainId: _chainId
+            chainId: _nftChainId
         });
 
         (address _platform, address _owner) = hashtagProtocol
-        .getPaymentAddresses(_hashtagId);
+            .getPaymentAddresses(_hashtagId);
 
         // pre-auction
         if (_owner == _platform) {
@@ -349,7 +356,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
             _nftId,
             tagId,
             tagFee,
-            _chainId
+            _nftChainId
         );
     }
 

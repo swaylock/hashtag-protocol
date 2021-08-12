@@ -15,7 +15,7 @@ describe("ERC721HashtagRegistry Tests", function () {
     randomAddress,
     tagger,
     taggerAddress;
-  let chainId;
+  let nftChainId;
 
   beforeEach(async function () {
     const accounts = await hre.ethers.getSigners();
@@ -33,7 +33,7 @@ describe("ERC721HashtagRegistry Tests", function () {
     tagger = accounts[7];
     taggerAddress = await accounts[7].getAddress();
 
-    chainId = 1;
+    nftChainId = 1;
 
     const HashtagAccessControls = await hre.ethers.getContractFactory(
       "HashtagAccessControls"
@@ -76,7 +76,7 @@ describe("ERC721HashtagRegistry Tests", function () {
     await this.nft.mint(); //#2
 
     // Add Eth Mainnet to the permitted target tagging chains.
-    await this.registry.setPermittedChainId(1, true);
+    await this.registry.setPermittedNftChainId(1, true);
   });
 
   describe("Validate setup", async function () {
@@ -85,11 +85,11 @@ describe("ERC721HashtagRegistry Tests", function () {
     });
 
     it("should have Eth mainnet (chain id 1) permitted", async function () {
-      expect((await this.registry.getPermittedChainId(1)) == true);
+      expect((await this.registry.getPermittedNftChainId(1)) == true);
     });
 
     it("should have Polygon mainnet (chain id 137) not permitted", async function () {
-      expect((await this.registry.getPermittedChainId(137)) == false);
+      expect((await this.registry.getPermittedNftChainId(137)) == false);
     });
   });
 
@@ -131,12 +131,12 @@ describe("ERC721HashtagRegistry Tests", function () {
     it("should be able to add target chain ids", async function () {
       // Try adding a target chain id as platform address.
       // Expect it to be set.
-      await this.registry.connect(platform).setPermittedChainId(4, true);
-      expect((await this.registry.getPermittedChainId(4)) == true);
+      await this.registry.connect(platform).setPermittedNftChainId(4, true);
+      expect((await this.registry.getPermittedNftChainId(4)) == true);
 
       // Try adding a target chain id as random address.
       // Expect it to be reverted.
-      await expect(this.registry.connect(random).setPermittedChainId(4, true))
+      await expect(this.registry.connect(random).setPermittedNftChainId(4, true))
         .to.be.reverted;
     });
   });
@@ -164,7 +164,7 @@ describe("ERC721HashtagRegistry Tests", function () {
             nftId,
             publisherAddress,
             taggerAddress,
-            chainId,
+            nftChainId,
             { value: utils.parseEther("0.001") }
           )
       )
@@ -177,7 +177,7 @@ describe("ERC721HashtagRegistry Tests", function () {
           nftId,
           constants.One,
           utils.parseEther("0.001"),
-          chainId
+          nftChainId
         );
 
       const {
@@ -187,7 +187,7 @@ describe("ERC721HashtagRegistry Tests", function () {
         _tagger,
         _tagstamp,
         _publisher,
-        _chainId,
+        _nftChainId,
       } = await this.registry.getTagInfo(nftId);
 
       expect(_hashtagId).to.be.equal(constants.Two);
@@ -197,7 +197,7 @@ describe("ERC721HashtagRegistry Tests", function () {
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
       expect(_publisher).to.be.equal(publisherAddress);
-      expect(_chainId).to.be.equal(chainId);
+      expect(_nftChainId).to.be.equal(nftChainId);
 
       // check accrued values
       expect(await this.registry.accrued(publisherAddress)).to.be.equal(
@@ -223,7 +223,7 @@ describe("ERC721HashtagRegistry Tests", function () {
             nftId,
             publisherAddress,
             taggerAddress,
-            chainId,
+            nftChainId,
             { value: utils.parseEther("0.001") }
           )
       )
@@ -236,7 +236,7 @@ describe("ERC721HashtagRegistry Tests", function () {
           nftId,
           constants.One,
           utils.parseEther("0.001"),
-          chainId
+          nftChainId
         );
 
       expect(await this.registry.totalTags()).to.be.equal(1);
@@ -248,7 +248,7 @@ describe("ERC721HashtagRegistry Tests", function () {
         _tagger,
         _tagstamp,
         _publisher,
-        _chainId,
+        _nftChainId,
       } = await this.registry.getTagInfo(this.hashtagId);
 
       expect(_hashtagId).to.be.equal(this.hashtagId);
@@ -258,7 +258,7 @@ describe("ERC721HashtagRegistry Tests", function () {
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
       expect(_publisher).to.be.equal(publisherAddress);
-      expect(_chainId).to.be.equal(chainId);
+      expect(_nftChainId).to.be.equal(nftChainId);
 
       // check accrued values
       expect(await this.registry.accrued(publisherAddress)).to.be.equal(
@@ -282,8 +282,8 @@ describe("ERC721HashtagRegistry Tests", function () {
       const matic = 137;
       // Permit chain id 137. Obviously this is set globally for the contract
       // ahead of time.
-      await this.registry.connect(platform).setPermittedChainId(137, true);
-      expect((await this.registry.getPermittedChainId(137)) == true);
+      await this.registry.connect(platform).setPermittedNftChainId(137, true);
+      expect((await this.registry.getPermittedNftChainId(137)) == true);
 
       await expect(
         this.registry
@@ -319,7 +319,7 @@ describe("ERC721HashtagRegistry Tests", function () {
         _tagger,
         _tagstamp,
         _publisher,
-        _chainId,
+        _nftChainId,
       } = await this.registry.getTagInfo(this.hashtagId);
 
       expect(_hashtagId).to.be.equal(this.hashtagId);
@@ -329,7 +329,7 @@ describe("ERC721HashtagRegistry Tests", function () {
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
       expect(_publisher).to.be.equal(publisherAddress);
-      expect(_chainId).to.be.equal(matic);
+      expect(_nftChainId).to.be.equal(matic);
 
       // check accrued values
       expect(await this.registry.accrued(publisherAddress)).to.be.equal(
@@ -354,7 +354,7 @@ describe("ERC721HashtagRegistry Tests", function () {
           nftOneId,
           publisherAddress,
           taggerAddress,
-          chainId,
+          nftChainId,
           { value: utils.parseEther("0.001") }
         );
 
@@ -384,7 +384,7 @@ describe("ERC721HashtagRegistry Tests", function () {
           nftTwoId,
           publisherAddress,
           taggerAddress,
-          chainId,
+          nftChainId,
           { value: utils.parseEther("0.001") }
         );
 
@@ -412,7 +412,7 @@ describe("ERC721HashtagRegistry Tests", function () {
             constants.One,
             publisherAddress,
             taggerAddress,
-            chainId,
+            nftChainId,
             { value: utils.parseEther("1") }
           )
       ).to.be.revertedWith(
@@ -430,7 +430,7 @@ describe("ERC721HashtagRegistry Tests", function () {
             this.hashtagId,
             publisherAddress,
             taggerAddress,
-            chainId,
+            nftChainId,
             { value: utils.parseEther("1") }
           )
       ).to.be.revertedWith(
@@ -446,7 +446,7 @@ describe("ERC721HashtagRegistry Tests", function () {
           this.hashtagId,
           publisherAddress,
           taggerAddress,
-          chainId
+          nftChainId
         )
       ).to.be.revertedWith("Mint and tag: You must send the tag fee");
     });
@@ -459,7 +459,7 @@ describe("ERC721HashtagRegistry Tests", function () {
           this.hashtagId,
           publisherAddress,
           taggerAddress,
-          chainId
+          nftChainId
         )
       ).to.be.revertedWith("Tag: You must send the fee");
     });
@@ -485,7 +485,7 @@ describe("ERC721HashtagRegistry Tests", function () {
           this.hashtagId,
           constants.AddressZero,
           taggerAddress,
-          chainId,
+          nftChainId,
           { value: utils.parseEther("1") }
         )
       ).to.be.revertedWith("Mint and tag: The publisher must be whitelisted");
@@ -499,14 +499,14 @@ describe("ERC721HashtagRegistry Tests", function () {
           this.hashtagId,
           constants.AddressZero,
           taggerAddress,
-          chainId,
+          nftChainId,
           { value: utils.parseEther("1") }
         )
       ).to.be.revertedWith("Tag: The publisher must be whitelisted");
     });
 
     it("Reverts when target chain id is not permitted when mint and tagging", async function () {
-      const nonPermittedChainId = 5;
+      const nonPermittedNftChainId = 5;
       await expect(
         this.registry.mintAndTag(
           "#hullo",
@@ -514,14 +514,14 @@ describe("ERC721HashtagRegistry Tests", function () {
           this.hashtagId,
           publisherAddress,
           taggerAddress,
-          nonPermittedChainId,
+          nonPermittedNftChainId,
           { value: utils.parseEther("1") }
         )
       ).to.be.revertedWith("Mint and tag: Tagging target chain not permitted");
     });
 
     it("Reverts when target chain id is not permitted during tagging", async function () {
-      const nonPermittedChainId = 5;
+      const nonPermittedNftChainId = 5;
       await expect(
         this.registry.tag(
           this.hashtagId,
@@ -529,19 +529,19 @@ describe("ERC721HashtagRegistry Tests", function () {
           this.hashtagId,
           publisherAddress,
           taggerAddress,
-          nonPermittedChainId,
+          nonPermittedNftChainId,
           { value: utils.parseEther("1") }
         )
       ).to.be.revertedWith("Tag: Tagging target chain not permitted");
     });
 
     it("Reverts when previously permitted target chain id is no longer permitted", async function () {
-      const revertedChainId = 1;
+      const revertedNftChainId = 1;
       await this.registry
         .connect(platform)
-        .setPermittedChainId(revertedChainId, false);
+        .setPermittedNftChainId(revertedNftChainId, false);
       expect(
-        (await this.registry.getPermittedChainId(revertedChainId)) == false
+        (await this.registry.getPermittedNftChainId(revertedNftChainId)) == false
       );
 
       await expect(
@@ -551,7 +551,7 @@ describe("ERC721HashtagRegistry Tests", function () {
           this.hashtagId,
           publisherAddress,
           taggerAddress,
-          revertedChainId,
+          revertedNftChainId,
           { value: utils.parseEther("1") }
         )
       ).to.be.revertedWith("Tag: Tagging target chain not permitted");
@@ -576,7 +576,7 @@ describe("ERC721HashtagRegistry Tests", function () {
           nftOneId,
           publisherAddress,
           taggerAddress,
-          chainId,
+          nftChainId,
           { value: utils.parseEther("0.01") }
         );
     });
