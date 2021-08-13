@@ -13,13 +13,18 @@ async function main() {
   const accessControlsAddress = prompt(
     "HashtagAccessControls contract address? "
   );
-  const protocolAddress = prompt("HashtagProtocol contract address? ");
+  const protocolAddress = prompt(
+    "HashtagProtocol (NFT Token) contract address? "
+  );
 
   console.log(
     "\nHashtagAccessControls contract address: ",
     accessControlsAddress
   );
-  console.log("HashtagProtocol contract address: ", protocolAddress);
+  console.log(
+    "HashtagProtocol (NFT Token) contract address: ",
+    protocolAddress
+  );
   console.log("\n");
 
   prompt("If happy, hit enter to continue...");
