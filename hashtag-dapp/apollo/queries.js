@@ -29,10 +29,8 @@ export const SNAPSHOT = gql(`
             hashtagDisplayHashtag
             nftContract
             nftContractName
-            nftImage
-            nftName
-            nftDescription
             nftId
+            nftChainId
             tagger
             timestamp
             publisher
@@ -84,10 +82,8 @@ export const PAGED_TAGS_BY_HASHTAG = gql`
       hashtagDisplayHashtag
       nftContract
       nftContractName
-      nftImage
-      nftName
-      nftDescription
       nftId
+      nftChainId
       tagger
       timestamp
       publisher
@@ -120,11 +116,8 @@ export const TAGS_BY_DIGITAL_ASSET = gql(`
     id
     nftContract
     nftContractName
-    nftImage
     nftId
-    nftName
-    nftTokenUri
-    nftDescription
+    nftChainId
     tagger
     timestamp
     publisher
@@ -239,9 +232,7 @@ export const PAGED_TAGS_BY_TAGGER = gql`
       nftContract
       nftId
       nftContractName
-      nftTokenUri
-      nftName
-      nftImage
+      nftChainId
       tagger
       timestamp
       publisher
@@ -258,9 +249,7 @@ query tagsByTagger($tagger: String!) {
     nftContract
     nftId
     nftContractName
-    nftTokenUri
-    nftName
-    nftImage
+    nftChainId
     tagger
     timestamp
     publisher
@@ -285,9 +274,7 @@ query tagsByPublisher($publisher: String!, $first: Int!, $skip: Int!) {
     nftContract
     nftId
     nftContractName
-    nftTokenUri
-    nftName
-    nftImage
+    nftChainId
     tagger
     timestamp
     publisher
@@ -355,10 +342,8 @@ query pagedTags($first: Int!, $skip: Int!) {
             hashtagDisplayHashtag
             nftContract
             nftContractName
-            nftImage
-            nftName
-            nftDescription
             nftId
+            nftChainId
             tagger
             timestamp
             publisher
