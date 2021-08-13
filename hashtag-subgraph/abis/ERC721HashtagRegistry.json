@@ -78,6 +78,12 @@
         "internalType": "uint256",
         "name": "tagFee",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "nftChainId",
+        "type": "uint256"
       }
     ],
     "name": "HashtagRegistered",
@@ -132,6 +138,25 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_nftChainId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPermittedNftChainId",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "_tagId",
         "type": "uint256"
       }
@@ -167,6 +192,11 @@
         "internalType": "address",
         "name": "_publisher",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_nftChainId",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -211,6 +241,11 @@
         "internalType": "address",
         "name": "_tagger",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_nftChainId",
+        "type": "uint256"
       }
     ],
     "name": "mintAndTag",
@@ -245,6 +280,25 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "permittedNftChainIds",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -293,6 +347,24 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_nftChainId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_setting",
+        "type": "bool"
+      }
+    ],
+    "name": "setPermittedNftChainId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "_fee",
         "type": "uint256"
       }
@@ -328,6 +400,11 @@
         "internalType": "address",
         "name": "_tagger",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_nftChainId",
+        "type": "uint256"
       }
     ],
     "name": "tag",
@@ -387,6 +464,11 @@
         "internalType": "address",
         "name": "publisher",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nftChainId",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",

@@ -6,7 +6,7 @@ import {
 } from "../generated/ERC721HashtagRegistry/ERC721HashtagRegistry";
 
 import { HashtagProtocol } from "../generated/HashtagProtocol/HashtagProtocol";
-import { Tag, Hashtag, Creator } from "../generated/schema";
+import { Tag, Hashtag } from "../generated/schema";
 
 import {
   toLowerCase,
@@ -14,8 +14,8 @@ import {
   safeLoadPlatform,
   safeLoadOwner,
   safeLoadTagger,
-  extractNftIPFSMetadata,
-  ONE, ZERO, safeLoadCreator,
+  safeLoadCreator,
+  ONE
 } from "./helpers";
 
 /*
@@ -29,11 +29,11 @@ import {
  * event.params.hashtagFee Fee earned by the owner of the hashtag
  * event.params.publisherFee Fee earned by the publisher that facilitated the tagging
  * event.params.platformFee Fee earned by the Hashtag Protocol
+ * event.params.nftChainId Chain Id the target nft is on
  *
  * Notes
  *    A number of data points are generated off the back of this tagging event:
  *     - Tag / usage count for a hashtag
- *     - NFT asset metadata including name, description and image
  *     - Tagging fees earned by the hashtag owner, publisher and platform
  */
 export function handleHashtagRegistered(event: HashtagRegistered): void {
@@ -95,23 +95,24 @@ export function handleHashtagRegistered(event: HashtagRegistered): void {
 
   tagEntity.nftContract = event.params.nftContract;
   tagEntity.nftId = event.params.nftId.toString();
+  tagEntity.nftChainId = event.params.nftChainId;
 
   let erc721Contract = HashtagProtocol.bind(event.params.nftContract);
   tagEntity.nftContractName = erc721Contract.name();
 
-  let tokenUriCallResult = erc721Contract.try_tokenURI(event.params.nftId);
-  tagEntity.nftTokenUri = tokenUriCallResult.reverted
-    ? null
-    : tokenUriCallResult.value;
-
-  if (!tokenUriCallResult.reverted) {
-    let nftMetadata = extractNftIPFSMetadata(tagEntity.nftTokenUri);
-    if (nftMetadata) {
-      tagEntity.nftName = nftMetadata.nftName;
-      tagEntity.nftDescription = nftMetadata.nftDescription;
-      tagEntity.nftImage = nftMetadata.nftImage;
-    }
-  }
+  //let tokenUriCallResult = erc721Contract.try_tokenURI(event.params.nftId);
+  //tagEntity.nftTokenUri = tokenUriCallResult.reverted
+  //  ? null
+  //  : tokenUriCallResult.value;
+  //
+  //if (!tokenUriCallResult.reverted) {
+  //  let nftMetadata = extractNftIPFSMetadata(tagEntity.nftTokenUri);
+  //  if (nftMetadata) {
+  //    tagEntity.nftName = nftMetadata.nftName;
+  //    tagEntity.nftDescription = nftMetadata.nftDescription;
+  //    tagEntity.nftImage = nftMetadata.nftImage;
+  //  }
+  //}
 
   tagEntity.tagger = event.params.tagger;
   tagEntity.timestamp = event.block.timestamp;

@@ -41,7 +41,7 @@ dataSources:
         - name: HashtagProtocol
           file: ./abis/HashtagProtocol.json
       eventHandlers:
-        - event: HashtagRegistered(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256)
+        - event: HashtagRegistered(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleHashtagRegistered
       file: ./src/erc721-hashtag-registry.ts
   - kind: ethereum/contract

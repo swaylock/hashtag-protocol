@@ -26,10 +26,11 @@ type Tag @entity {
   nftContract: Bytes!
   nftId: String!
   nftContractName: String!
-  nftTokenUri: String
-  nftName: String
-  nftDescription: String
-  nftImage: String
+  nftChainId: BigInt!
+  # nftTokenUri: String
+  # nftName: String
+  # nftDescription: String
+  # nftImage: String
   tagger: Bytes!
   timestamp: BigInt!
   publisher: Bytes!
