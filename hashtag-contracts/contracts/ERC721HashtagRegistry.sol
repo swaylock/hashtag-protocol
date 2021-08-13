@@ -43,7 +43,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
         uint256 nftId,
         uint256 tagId,
         uint256 tagFee,
-        uint256 chainId
+        uint256 nftChainId
     );
 
     event DrawDown(address indexed who, uint256 amount);
@@ -56,7 +56,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
         address tagger;
         uint256 tagstamp;
         address publisher;
-        uint256 chainId;
+        uint256 nftChainId;
     }
 
     // tag id (will come from the totalTags pointer) -> tag
@@ -212,7 +212,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
             tagInfo.tagger,
             tagInfo.tagstamp,
             tagInfo.publisher,
-            tagInfo.chainId
+            tagInfo.nftChainId
         );
     }
 
@@ -297,11 +297,6 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
             "Tag: Invalid tag - you are attempting to tag another hashtag"
         );
 
-        require(
-            _nftContract != address(hashtagProtocol),
-            "Tag: Invalid tag - you are attempting to tag another hashtag"
-        );
-
         // Generate a new tag ID
         totalTags = totalTags.add(1);
         uint256 tagId = totalTags;
@@ -313,7 +308,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
             tagger: _tagger,
             tagstamp: now,
             publisher: _publisher,
-            chainId: _nftChainId
+            nftChainId: _nftChainId
         });
 
         (address _platform, address _owner) = hashtagProtocol
