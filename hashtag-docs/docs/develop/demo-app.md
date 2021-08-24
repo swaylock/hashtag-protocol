@@ -238,14 +238,14 @@ new terminal tab.
    HashtagAccessControls) to the appropriate section of the
    `/hashtag-subgraph/subgraph.yaml` configuration file.
 
-3. If you've made any changes to your contracts, will need to copy the contract
+3. If you've made any changes to your contracts, will need to copy the deployed contract
     ABIs to the Subgraph abis folder. For example:
 
     ``` bash
     # From the project root.
-    cp hashtag-contracts/abi/contracts/HashtagAccessControls.sol/HashtagAccessControls.json hashtag-subgraph/abis/HashtagAccessControls.json
-    cp hashtag-contracts/abi/contracts/HashtagProtocol.sol/HashtagProtocol.json hashtag-subgraph/abis/HashtagProtocol.json
-    cp hashtag-contracts/abi/contracts/ERC721HashtagRegistry.sol/ERC721HashtagRegistry.json hashtag-subgraph/abis/ERC721HashtagRegistry.json
+    cp hashtag-contracts/deployments/localhost/HashtagAccessControls.json hashtag-subgraph/abis/HashtagAccessControls.json
+    cp hashtag-contracts/deployments/localhost/HashtagProtocol.json hashtag-subgraph/abis/HashtagProtocol.json
+    cp hashtag-contracts/deployments/localhost/ERC721HashtagRegistry.json hashtag-subgraph/abis/ERC721HashtagRegistry.json
     ```
 
 4. Once Docker is running, open another tab and start up the subgraph node as follows:
@@ -363,7 +363,7 @@ new terminal tab.
     ``` bash
     cd hashtag-protocol/hashtag-dapp
     yarn install
-    yarn serve
+    yarn dev
     ```
 
     If everything was set up properly, you should be able to mint tokens and tag
