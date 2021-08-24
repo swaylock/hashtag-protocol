@@ -1,26 +1,34 @@
-//const prompt = require('prompt-sync')();
+const hre = require("hardhat");
+// eslint-disable-next-line no-unused-vars
+const ethernal = require("hardhat-ethernal");
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
+  const [deployer] = await hre.ethers.getSigners();
+
   console.log(
     "Deploying access controls with the account:",
     await deployer.getAddress()
   );
 
-  const HashtagAccessControls = await ethers.getContractFactory("HashtagAccessControls");
+  const HashtagAccessControls = await hre.ethers.getContractFactory(
+    "HashtagAccessControls"
+  );
 
   const accessControls = await HashtagAccessControls.deploy();
 
   await accessControls.deployed();
+  await hre.ethernal.push({
+    name: "HashtagAccessControls",
+    address: accessControls.address,
+  });
 
   console.log(`Access controls deployed at: `, accessControls.address);
-
-  console.log('Finished!');
+  console.log("Finished!");
 }
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });
