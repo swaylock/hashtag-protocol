@@ -198,10 +198,11 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
         require(_nftContract != address(hashtagProtocol), "Tag: Invalid tag - you are attempting to tag another hashtag");
 
         // Ensure that we are dealing with an ERC721 compliant _nftContract
-        _assertContractSupportsERC721Interface(_nftContract);
+        require(_nftContract != address(0), "function call to a non-contract address");
+        //_assertContractSupportsERC721Interface(_nftContract);
 
         // NFT existence checks - revert if NFT does not exist
-        _assertNftExists(_nftContract, _nftId);
+        //_assertNftExists(_nftContract, _nftId);
 
         // Generate a new tag ID
         totalTags = totalTags.add(1);
