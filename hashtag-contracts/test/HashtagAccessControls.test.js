@@ -14,8 +14,8 @@ async function setup() {
   // See namedAccounts section of hardhat.config.js
   const namedAccounts = await ethers.getNamedSigners();
   const accounts = {
-    accountHashtagAdmin: namedAccounts["hashtagAdmin"],
-    accountHashtagPublisher: namedAccounts["hashtagPublisher"],
+    accountHashtagAdmin: namedAccounts["accountHashtagAdmin"],
+    accountHashtagPublisher: namedAccounts["accountHashtagPublisher"],
   };
 
   return {
@@ -32,24 +32,15 @@ describe("HashtagAccessControl Tests", function () {
       // to declare the variable in greater scope which can introduce subtle errors
       // as such we prefer to have the setup called right at the beginning of the test.
       const { contractAccessControls, accountHashtagAdmin } = await setup();
-      expect(
-        await contractAccessControls.isAdmin(accountHashtagAdmin.address)
-      ).to.be.equal(true);
+      expect(await contractAccessControls.isAdmin(accountHashtagAdmin.address)).to.be.equal(true);
     });
   });
 
   describe("Publisher", async function () {
     it("should admin as contract creator", async function () {
       const { contractAccessControls, accountHashtagPublisher } = await setup();
-      await contractAccessControls.grantRole(
-        ethers.utils.id("PUBLISHER"),
-        accountHashtagPublisher.address
-      );
-      expect(
-        await contractAccessControls.isPublisher(
-          accountHashtagPublisher.address
-        )
-      ).to.be.equal(true);
+      await contractAccessControls.grantRole(ethers.utils.id("PUBLISHER"), accountHashtagPublisher.address);
+      expect(await contractAccessControls.isPublisher(accountHashtagPublisher.address)).to.be.equal(true);
     });
   });
 });
