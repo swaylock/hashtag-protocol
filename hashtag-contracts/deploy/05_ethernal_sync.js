@@ -3,31 +3,17 @@ const { ethers, ethernal } = require("hardhat");
 module.exports = async ({ deployments }) => {
   const { deploy } = deployments;
 
-  const accountHashtagAdmin = await ethers.getNamedSigner(
-    "accountHashtagAdmin"
-  );
+  const accountHashtagAdmin = await ethers.getNamedSigner("accountHashtagAdmin");
 
   // Fetch address of HashtagAccessControls.
-  const accessControls = await ethers.getContract(
-    "HashtagAccessControls",
-    accountHashtagAdmin
-  );
+  const accessControls = await ethers.getContract("HashtagAccessControls", accountHashtagAdmin);
 
   // Fetch address of HashtagAccessControls.
-  const hashtagProtocol = await ethers.getContract(
-    "HashtagProtocol",
-    accountHashtagAdmin
-  );
+  const hashtagProtocol = await ethers.getContract("HashtagProtocol", accountHashtagAdmin);
 
-  const ERC721HashtagRegistry = await ethers.getContract(
-    "ERC721HashtagRegistry",
-    accountHashtagAdmin
-  );
+  const ERC721HashtagRegistry = await ethers.getContract("ERC721HashtagRegistry", accountHashtagAdmin);
 
-  const burnableMock = await ethers.getContract(
-    "ERC721BurnableMock",
-    accountHashtagAdmin
-  );
+  const burnableMock = await ethers.getContract("ERC721BurnableMock", accountHashtagAdmin);
 
   await ethernal.push({
     name: "ERC721BurnableMock",
