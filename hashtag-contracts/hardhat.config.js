@@ -58,53 +58,6 @@ const MATICVIGIL_PROJECT_ID = process.env.MATICVIGIL_PROJECT_ID || "";
  */
 module.exports = {
   solidity: {
-<<<<<<< HEAD
-    version: '0.6.12',
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200
-      }
-    }
-  },
-  gasReporter: {
-    currency: 'USD',
-    enabled: false
-  },
-  networks: {
-    hardhat: {
-      gasPrice: 00000000000, // 0 gwei
-    },
-    localhost: {
-      url: "http://127.0.0.1:8545"
-    },
-    mainnet: {
-      url: `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`,
-      accounts: [`${PRIVATE_KEY}`],
-      gasPrice: 140000000000 // 140 gwei
-    },
-    ropsten: {
-      url: `https://ropsten.infura.io/v3/${INFURA_PROJECT_ID}`,
-      accounts: [`0x${PRIVATE_KEY}`]
-    },
-    rinkeby: {
-      url: `https://rinkeby.infura.io/v3/${INFURA_PROJECT_ID}`,
-      accounts: [`0x${PRIVATE_KEY}`]
-    },
-    kovan: {
-      url: `https://kovan.infura.io/v3/${INFURA_PROJECT_ID}`,
-      accounts: [`0x${PRIVATE_KEY}`]
-    },
-    mumbai: {
-      url: `https://rpc-mumbai.maticvigil.com/v1/${MATICVIGIL_PROJECT_ID}`,
-      accounts: [`0x${PRIVATE_KEY}`],
-      gasPrice: 2000000000, // 2 gwei
-    },
-    coverage: {
-      url: 'http://localhost:8555',
-      gasPrice: 8000000000, // 8 gwei
-    }
-=======
     version: "0.6.12",
     settings: {
       optimizer: {
@@ -130,11 +83,11 @@ module.exports = {
       accounts: accounts(),
     },
     localhost: {
-      url: "http://127.0.0.1:8545",
+      url: "http://127.0.0.1:8545", //default port: 31337
       accounts: accounts(),
     },
     ganache: {
-      url: "http://127.0.0.1:8545",
+      url: "http://127.0.0.1:8545", // default port: 5777
       accounts: accounts(),
     },
     mainnet: {
@@ -163,6 +116,5 @@ module.exports = {
       url: "http://localhost:8555",
       gasPrice: 8000000000, // 8 gwei
     },
->>>>>>> 216-chainId
   },
 };
