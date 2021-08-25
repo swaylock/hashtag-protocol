@@ -4,15 +4,15 @@
     "url": "https://etherscan.io"
   },
   "4": {
-    "Name": "Rinkby",
+    "Name": "Rinkeby",
     "url": "https://rinkeby.etherscan.io"
   },
   "5777": {
-    "Name": "Localdev",
+    "Name": "Ganache Localdev",
     "url": "https://rinkeby.etherscan.io"
   },
   "31337": {
-    "Name": "Localdev Hardhat",
+    "Name": "Hardhat Localdev",
     "url": "https://rinkeby.etherscan.io"
-  }
+  },
 }

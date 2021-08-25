@@ -24,13 +24,6 @@ module.exports = {
       gasPrice: 1000000000, // <-- Use this low gas price
       network_id: "*", // Match any network id
     },
-    ganache: {
-      host: "127.0.0.1",
-      port: 7545,
-      gas: 6721975, // <-- Use this high gas value
-      gasPrice: 1000000000, // <-- Use this low gas price
-      network_id: "*", // Match any network id
-    },
     coverage: {
       host: "localhost",
       network_id: "*",

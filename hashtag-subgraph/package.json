@@ -12,8 +12,7 @@
     "run-graph-node": "docker-compose -f graph-node/docker-compose.yml up -d && ganache-cli -h 0.0.0.0 -m 'worth grunt bridge trade chuckle stand lamp jealous snow order pluck mobile' -i 5777 --chainId 5777"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.16.2",
-    "@graphprotocol/graph-ts": "0.16.0"
-  },
-  "devDependencies": {}
+    "@graphprotocol/graph-cli": "^0.21.1",
+    "@graphprotocol/graph-ts": "^0.20.0"
+  }
 }

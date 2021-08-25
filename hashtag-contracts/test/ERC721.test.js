@@ -1,5 +1,4 @@
 const {
-  BN,
   constants,
   expectEvent,
   expectRevert,
@@ -7,7 +6,11 @@ const {
 const { ZERO_ADDRESS } = constants;
 
 const web3 = require("web3");
+const chai = require("chai");
+const BN = require("bn.js");
 
+// Enable and inject BN dependency
+chai.use(require("chai-bn")(BN));
 const { expect } = require("chai");
 
 const { shouldSupportInterfaces } = require("./SupportsInterface.behavior");
