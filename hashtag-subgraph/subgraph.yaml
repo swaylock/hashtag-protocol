@@ -21,7 +21,7 @@ dataSources:
       eventHandlers:
         - event: MintHashtag(indexed uint256,string,indexed address,address)
           handler: handleMintHashtag
-      file: ./src/protocol-mapping.ts
+      file: ./src/mappings/protocol-mapping.ts
   - kind: ethereum/contract
     name: ERC721HashtagRegistry
     network: mainnet
@@ -43,7 +43,7 @@ dataSources:
       eventHandlers:
         - event: HashtagRegistered(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleHashtagRegistered
-      file: ./src/erc721-hashtag-registry.ts
+      file: ./src/mappings/erc721-hashtag-registry.ts
   - kind: ethereum/contract
     name: HashtagAccessControls
     network: mainnet
@@ -63,4 +63,4 @@ dataSources:
       eventHandlers:
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
-      file: ./src/access-control-mapping.ts
+      file: ./src/mappings/access-control-mapping.ts
