@@ -1,15 +1,10 @@
 import { Bytes } from "@graphprotocol/graph-ts";
 
-import { RoleGranted } from "../generated/HashtagAccessControls/HashtagAccessControls";
+import { RoleGranted } from "../../generated/HashtagAccessControls/HashtagAccessControls";
+import { safeLoadPublisher } from "../utils/helpers";
 
-import { safeLoadPublisher } from "./helpers";
-
-const ADMIN_ROLE = Bytes.fromHexString(
-  "0x0000000000000000000000000000000000000000000000000000000000000000"
-);
-const PUBLISHER_ROLE = Bytes.fromHexString(
-  "0xad312f08b8889cfe65ec2f1faae419f8b47f0153a3483ea6130918c055c8183d"
-);
+// const ADMIN_ROLE = Bytes.fromHexString("0x0000000000000000000000000000000000000000000000000000000000000000");
+const PUBLISHER_ROLE = Bytes.fromHexString("0xad312f08b8889cfe65ec2f1faae419f8b47f0153a3483ea6130918c055c8183d");
 
 /*
  * Track roles that are granted to Ethereum accounts
