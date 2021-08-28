@@ -10,49 +10,9 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-truffle5");
 require("hardhat-ethernal");
 
-const { accounts } = require("./utils/network");
+// require("@nomiclabs/hardhat-etherscan");
 
-//import { accounts } from "./utils/network";
-
-//require("@nomiclabs/hardhat-solhint");
-//require("@nomiclabs/hardhat-etherscan");
-//require("hardhat-abi-exporter");
-//require("hardhat-gas-reporter");
-//require("solidity-coverage");
-//const { utils } = require("ethers");
-//const { isAddress, getAddress, formatUnits, parseUnits } = utils;
-
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async ({ ethers }) => {
-  const accounts = await ethers.getSigners();
-
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
-
-//usePlugin("hardhat-deploy-ethers");
-
-// task action function receives the Hardhat Runtime Environment as second argument
-task(
-  "blockNumber",
-  "Prints the current block number",
-  async (_, { ethers }) => {
-    await ethers.provider.getBlockNumber().then((blockNumber) => {
-      console.log("Current block number: " + blockNumber);
-    });
-  }
-);
-
-module.exports = {};
-
-const INFURA_PROJECT_ID = process.env.PROTOTYPE_BR_INFURA_KEY || "";
-const PRIVATE_KEY =
-  process.env.HASHTAG_PRIVATE_KEY ||
-  "0000000000000000000000000000000000000000000000000000000000000000";
-const MATICVIGIL_PROJECT_ID = process.env.MATICVIGIL_PROJECT_ID || "";
-
+const { node_url, accounts } = require("./utils/network");
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -72,9 +32,21 @@ module.exports = {
   },
   // For named accounts see https://github.com/wighawag/hardhat-deploy#1-namedaccounts-ability-to-name-addresses
   namedAccounts: {
-    accountHashtagAdmin: 0,
-    accountHashtagPublisher: 1,
-    accountHashtagPlatform: 2,
+    accountHashtagAdmin: {
+      default: 0,
+      mumbai: "0x93A5f58566D436Cae0711ED4d2815B85A26924e6",
+    },
+    accountHashtagPublisher: {
+      default: 1,
+      mumbai: "0xE9FBC1a1925F6f117211C59b89A55b576182e1e9",
+    },
+    accountHashtagPlatform: {
+      default: 2,
+      mumbai: "0x60F2760f0D99330A555c5fc350099b634971C6Eb",
+    },
+  },
+  etherscan: {
+    apiKey: "8UHY65TIS48GSD58N8US7JKM9Z1UYJ297U",
   },
   networks: {
     hardhat: {
@@ -83,38 +55,17 @@ module.exports = {
       accounts: accounts(),
     },
     localhost: {
-      url: "http://127.0.0.1:8545", //default port: 31337
+      url: node_url("localhost"), //default port: 31337
       accounts: accounts(),
     },
     ganache: {
-      url: "http://127.0.0.1:8545", // default port: 5777
+      url: node_url("localhost"), // default port: 5777
       accounts: accounts(),
     },
-    mainnet: {
-      url: `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`,
-      //accounts: [`${PRIVATE_KEY}`],
-      gasPrice: 140000000000, // 140 gwei
-    },
-    ropsten: {
-      url: `https://ropsten.infura.io/v3/${INFURA_PROJECT_ID}`,
-      //accounts: [`0x${PRIVATE_KEY}`],
-    },
-    rinkeby: {
-      url: `https://rinkeby.infura.io/v3/${INFURA_PROJECT_ID}`,
-      //accounts: [`0x${PRIVATE_KEY}`],
-    },
-    kovan: {
-      url: `https://kovan.infura.io/v3/${INFURA_PROJECT_ID}`,
-      //accounts: [`0x${PRIVATE_KEY}`],
-    },
     mumbai: {
-      url: `https://rpc-mumbai.maticvigil.com/v1/${MATICVIGIL_PROJECT_ID}`,
-      //accounts: [`0x${PRIVATE_KEY}`],
-      gasPrice: 2000000000, // 2 gwei
-    },
-    coverage: {
-      url: "http://localhost:8555",
-      gasPrice: 8000000000, // 8 gwei
+      url: node_url("mumbai"), // see .env.default
+      accounts: accounts("mumbai"),
+      gasPrice: 2000000000,
     },
   },
 };
