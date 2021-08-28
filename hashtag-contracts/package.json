@@ -10,11 +10,12 @@
     "node-ganache": "$PWD/scripts/node-ganache.sh",
     "clean": "hardhat clean",
     "compile": "hardhat compile",
-    "test": "hardhat test --network localhost",
-    "test-ganache": "hardhat test --network ganache",
-    "deploy-hardhat": "hardhat deploy --network localhost --tags dev,Ethernal",
-    "deploy-ganache": "hardhat deploy --network ganache --tags dev",
-    "deploy-ethernal": "hardhat deploy --network localhost --tags Ethernal"
+    "test:hardhat": "hardhat test --network localhost",
+    "test:ganache": "hardhat test --network ganache",
+    "deploy:hardhat": "hardhat deploy --network localhost --tags dev,Ethernal",
+    "deploy:ganache": "hardhat deploy --network ganache --tags dev",
+    "deploy:ethernal": "hardhat deploy --network localhost --tags Ethernal",
+    "deploy:mumbai": "hardhat deploy --network mumbai --tags dev"
   },
   "author": "BlockRocket.tech",
   "license": "MIT",

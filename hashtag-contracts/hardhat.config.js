@@ -10,8 +10,6 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-truffle5");
 require("hardhat-ethernal");
 
-// require("@nomiclabs/hardhat-etherscan");
-
 const { node_url, accounts } = require("./utils/network");
 /**
  * @type import('hardhat/config').HardhatUserConfig
