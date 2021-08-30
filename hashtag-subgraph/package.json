@@ -6,7 +6,7 @@
     "codegen:dev": "rimraf src/generated && yarn graph codegen --output-dir src/generated",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ hashtag-protocol/hashtag-rinkeby",
+    "deploy:mumbai": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ hashtag-protocol/hashtag-polygon-mumbai",
     "create-local": "graph create --node http://localhost:8020/ hashtag-protocol/hashtag-local",
     "remove-local": "graph remove --node http://localhost:8020/ hashtag-protocol/hashtag-local",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 hashtag-protocol/hashtag-local --version-label dev",
