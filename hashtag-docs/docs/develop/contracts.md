@@ -1,49 +1,14 @@
-<!-- Output copied to clipboard! -->
-
-<!-----
-NEW: Check the "Suppress top comment" option to remove this info from the output.
-
-Conversion time: 0.64 seconds.
-
-
-Using this Markdown file:
-
-1. Paste this output into your source file.
-2. See the notes and action items below regarding this conversion run.
-3. Check the rendered output (headings, lists, code blocks, tables) for proper
-   formatting and use a linkchecker before you publish this page.
-
-Conversion notes:
-
-* Docs to Markdown version 1.0β31
-* Mon Aug 30 2021 14:34:51 GMT-0700 (PDT)
-* Source doc: Smart Contracts
-
-WARNING:
-You have 2 H1 headings. You may want to use the "H1 -> H2" option to demote all headings by one level.
-
------>
-
-
-<p style="color: red; font-weight: bold">>>>>>  gd2md-html alert:  ERRORs: 0; WARNINGs: 1; ALERTS: 0.</p>
-<ul style="color: red; font-weight: bold"><li>See top comment block for details on ERRORs and WARNINGs. <li>In the converted Markdown or HTML, search for inline alerts that start with >>>>>  gd2md-html alert:  for specific instances that need correction.</ul>
-
-<p style="color: red; font-weight: bold">Links to alert messages:</p>
-<p style="color: red; font-weight: bold">>>>>> PLEASE check and correct alert issues and delete this message and the inline alerts.<hr></p>
-
-
-
 # Smart Contracts
 
 
-# Version 2
+## Version 2
 
 Extends basic HASHTAG token minting and tagging of ERC721 NFTs introduced in Version one, with the ability to tag target NFTs on different chains. For example, if a HASHTAG token is on Rinkeby, the tagging contract can be configured to permit tagging of NFTs on Polygon mainnet. In addition, smart contracts are being migrated to the Polygon Network.
 
 For the latest contract source code in progress, please see [Hashtag Protocol contracts directory](https://github.com/hashtag-protocol/hashtag-protocol/tree/stage/hashtag-contracts).
 
 
-## HashtagProtocol.sol
+### HashtagProtocol.sol
 
 **Polygon Mumbai**
 
@@ -53,7 +18,7 @@ For the latest contract source code in progress, please see [Hashtag Protocol co
 * Github: [https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagProtocol.sol](https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagProtocol.sol)
 
 
-## ERC721HashtagRegistry.sol
+### ERC721HashtagRegistry.sol
 
 **Polygon Mumbai**
 
@@ -63,7 +28,7 @@ For the latest contract source code in progress, please see [Hashtag Protocol co
 * Github: [https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/ERC721HashtagRegistry.sol](https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/ERC721HashtagRegistry.sol)
 
 
-## HashtagAccessControls.sol
+### HashtagAccessControls.sol
 
 **Polygon Mumbai**
 
@@ -73,12 +38,12 @@ For the latest contract source code in progress, please see [Hashtag Protocol co
 * Github: [https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagAccessControls.sol](https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagAccessControls.sol)
 
 
-# Version 1
+## Version 1
 
 Implements basic HASHTAG token minting and tagging of target ERC721 NFTs. Tagging is limited to target NFTs existing on same chain (ie. HASHTAG tokens on mainnet can _only_ tag target NFTs on mainnet). This is being modified in Version 2 so that target NFTs can exist on any chain permitted by the protocol (ie. if enabled, Tagging contract on mainnet can tag target NFTs on Polygon).  
 
 
-## HashtagProtocol.sol
+### HashtagProtocol.sol
 
 **Ethereum Mainnet**
 
@@ -94,7 +59,7 @@ Implements basic HASHTAG token minting and tagging of target ERC721 NFTs. Taggin
 * Etherscan: [https://rinkeby.etherscan.io/address/0xa948549116e716cc0da11afdbcabf01ff04fc35e](https://rinkeby.etherscan.io/address/0xa948549116e716cc0da11afdbcabf01ff04fc35e)
 
 
-## ERC721HashtagRegistry.sol
+### ERC721HashtagRegistry.sol
 
 **Ethereum Mainnet**
 
@@ -110,7 +75,7 @@ Implements basic HASHTAG token minting and tagging of target ERC721 NFTs. Taggin
 * Etherscan: [https://rinkeby.etherscan.io/address/0x2a23A463C7d676f3C94402eA0B0450E36BF14305](https://rinkeby.etherscan.io/address/0x2a23A463C7d676f3C94402eA0B0450E36BF14305)
 
 
-## HashtagAccessControls.sol
+### HashtagAccessControls.sol
 
 **Ethereum Mainnet**
 
