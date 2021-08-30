@@ -1,72 +1,126 @@
-## Smart Contracts
+<!-- Output copied to clipboard! -->
+
+<!-----
+NEW: Check the "Suppress top comment" option to remove this info from the output.
+
+Conversion time: 0.64 seconds.
 
 
-## Version 2
+Using this Markdown file:
+
+1. Paste this output into your source file.
+2. See the notes and action items below regarding this conversion run.
+3. Check the rendered output (headings, lists, code blocks, tables) for proper
+   formatting and use a linkchecker before you publish this page.
+
+Conversion notes:
+
+* Docs to Markdown version 1.0β31
+* Mon Aug 30 2021 14:34:51 GMT-0700 (PDT)
+* Source doc: Smart Contracts
+
+WARNING:
+You have 2 H1 headings. You may want to use the "H1 -> H2" option to demote all headings by one level.
+
+----->
+
+
+<p style="color: red; font-weight: bold">>>>>>  gd2md-html alert:  ERRORs: 0; WARNINGs: 1; ALERTS: 0.</p>
+<ul style="color: red; font-weight: bold"><li>See top comment block for details on ERRORs and WARNINGs. <li>In the converted Markdown or HTML, search for inline alerts that start with >>>>>  gd2md-html alert:  for specific instances that need correction.</ul>
+
+<p style="color: red; font-weight: bold">Links to alert messages:</p>
+<p style="color: red; font-weight: bold">>>>>> PLEASE check and correct alert issues and delete this message and the inline alerts.<hr></p>
+
+
+
+# Smart Contracts
+
+
+# Version 2
 
 Extends basic HASHTAG token minting and tagging of ERC721 NFTs introduced in Version one, with the ability to tag target NFTs on different chains. For example, if a HASHTAG token is on Rinkeby, the tagging contract can be configured to permit tagging of NFTs on Polygon mainnet. In addition, smart contracts are being migrated to the Polygon Network.
 
-
-### HashtagProtocol.sol
-
-**Polygonscan**
-
-Mumbai: https://mumbai.polygonscan.com/address/0x112acF9C8BAB5e0830d756C96bD18730C47e6A09
-
-**Github**
-
-Stage: https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagProtocol.sol
+For the latest contract source code in progress, please see [Hashtag Protocol contracts directory](https://github.com/hashtag-protocol/hashtag-protocol/tree/stage/hashtag-contracts).
 
 
-### ERC721HashtagRegistry.sol
+## HashtagProtocol.sol
 
-**Polygonscan**
-
-Mumbai: https://mumbai.polygonscan.com/address/0x487F03DD5ac07c9F475A723AA06d5ecf3Cf2d1d7
-
-**Github**
-
-Stage: https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/ERC721HashtagRegistry.sol
+**Polygon Mumbai**
 
 
-### HashtagAccessControls.sol
 
-**Polygonscan**
-
-Mumbai: https://mumbai.polygonscan.com/address/0x524c297E92129Ed2392Cd00F0d88430cCC9b542B
-
-**Github**
-
-Stage: https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagAccessControls.sol
+* Polygonscan: [https://mumbai.polygonscan.com/address/0x112acF9C8BAB5e0830d756C96bD18730C47e6A09](https://mumbai.polygonscan.com/address/0x112acF9C8BAB5e0830d756C96bD18730C47e6A09)
+* Github: [https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagProtocol.sol](https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagProtocol.sol)
 
 
-## Version 1
+## ERC721HashtagRegistry.sol
+
+**Polygon Mumbai**
+
+
+
+* Polygonscan: [https://mumbai.polygonscan.com/address/0x487F03DD5ac07c9F475A723AA06d5ecf3Cf2d1d7](https://mumbai.polygonscan.com/address/0x487F03DD5ac07c9F475A723AA06d5ecf3Cf2d1d7)
+* Github: [https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/ERC721HashtagRegistry.sol](https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/ERC721HashtagRegistry.sol)
+
+
+## HashtagAccessControls.sol
+
+**Polygon Mumbai**
+
+
+
+* Polygonscan: [https://mumbai.polygonscan.com/address/0x524c297E92129Ed2392Cd00F0d88430cCC9b542B](https://mumbai.polygonscan.com/address/0x524c297E92129Ed2392Cd00F0d88430cCC9b542B)
+* Github: [https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagAccessControls.sol](https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-contracts/contracts/HashtagAccessControls.sol)
+
+
+# Version 1
 
 Implements basic HASHTAG token minting and tagging of target ERC721 NFTs. Tagging is limited to target NFTs existing on same chain (ie. HASHTAG tokens on mainnet can _only_ tag target NFTs on mainnet). This is being modified in Version 2 so that target NFTs can exist on any chain permitted by the protocol (ie. if enabled, Tagging contract on mainnet can tag target NFTs on Polygon).  
 
 
-### HashtagProtocol.sol
+## HashtagProtocol.sol
 
-**Etherscan** 
-
-Mainnet: https://etherscan.io/address/0x3a7a449308052d74256bb6867979aba51b2cd887
-
-Rinkeby: https://rinkeby.etherscan.io/address/0xa948549116e716cc0da11afdbcabf01ff04fc35e
+**Ethereum Mainnet**
 
 
-### ERC721HashtagRegistry.sol
 
-**Etherscan**
+* Etherscan: [https://etherscan.io/address/0x3a7a449308052d74256bb6867979aba51b2cd887](https://etherscan.io/address/0x3a7a449308052d74256bb6867979aba51b2cd887)
+* Github: [https://github.com/hashtag-protocol/hashtag-protocol/blob/v0.1.0-Beta/hashtag-contracts/contracts/HashtagProtocol.sol](https://github.com/hashtag-protocol/hashtag-protocol/blob/v0.1.0-Beta/hashtag-contracts/contracts/HashtagProtocol.sol)
 
-Mainnet: https://etherscan.io/address/0x3a7a449308052d74256bb6867979aba51b2cd887
-
-Rinkeby: https://rinkeby.etherscan.io/address/0x2a23A463C7d676f3C94402eA0B0450E36BF14305
+**Ethereum Rinkeby Testnet**
 
 
-### HashtagAccessControls.sol
 
-**Etherscan**
+* Etherscan: [https://rinkeby.etherscan.io/address/0xa948549116e716cc0da11afdbcabf01ff04fc35e](https://rinkeby.etherscan.io/address/0xa948549116e716cc0da11afdbcabf01ff04fc35e)
 
-Mainnet: https://etherscan.io/address/0x0f5eece5f30f5d10301f0c59f579b486a44d55c6
 
-Rinkeby:
+## ERC721HashtagRegistry.sol
 
+**Ethereum Mainnet**
+
+
+
+* Etherscan: [https://etherscan.io/address/0x3a7a449308052d74256bb6867979aba51b2cd887](https://etherscan.io/address/0x3a7a449308052d74256bb6867979aba51b2cd887)
+* Github: [https://github.com/hashtag-protocol/hashtag-protocol/blob/v0.1.0-Beta/hashtag-contracts/contracts/ERC721HashtagRegistry.sol](https://github.com/hashtag-protocol/hashtag-protocol/blob/v0.1.0-Beta/hashtag-contracts/contracts/ERC721HashtagRegistry.sol)
+
+**Ethereum Rinkeby Testnet**
+
+
+
+* Etherscan: [https://rinkeby.etherscan.io/address/0x2a23A463C7d676f3C94402eA0B0450E36BF14305](https://rinkeby.etherscan.io/address/0x2a23A463C7d676f3C94402eA0B0450E36BF14305)
+
+
+## HashtagAccessControls.sol
+
+**Ethereum Mainnet**
+
+
+
+* Etherscan: [https://etherscan.io/address/0x0f5eece5f30f5d10301f0c59f579b486a44d55c6](https://etherscan.io/address/0x0f5eece5f30f5d10301f0c59f579b486a44d55c6)
+* Github: [https://github.com/hashtag-protocol/hashtag-protocol/blob/v0.1.0-Beta/hashtag-contracts/contracts/HashtagAccessControls.sol](https://github.com/hashtag-protocol/hashtag-protocol/blob/v0.1.0-Beta/hashtag-contracts/contracts/HashtagAccessControls.sol)
+
+**Ethereum Rinkeby Testnet**
+
+
+
+* Etherscan:
