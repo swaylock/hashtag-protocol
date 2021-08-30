@@ -26,9 +26,7 @@ export const SNAPSHOT = gql(`
         tags(first: 5, orderBy: timestamp, orderDirection: desc) {
             id
             hashtagId
-            hashtagDisplayHashtag
             nftContract
-            nftContractName
             nftId
             nftChainId
             tagger
@@ -79,9 +77,7 @@ export const PAGED_TAGS_BY_HASHTAG = gql`
     ) {
       id
       hashtagId
-      hashtagDisplayHashtag
       nftContract
-      nftContractName
       nftId
       nftChainId
       tagger
@@ -115,14 +111,12 @@ export const TAGS_BY_DIGITAL_ASSET = gql(`
     tagsByDigitalAsset: tags(where:{nftContract: $nftContract, nftId: $nftId}, orderBy: timestamp, orderDirection: desc) {
     id
     nftContract
-    nftContractName
     nftId
     nftChainId
     tagger
     timestamp
     publisher
     hashtagId
-    hashtagDisplayHashtag
   }
 }`);
 
@@ -228,10 +222,8 @@ export const PAGED_TAGS_BY_TAGGER = gql`
     tagsByTagger: tags(first: $first, skip: $skip, where: { tagger: $tagger }) {
       id
       hashtagId
-      hashtagDisplayHashtag
       nftContract
       nftId
-      nftContractName
       nftChainId
       tagger
       timestamp
@@ -245,10 +237,8 @@ query tagsByTagger($tagger: String!) {
   tagsByTagger: tags(where:{ tagger: $tagger}) {
     id
     hashtagId
-    hashtagDisplayHashtag
     nftContract
     nftId
-    nftContractName
     nftChainId
     tagger
     timestamp
@@ -270,10 +260,8 @@ query tagsByPublisher($publisher: String!, $first: Int!, $skip: Int!) {
   tagsByPublisher: tags(first: $first, skip: $skip, where:{ publisher: $publisher}) {
     id
     hashtagId
-    hashtagDisplayHashtag
     nftContract
     nftId
-    nftContractName
     nftChainId
     tagger
     timestamp
@@ -339,9 +327,7 @@ query pagedTags($first: Int!, $skip: Int!) {
         pagedTags: tags(first: $first, skip: $skip, orderBy: timestamp, orderDirection: desc) {
             id
             hashtagId
-            hashtagDisplayHashtag
             nftContract
-            nftContractName
             nftId
             nftChainId
             tagger
