@@ -26,14 +26,14 @@ type Tag @entity {
   tagger: Bytes!
   timestamp: BigInt!
   publisher: Bytes!
-  # nftContractName: String!
-  # hashtagDisplayHashtag: String!
-  # hashtag: String!
-  # hashtagWithoutHash: String!
-  # nftTokenUri: String
-  # nftName: String
-  # nftDescription: String
-  # nftImage: String
+  hashtagDisplayHashtag: String!
+  hashtag: String!
+  hashtagWithoutHash: String!
+  nftContractName: String
+  nftTokenUri: String
+  nftName: String
+  nftDescription: String
+  nftImage: String
 }
 
 type Publisher @entity {

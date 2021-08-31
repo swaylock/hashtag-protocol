@@ -26,9 +26,13 @@ export const SNAPSHOT = gql(`
         tags(first: 5, orderBy: timestamp, orderDirection: desc) {
             id
             hashtagId
+            hashtagDisplayHashtag
             nftContract
+            nftContractName
+            nftImage
+            nftName
+            nftDescription
             nftId
-            nftChainId
             tagger
             timestamp
             publisher
@@ -77,9 +81,13 @@ export const PAGED_TAGS_BY_HASHTAG = gql`
     ) {
       id
       hashtagId
+      hashtagDisplayHashtag
       nftContract
+      nftContractName
+      nftImage
+      nftName
+      nftDescription
       nftId
-      nftChainId
       tagger
       timestamp
       publisher
@@ -111,12 +119,17 @@ export const TAGS_BY_DIGITAL_ASSET = gql(`
     tagsByDigitalAsset: tags(where:{nftContract: $nftContract, nftId: $nftId}, orderBy: timestamp, orderDirection: desc) {
     id
     nftContract
+    nftContractName
+    nftImage
     nftId
-    nftChainId
+    nftName
+    nftTokenUri
+    nftDescription
     tagger
     timestamp
     publisher
     hashtagId
+    hashtagDisplayHashtag
   }
 }`);
 
@@ -222,9 +235,13 @@ export const PAGED_TAGS_BY_TAGGER = gql`
     tagsByTagger: tags(first: $first, skip: $skip, where: { tagger: $tagger }) {
       id
       hashtagId
+      hashtagDisplayHashtag
       nftContract
       nftId
-      nftChainId
+      nftContractName
+      nftTokenUri
+      nftName
+      nftImage
       tagger
       timestamp
       publisher
@@ -237,9 +254,13 @@ query tagsByTagger($tagger: String!) {
   tagsByTagger: tags(where:{ tagger: $tagger}) {
     id
     hashtagId
+    hashtagDisplayHashtag
     nftContract
     nftId
-    nftChainId
+    nftContractName
+    nftTokenUri
+    nftName
+    nftImage
     tagger
     timestamp
     publisher
@@ -260,9 +281,13 @@ query tagsByPublisher($publisher: String!, $first: Int!, $skip: Int!) {
   tagsByPublisher: tags(first: $first, skip: $skip, where:{ publisher: $publisher}) {
     id
     hashtagId
+    hashtagDisplayHashtag
     nftContract
     nftId
-    nftChainId
+    nftContractName
+    nftTokenUri
+    nftName
+    nftImage
     tagger
     timestamp
     publisher
@@ -327,9 +352,13 @@ query pagedTags($first: Int!, $skip: Int!) {
         pagedTags: tags(first: $first, skip: $skip, orderBy: timestamp, orderDirection: desc) {
             id
             hashtagId
+            hashtagDisplayHashtag
             nftContract
+            nftContractName
+            nftImage
+            nftName
+            nftDescription
             nftId
-            nftChainId
             tagger
             timestamp
             publisher
