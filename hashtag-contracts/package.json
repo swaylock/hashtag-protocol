@@ -6,10 +6,11 @@
     "test": "test"
   },
   "scripts": {
-    "node-hardhat": "hardhat node --no-deploy",
-    "node-ganache": "$PWD/scripts/node-ganache.sh",
     "clean": "hardhat clean",
     "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node:hardhat": "hardhat node --no-deploy",
+    "node:ganache": "$PWD/scripts/node-ganache.sh",
     "test:hardhat": "hardhat test --network localhost",
     "test:ganache": "hardhat test --network ganache",
     "deploy:hardhat": "hardhat deploy --network localhost --tags dev,Ethernal",

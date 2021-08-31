@@ -32,6 +32,11 @@ async function setup(type) {
     contractERC721Mock: await ethers.getContract("ERC721BurnableMock"),
   };
 
+  // Set permitted target NFT chain id.
+  await contracts.contractERC721Registry
+    .connect(accounts.accountHashtagAdmin)
+    .setPermittedNftChainId(constants.One, true);
+
   // Mint a HASHTAG token for tagging.
   await contracts.contractHashtagProtocol
     .connect(accounts.accountTagger)
@@ -157,15 +162,15 @@ describe("ERC721HashtagRegistry Tests", function () {
           constants.Two,
           nftId,
           constants.One,
-          targetNftChainId,
           utils.parseEther("0.001"),
+          targetNftChainId,
         );
 
       const {
         _hashtagId,
         _nftContract,
         _nftId,
-        _accountTagger,
+        _tagger,
         _tagstamp,
         _publisher,
         _nftChainId,
@@ -176,7 +181,7 @@ describe("ERC721HashtagRegistry Tests", function () {
       expect(_hashtagId).to.be.equal(constants.Two);
       expect(_nftContract).to.be.equal(contractERC721Mock.address);
       expect(_nftId).to.be.equal(nftId);
-      expect(_accountTagger).to.be.equal(accountTagger.address);
+      expect(_tagger).to.be.equal(accountTagger.address);
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
       expect(_publisher).to.be.equal(accountHashtagPublisher.address);
@@ -238,7 +243,7 @@ describe("ERC721HashtagRegistry Tests", function () {
         _hashtagId,
         _nftContract,
         _nftId,
-        _accountTagger,
+        _tagger,
         _tagstamp,
         _publisher,
         _nftChainId,
@@ -247,7 +252,7 @@ describe("ERC721HashtagRegistry Tests", function () {
       expect(_hashtagId).to.be.equal(hashtagId);
       expect(_nftContract).to.be.equal(contractERC721Mock.address);
       expect(_nftId).to.be.equal(nftId);
-      expect(_accountTagger).to.be.equal(accountTagger.address);
+      expect(_tagger).to.be.equal(accountTagger.address);
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
       expect(_publisher).to.be.equal(accountHashtagPublisher.address);
@@ -305,7 +310,7 @@ describe("ERC721HashtagRegistry Tests", function () {
       //  _hashtagId,
       //  _nftContract,
       //  _nftId,
-      //  _accountTagger,
+      //  _tagger,
       //  _tagstamp,
       //  _publisher,
       //  _nftChainId,
@@ -356,7 +361,7 @@ describe("ERC721HashtagRegistry Tests", function () {
         _hashtagId,
         _nftContract,
         _nftId,
-        _accountTagger,
+        _tagger,
         _tagstamp,
         _publisher,
         _nftChainId,
@@ -365,7 +370,7 @@ describe("ERC721HashtagRegistry Tests", function () {
       expect(_hashtagId).to.be.equal(hashtagId);
       expect(_nftContract).to.be.equal(contractERC721Mock.address);
       expect(_nftId).to.be.equal(nftOneId);
-      expect(_accountTagger).to.be.equal(accountTagger.address);
+      expect(_tagger).to.be.equal(accountTagger.address);
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
       expect(_publisher).to.be.equal(accountHashtagPublisher.address);
@@ -387,6 +392,7 @@ describe("ERC721HashtagRegistry Tests", function () {
         contractERC721Registry,
         hashtagId,
         contractERC721Mock,
+        contractHashtagProtocol,
         accountHashtagPlatform,
         accountHashtagPublisher,
         accountTagger,
@@ -420,8 +426,8 @@ describe("ERC721HashtagRegistry Tests", function () {
       ); // 20%
       expect(await contractERC721Registry.accrued(accountTagger.address)).to.be.equal(utils.parseEther("0.0005")); // 50%
 
-      await this.hashtagProtocol
-        .connect(platform)
+      await contractHashtagProtocol
+        .connect(accountHashtagPlatform)
         .transferFrom(accountHashtagPlatform.address, accountBuyer.address, hashtagId);
 
       const nftTwoId = constants.Two;
@@ -482,7 +488,7 @@ describe("ERC721HashtagRegistry Tests", function () {
 
       await expect(
         contractERC721Registry
-          .connect(publisher)
+          .connect(accountHashtagPublisher)
           .tag(
             hashtagId,
             contractHashtagProtocol.address,
