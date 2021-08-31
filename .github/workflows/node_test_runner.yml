@@ -21,6 +21,6 @@ jobs:
       run: |
         cd hashtag-contracts/
         yarn install --frozen-lockfile
-        yarn test
+        yarn test:hardhat
       env:
         CI: true
