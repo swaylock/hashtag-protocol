@@ -21,7 +21,7 @@ export default {
         let response = await axios.post(
           // See /hashtag-website .env.example
           process.env.VUE_APP_NEWSLETTER_SUBSCRIBE,
-          payload
+          payload,
         );
         return response.data;
       } catch (error) {
