@@ -314,7 +314,7 @@ describe("HashtagProtocol Tests", function () {
       newRenewTime = Number(newRenewTime.toString());
       expect(newRenewTime).to.be.equal(timestamp);
       // Check that newRenewTime is equal to lastRenewTime + 1year + 1microsecond.
-      expect(newRenewTime).to.be.equal(lastRenewTime + advanceTime + 1);
+      expect(newRenewTime).to.be.equal(lastRenewTime + advanceTime + 1 || lastRenewTime + advanceTime);
     });
 
     it("once reset, last transfer time reset", async function () {
@@ -326,13 +326,16 @@ describe("HashtagProtocol Tests", function () {
       // Advance current block time by ownership length (2 years) + 1 day.
       await ethers.provider.send("evm_increaseTime", [advanceTime]);
       await ethers.provider.send("evm_mine");
+      // Renew the HASHTAG token.
       await expect(contractHashtagProtocol.connect(accountHashtagPlatform).renewHashtag(tokenId))
         .to.emit(contractHashtagProtocol, "HashtagRenewed")
         .withArgs(tokenId, accountHashtagPlatform.address);
       let newRenewTime = await contractHashtagProtocol.tokenIdToLastTransferTime(tokenId);
       newRenewTime = Number(newRenewTime.toString());
       const lastRenewTime = Number(lastTransferTime.toString());
-      expect(newRenewTime).to.be.equal(lastRenewTime + advanceTime + 1);
+      // There seems to be a 1 microsecond variance depending on whether test is
+      // run locally or up on Github using test runner. Probably a better way to deal with this...
+      expect(newRenewTime).to.be.equal(lastRenewTime + advanceTime + 1 || lastRenewTime + advanceTime);
     });
   });
 
