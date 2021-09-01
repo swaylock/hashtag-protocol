@@ -124,22 +124,20 @@ const actions = {
         const signer = provider.getSigner();
         const chain = await provider.getNetwork();
 
-        const hashtagProtocolContractAddress =
-          utils.getContractAddressFromTruffleConf(
-            HashtagProtocolTruffleConf,
-            chain.chainId
-          );
+        const hashtagProtocolContractAddress = utils.getContractAddressFromTruffleConf(
+          HashtagProtocolTruffleConf,
+          chain.chainId
+        );
         const hashtagProtocolContract = new ethers.Contract(
           hashtagProtocolContractAddress,
           HashtagProtocolTruffleConf.abi,
           signer
         );
 
-        const erc721HashtagRegistryAddress =
-          utils.getContractAddressFromTruffleConf(
-            ERC721HashtagRegistry,
-            chain.chainId
-          );
+        const erc721HashtagRegistryAddress = utils.getContractAddressFromTruffleConf(
+          ERC721HashtagRegistry,
+          chain.chainId
+        );
 
         const erc721HashtagRegistryContract = new ethers.Contract(
           erc721HashtagRegistryAddress,

@@ -20,19 +20,20 @@ type Hashtag @entity {
 type Tag @entity {
   id: ID!
   hashtagId: String!
+  nftContract: Bytes!
+  nftId: String!
+  nftChainId: BigInt!
+  tagger: Bytes!
+  timestamp: BigInt!
+  publisher: Bytes!
   hashtagDisplayHashtag: String!
   hashtag: String!
   hashtagWithoutHash: String!
-  nftContract: Bytes!
-  nftId: String!
-  nftContractName: String!
+  nftContractName: String
   nftTokenUri: String
   nftName: String
   nftDescription: String
   nftImage: String
-  tagger: Bytes!
-  timestamp: BigInt!
-  publisher: Bytes!
 }
 
 type Publisher @entity {
