@@ -115,74 +115,7 @@
                       class="mdi mdi-help-circle-outline mdi-24px is-pulled-right has-text-grey"
                     />
                     <h2 class="title is-5">Recently tagged content</h2>
-                    <template>
-                      <b-table :data="tags || []" focusable>
-                        <template slot="footer" v-if="!isCustom">
-                          <div class="has-text-right">
-                            <nuxt-link :to="{ name: 'nfts' }">
-                              Browse tagged assets
-                            </nuxt-link>
-                            &nbsp;
-                            <b-icon
-                              icon="arrow-right"
-                              type="is-dark"
-                              size="is-small"
-                            >
-                            </b-icon>
-                          </div>
-                        </template>
-                        <b-table-column field="nftId" centered v-slot="props">
-                          <nuxt-link
-                            :to="{
-                              name: 'type-contract-id',
-                              params: {
-                                type: 'nft',
-                                contract: props.row.nftContract,
-                                id: props.row.nftId,
-                              },
-                            }"
-                          >
-                            <img
-                              :src="props.row.nftImage"
-                              :alt="props.row.nftName"
-                              class="nft-thumb"
-                            />
-                          </nuxt-link>
-                        </b-table-column>
-                        <b-table-column
-                          field="nftName"
-                          label="Asset Name"
-                          v-slot="props"
-                        >
-                          <nft-link
-                            type="nft"
-                            :name="props.row.nftName"
-                            :contract="props.row.nftContract"
-                            :id="props.row.nftId"
-                          ></nft-link>
-                        </b-table-column>
-                        <b-table-column
-                          field="projectName"
-                          label="Project"
-                          :visible="$screen.widescreen"
-                          v-slot="props"
-                        >
-                          {{ props.row.nftContractName }}
-                        </b-table-column>
-                        <b-table-column
-                          field="hashtagName"
-                          label="Hashtag"
-                          v-slot="props"
-                        >
-                          <hashtag
-                            :value="props.row.hashtagDisplayHashtag"
-                          ></hashtag>
-                        </b-table-column>
-                        <template #empty>
-                          <div class="has-text-centered">No records</div>
-                        </template>
-                      </b-table>
-                    </template>
+                    <RecentlyTagged />
                   </article>
                 </div>
               </div>
@@ -473,7 +406,7 @@ import Footer from "hashtag-components/src/components/Footer.vue";
 import Hashtag from "~/components/Hashtag";
 import Header from "~/components/Header";
 import MarkdownModal from "~/components/MarkdownModal";
-import NftLink from "~/components/NftLink";
+import RecentlyTagged from "~/components/RecentlyTagged";
 import PseudoOwners from "~/components/PseudoOwners";
 import { SNAPSHOT, FIRST_THOUSAND_HASHTAGS } from "~/apollo/queries";
 import TimestampFrom from "~/components/TimestampFrom";
@@ -488,11 +421,11 @@ export default {
     Footer,
     Hashtag,
     Header,
-    NftLink,
     PseudoOwners,
     TimestampFrom,
     MintingWidget,
     TaggingWidget,
+    RecentlyTagged,
   },
   data() {
     return {

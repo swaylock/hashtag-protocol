@@ -31,7 +31,7 @@
   </section>
 </template>
 <script>
-import { NFTS_ASSETS_NAME_CONTAINS } from "~/apollo/queries";
+import axios from "axios";
 import debounce from "lodash/debounce";
 import TxnModal from "~/components/TxnModal";
 //import TaggingModal from "~/components/TaggingModal";
@@ -51,16 +51,44 @@ export default {
         return;
       }
 
-      const { data } = await this.$apollo.query({
-        query: NFTS_ASSETS_NAME_CONTAINS,
-        client: "nftsClient",
-        variables: {
-          first: 100,
-          name: name,
-        },
-      });
-
-      this.nameContains = data.nameContains;
+      const headers = {
+        Authorization: "32097857-1c85-4b19-b4d6-f79c86c7d2e9",
+      };
+      const { data } = await axios
+        .get("https://api.nftport.xyz/text_search", {
+          params: {
+            chain: "all-chains",
+            text: name,
+            page_number: 1,
+            page_size: 50,
+          },
+          headers: headers,
+        })
+        .then((response) => {
+          if (response.data.response == "OK") {
+            console.log(response);
+            const jsonArr = response.data.search_results;
+            const saveInfo = [];
+            for (var i = 0; i < jsonArr.length; i++) {
+              const arrInfo = {};
+              arrInfo["contractAddress"] = jsonArr[i].contract_id;
+              arrInfo["contractName"] = jsonArr[i].name;
+              arrInfo["contractSymbol"] = "test";
+              arrInfo["id"] = jsonArr[i].token_id;
+              arrInfo["metadataImageURI"] = jsonArr[i].image_url;
+              arrInfo["metadataName"] = jsonArr[i].name;
+              arrInfo["tokenId"] = jsonArr[i].token_id;
+              arrInfo["chain"] = jsonArr[i].chain;
+              saveInfo.push(arrInfo);
+            }
+            console.log("save info", saveInfo);
+            this.nameContains = saveInfo;
+            return saveInfo;
+          } else {
+            return [];
+          }
+        });
+      console.log(data);
     }, 300),
     async onNftSelected(nft) {
       await this.$store.dispatch("protocolAction/updateTargetNft", nft);
