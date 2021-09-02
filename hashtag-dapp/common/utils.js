@@ -15,8 +15,16 @@ function getMetadataApiUrl() {
     // "hashtag-api" is the named environment for the api up on Platform.sh
     // This will return the baseurl for hashtag api specific to the PR or
     // Git branch the environment is built from.
-    console.log("getRoute", config.getRoute("hashtag-api"));
-    return config.getRoute("hashtag-api").replace(/\/$/, "");
+    try {
+      let route = config.getRoute("hashtag-api");
+      console.log(route);
+      route = route.url.replace(/\/$/, "");
+      console.log(route);
+      return route;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 
   // If we aren't on Platform, return our locally set metadata api
