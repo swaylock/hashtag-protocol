@@ -64,7 +64,7 @@ export default {
     app: "https://app.hashtag-protocol.org",
     docs: "https://docs.hashtag-protocol.org",
     substack: "https://hashtagprotocol.substack.com",
-    metadataApiUrl: utils.getMetadataApiUrl(),
+    //metadataApiUrl: utils.getMetadataApiUrl(),
     etherscanBaseUrl: onBoardChainMap[process.env.VUE_APP_ONBOARD_NETWORK_ID].url,
     hashtagProtocolContractAddress: utils.getContractAddressFromTruffleConf(
       HashtagProtocolTruffleConf,

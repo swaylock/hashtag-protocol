@@ -240,6 +240,7 @@ import SocialHead from "~/components/SocialHead";
 import { PAGED_TAGS_BY_HASHTAG, HASHTAGS_BY_NAME, ALL_TAGS_BY_HASHTAG } from "~/apollo/queries";
 import TimestampFrom from "~/components/TimestampFrom";
 import TimestampFormatted from "~/components/TimestampFormatted";
+import utils from "~/common/utils";
 
 const PAGE_SIZE = 10;
 
@@ -332,7 +333,13 @@ export default {
   },
   computed: {
     image() {
-      return this.$config.metadataApiUrl + "/images/" + this.hashtagsByName[0].id + ".png";
+      // Fetch the Metadata Api URL at runtime.
+      if (utils.getMetadataApiUrl()) {
+        return utils.getMetadataApiUrl() + "/images/" + this.hashtagsByName[0].id + ".png";
+      }
+
+      // If no metadata api is available, return placeholder image.
+      return require("~/assets/pending.png");
     },
     randomSharingMessage() {
       const messages = [
