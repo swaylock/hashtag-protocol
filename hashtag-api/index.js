@@ -141,10 +141,7 @@ async function buildImage(hashtag, rebuild) {
     // to pass to the nodeHtmlToImage processor.
     const compile = require("es6-template-strings/compile"),
       resolveToString = require("es6-template-strings/resolve-to-string");
-    const data = fs.readFileSync(
-      "./hashtag-api/assets/templates/series2021a.txt",
-      "utf8"
-    );
+    const data = fs.readFileSync("./hashtag-api/assets/templates/series2021a.txt", "utf8");
     const compiled = compile(data);
 
     const html = resolveToString(compiled, hashtag);
@@ -154,10 +151,7 @@ async function buildImage(hashtag, rebuild) {
     let browser;
     // Connect to chrome-headless using pre-formatted puppeteer credentials
     if (config.isValidPlatform()) {
-      const formattedURL = config.formattedCredentials(
-        "chromeheadlessbrowser",
-        "puppeteer"
-      );
+      const formattedURL = config.formattedCredentials("chromeheadlessbrowser", "puppeteer");
       browser = await puppeteer.connect({ browserURL: formattedURL });
     } else {
       browser = await puppeteer.launch({ headless: true });
