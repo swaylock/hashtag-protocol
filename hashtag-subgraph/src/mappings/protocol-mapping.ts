@@ -1,12 +1,15 @@
-import { BigInt } from "@graphprotocol/graph-ts"
+import { BigInt } from "@graphprotocol/graph-ts";
+import { MintHashtag, HashtagProtocol } from "../generated/HashtagProtocol/HashtagProtocol";
 
+import { Hashtag } from "../generated/schema";
 import {
-  MintHashtag,
-  HashtagProtocol
-} from "../generated/HashtagProtocol/HashtagProtocol";
-
-import { Hashtag, Creator } from "../generated/schema";
-import {toLowerCase, safeLoadOwner, safeLoadPlatform, safeLoadPublisher, ONE, ZERO, safeLoadCreator} from "./helpers";
+  toLowerCase,
+  safeLoadOwner,
+  safeLoadPlatform,
+  safeLoadPublisher,
+  ONE,
+  safeLoadCreator,
+} from "../utils/helpers";
 
 /*
  * Track the minting of a hashtag
@@ -31,11 +34,11 @@ export function handleMintHashtag(event: MintHashtag): void {
   hashtagEntity.name = hashtag.value2;
   hashtagEntity.displayHashtag = event.params.displayHashtag;
 
-  let displayHashtag: string = event.params.displayHashtag
-  let lowerHashtag: string = toLowerCase(displayHashtag)
+  let displayHashtag: string = event.params.displayHashtag;
+  let lowerHashtag: string = toLowerCase(displayHashtag);
 
-  hashtagEntity.hashtag = lowerHashtag
-  hashtagEntity.hashtagWithoutHash = lowerHashtag.substring(1, lowerHashtag.length)
+  hashtagEntity.hashtag = lowerHashtag;
+  hashtagEntity.hashtagWithoutHash = lowerHashtag.substring(1, lowerHashtag.length);
 
   hashtagEntity.owner = hashtagContract.platform();
   hashtagEntity.creator = hashtag.value1;

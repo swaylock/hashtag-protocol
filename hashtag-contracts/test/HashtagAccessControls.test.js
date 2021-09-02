@@ -1,33 +1,46 @@
-const web3 = require('web3');
-const {expect} = require('chai');
+const { ethers, deployments } = require("hardhat");
+const { expect } = require("chai");
 
-describe('HashtagAccessControl Tests', function () {
+// we create a setup function that can be called by every test and setup variable for easy to read tests
+async function setup() {
+  // it first ensure the deployment is executed and reset (use of evm_snaphost for fast test)
+  await deployments.fixture(["HashtagAccessControls"]);
 
-  let platform, platformAddress, publisher, publisherAddress;
+  // we get an instantiated contract in teh form of a ethers.js Contract instance:
+  const contracts = {
+    contractAccessControls: await ethers.getContract("HashtagAccessControls"),
+  };
 
-  beforeEach(async function () {
-    const accounts = await ethers.getSigners();
+  // See namedAccounts section of hardhat.config.js
+  const namedAccounts = await ethers.getNamedSigners();
+  const accounts = {
+    accountHashtagAdmin: namedAccounts["accountHashtagAdmin"],
+    accountHashtagPublisher: namedAccounts["accountHashtagPublisher"],
+  };
 
-    platform = accounts[0];
-    platformAddress = await accounts[0].getAddress();
-    publisher = accounts[1];
-    publisherAddress = await accounts[1].getAddress();
+  return {
+    ...accounts,
+    ...contracts,
+  };
+}
 
-    const HashtagAccessControls = await ethers.getContractFactory('HashtagAccessControls');
-
-    this.accessControls = await HashtagAccessControls.deploy();
-  });
-
-  describe('Validate setup', async function () {
-    it('should admin as contract creator', async function () {
-      expect(await this.accessControls.isAdmin(platformAddress)).to.be.equal(true);
+describe("HashtagAccessControl Tests", function () {
+  describe("Validate setup", async function () {
+    it("named account accountHashtagAdmin should be admin", async function () {
+      // before the test, we call the fixture function.
+      // while mocha have hooks to perform these automatically, they force you
+      // to declare the variable in greater scope which can introduce subtle errors
+      // as such we prefer to have the setup called right at the beginning of the test.
+      const { contractAccessControls, accountHashtagAdmin } = await setup();
+      expect(await contractAccessControls.isAdmin(accountHashtagAdmin.address)).to.be.equal(true);
     });
   });
 
-  describe('Publisher', async function () {
-    it('should admin as contract creator', async function () {
-      await this.accessControls.grantRole(web3.utils.sha3('PUBLISHER'), publisherAddress);
-      expect(await this.accessControls.isPublisher(publisherAddress)).to.be.equal(true);
+  describe("Publisher", async function () {
+    it("should admin as contract creator", async function () {
+      const { contractAccessControls, accountHashtagPublisher } = await setup();
+      await contractAccessControls.grantRole(ethers.utils.id("PUBLISHER"), accountHashtagPublisher.address);
+      expect(await contractAccessControls.isPublisher(accountHashtagPublisher.address)).to.be.equal(true);
     });
   });
 });
