@@ -4,11 +4,19 @@
     "url": "https://etherscan.io"
   },
   "4": {
-    "Name": "Rinkby",
+    "Name": "Rinkeby",
     "url": "https://rinkeby.etherscan.io"
   },
   "5777": {
-    "Name": "Localdev",
+    "Name": "Ganache Localdev",
+    "url": "https://rinkeby.etherscan.io"
+  },
+  "80001": {
+    "Name": "Polygon Mumbai",
+    "url": "https://mumbai.polygonscan.com/"
+  },
+  "31337": {
+    "Name": "Hardhat Localdev",
     "url": "https://rinkeby.etherscan.io"
   }
 }

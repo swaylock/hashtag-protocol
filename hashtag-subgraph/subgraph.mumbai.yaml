@@ -1,0 +1,66 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: HashtagProtocol
+    network: mumbai
+    source:
+      address: "0x112acF9C8BAB5e0830d756C96bD18730C47e6A09"
+      abi: HashtagProtocol
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - MintHashtag
+      abis:
+        - name: HashtagProtocol
+          file: ../hashtag-contracts/deployments/mumbai/HashtagProtocol.json
+      eventHandlers:
+        - event: MintHashtag(indexed uint256,string,indexed address,address)
+          handler: handleMintHashtag
+      file: ./src/mappings/protocol-mapping.ts
+  - kind: ethereum/contract
+    name: ERC721HashtagRegistry
+    network: mumbai
+    source:
+      address: "0x487F03DD5ac07c9F475A723AA06d5ecf3Cf2d1d7"
+      abi: ERC721HashtagRegistry
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - HashtagRegistered
+      abis:
+        - name: ERC721HashtagRegistry
+          file: ../hashtag-contracts/deployments/mumbai/ERC721HashtagRegistry.json
+        - name: HashtagProtocol
+          file: ../hashtag-contracts/deployments/mumbai/HashtagProtocol.json
+      eventHandlers:
+        - event: HashtagRegistered(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleHashtagRegistered
+      file: ./src/mappings/erc721-hashtag-registry.ts
+  - kind: ethereum/contract
+    name: HashtagAccessControls
+    network: mumbai
+    source:
+      address: "0x524c297E92129Ed2392Cd00F0d88430cCC9b542B"
+      abi: HashtagAccessControls
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - RoleGranted
+      abis:
+        - name: HashtagAccessControls
+          file: ../hashtag-contracts/deployments/mumbai/HashtagAccessControls.json
+      eventHandlers:
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+      file: ./src/mappings/access-control-mapping.ts

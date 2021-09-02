@@ -5,9 +5,7 @@
       <div class="level-left">
         <div class="level-item">
           <p class="is-size-6">
-            <small>
-              © {{ this.year }} Hashtag Protocol, Inc. All Rights Reserved
-            </small>
+            <small> © {{ this.year }} Hashtag Protocol, Inc. All Rights Reserved </small>
           </p>
         </div>
       </div>
@@ -15,20 +13,13 @@
       <div class="level-right">
         <div class="level-item">
           <div class="level is-mobile">
-            <a
-              :href="githubUrl"
-              target="_blank"
-              title="Github"
-              class="navbar-item"
-            >
+            <a :href="githubUrl" target="_blank" title="Github" class="navbar-item">
               <span class="icon"><i class="mdi mdi-github mdi-24px"></i></span>
             </a>
-            <a
-              :href="discordUrl"
-              target="_blank"
-              title="Discord"
-              class="is-dark navbar-item"
-            >
+            <a href="https://twitter.com/0xHashtag" target="_blank" title="@0xHashtag" class="is-dark navbar-item">
+              <span class="icon"><i class="mdi mdi-twitter mdi-24px"></i></span>
+            </a>
+            <a :href="discordUrl" target="_blank" title="Discord" class="is-dark navbar-item">
               <span class="icon"><i class="mdi mdi-discord mdi-24px"></i></span>
             </a>
             <a
@@ -39,12 +30,7 @@
             >
               <span class="icon"><i class="mdi mdi-email mdi-24px"></i></span>
             </a>
-            <a
-              href="https://hashtagprotocol.substack.com"
-              title="Substack"
-              class="navbar-item"
-              target="_blank"
-            >
+            <a href="https://hashtagprotocol.substack.com" title="Substack" class="navbar-item" target="_blank">
               <span class="icon substack"><i></i></span>
             </a>
           </div>

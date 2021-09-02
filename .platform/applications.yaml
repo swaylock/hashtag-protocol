@@ -103,8 +103,7 @@
       socket_family: tcp
       protocol: http
     commands:
-      start:
-        yarn start
+      start: yarn start
   disk: 512
   dependencies:
     nodejs:

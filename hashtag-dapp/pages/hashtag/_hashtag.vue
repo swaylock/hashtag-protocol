@@ -2,25 +2,68 @@
   <div class="body">
     <SocialHead
       :title="hashtagsByName[0].displayHashtag + ' | Hashtag Protocol'"
-      :description="hashtagsByName[0].displayHashtag + ' | Hashtag Protocol'"
+      :description="randomSharingMessage"
       :image="image"
     />
     <Header />
     <section class="main" v-if="hashtagsByName && hashtagsByName[0]">
       <div class="container">
-        <h1 class="title is-1">{{ hashtagsByName[0].displayHashtag }}</h1>
-        <h2 class="subtitle">
-          HASHTAG token
-          <span class="is-pulled-right is-size-6 has-text-weight-bold">
-            <nuxt-link :to="{ name: 'hashtags' }"
-              >Browse HASHTAG tokens</nuxt-link
-            >&nbsp;
-            <b-icon icon="arrow-up" type="is-dark" size="is-small"></b-icon>
-          </span>
-        </h2>
+        <div class="columns">
+          <div class="column is-6">
+            <nuxt-link :to="{ name: 'hashtags' }">
+              Browse Hashtag tokens
+            </nuxt-link>
+          </div>
+          <div class="column is-6 has-text-right">
+            <b-dropdown
+              aria-role="list"
+              class="has-text-left"
+              position="is-bottom-left"
+            >
+              <template #trigger="{ active }">
+                <b-button type="is-primary" inverted>
+                  <b-icon icon="share-variant-outline" size="is-small" />
+                  &nbsp;Share
+                </b-button>
+              </template>
+
+              <b-dropdown-item aria-role="listitem" has-link>
+                <a
+                  :href="twitterSharingUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <b-icon icon="twitter" size="is-small" />
+                  &nbsp;Tweet
+                </a>
+              </b-dropdown-item>
+              <b-dropdown-item aria-role="listitem" has-link>
+                <a
+                  :href="facebookSharingUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <b-icon icon="facebook" size="is-small" />
+                  &nbsp;Facebook
+                </a>
+              </b-dropdown-item>
+              <b-dropdown-item aria-role="listitem" @click="copyToClipboard">
+                <b-icon icon="link-variant" size="is-small" />
+                &nbsp;Copy link
+              </b-dropdown-item>
+            </b-dropdown>
+          </div>
+        </div>
         <div class="tile is-ancestor">
           <div class="tile is-horizontal">
-            <div class="tile is-parent is-6 is-12-mobile">
+            <div class="tile is-parent is-4 is-12-mobile">
+              <div class="tile is-child box">
+                <h1>
+                  <img :src="image" :alt="hashtagsByName[0].displayHashtag" />
+                </h1>
+              </div>
+            </div>
+            <div class="tile is-parent is-4 is-12-mobile">
               <div class="tile is-child box">
                 <h2 class="title is-4">Token overview</h2>
                 <div class="b-table" v-if="hashtagsByName">
@@ -82,7 +125,7 @@
                 </div>
               </div>
             </div>
-            <div class="tile is-parent is-6 is-12-mobile">
+            <div class="tile is-parent is-4 is-12-mobile">
               <div class="tile is-child box">
                 <h2 class="title is-4">Market summary</h2>
                 <div class="b-table">
@@ -285,12 +328,12 @@ export default {
   },
   head() {
     return {
-      title: "Hashtag Protocol",
+      title: `${this.hashtagsByName[0].displayHashtag} | Hashtag Protocol`,
       meta: [
         {
           hid: "description",
           name: "description",
-          content: "",
+          content: this.randomSharingMessage,
         },
       ],
     };
@@ -334,10 +377,40 @@ export default {
     tabSelected(id) {
       this.skip = id * PAGE_SIZE;
     },
+    copyToClipboard() {
+      const cb = navigator.clipboard;
+      const url = this.$config.app + this.$route.path;
+      cb.writeText(url);
+    },
   },
   computed: {
     image() {
-      return process.env.imageApi + this.hashtagsByName[0].id + ".png";
+      return this.$config.imageApi + this.hashtagsByName[0].id + ".png";
+    },
+    randomSharingMessage() {
+      const messages = [
+        `${this.hashtagsByName[0].displayHashtag} stored as a non-fungible token (NFT) on the blockchain.`,
+        `Not your typical hashtag. This is ${this.hashtagsByName[0].displayHashtag} as an NFT.`,
+        `Hashtag Protocol enables social content tagging for the decentralized internet.`,
+      ];
+      const randomNumber = Math.floor(Math.random() * 3);
+      return messages[randomNumber];
+    },
+    twitterSharingUrl() {
+      const encodedString = encodeURIComponent(
+        `Check out the hashtag ${
+          this.hashtagsByName[0].displayHashtag
+        } on @HashtagProtoHQ\n\n${this.$config.app + this.$route.path}`
+      );
+      return "https://twitter.com/intent/tweet?text=" + encodedString;
+    },
+    facebookSharingUrl() {
+      const encodedString = encodeURIComponent(
+        `Check out the hashtag ${
+          this.hashtagsByName[0].displayHashtag
+        } on Hashtag Protocol\n\n${this.$config.app + this.$route.path}`
+      );
+      return "https://www.facebook.com/share.php?u=" + encodedString;
     },
   },
 };

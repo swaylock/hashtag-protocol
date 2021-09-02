@@ -3,8 +3,8 @@ import { ethers } from "ethers";
 import Onboard from "bnc-onboard";
 import BlocknativeSdk from "bnc-sdk";
 import { ToastProgrammatic as Toast } from "buefy";
-import HashtagProtocolTruffleConf from "~/truffleconf/HashtagProtocol";
-import ERC721HashtagRegistry from "~/truffleconf/ERC721HashtagRegistry";
+import HashtagProtocolTruffleConf from "~/abis/HashtagProtocol";
+import ERC721HashtagRegistry from "~/abis/ERC721HashtagRegistry";
 import utils from "~/common/utils";
 import eventMap from "~/data/blocknativeEventMap";
 import onBoardChainMap from "~/data/onBoardChainMap";
@@ -12,8 +12,6 @@ import onBoardChainMap from "~/data/onBoardChainMap";
 let provider;
 let onboard = {};
 let blocknative = {};
-
-const localstorageWalletKey = process.env.localstorageWalletKey;
 
 /**
  * The Vuex 'state' object.
@@ -67,8 +65,8 @@ const actions = {
   async initOnboard({ dispatch, commit }) {
     // Initialize onboard.
     onboard = Onboard({
-      dappId: process.env.blocknativeApiKey,
-      networkId: process.env.onboardNetworkID,
+      dappId: this.$config.blocknativeApiKey,
+      networkId: this.$config.onboardNetworkID,
       subscriptions: {
         address: (address) => {
           commit("setWalletAddress", address);
@@ -91,8 +89,8 @@ const actions = {
 
     // Initialize blocknative SDK for mempool notifications.
     blocknative = new BlocknativeSdk({
-      dappId: process.env.blocknativeApiKey,
-      networkId: process.env.onboardNetworkID,
+      dappId: this.$config.blocknativeApiKey,
+      networkId: this.$config.onboardNetworkID,
     });
 
     dispatch("reconnectWallet");
@@ -102,26 +100,20 @@ const actions = {
     const signer = provider.getSigner();
     const chain = state.networkId;
 
-    const hashtagProtocolContractAddress = utils.getContractAddressFromTruffleConf(
-      HashtagProtocolTruffleConf,
-      chain
-    );
+    const hashtagProtocolContractAddress = utils.getContractAddressFromTruffleConf(HashtagProtocolTruffleConf, chain);
 
     const hashtagProtocolContract = new ethers.Contract(
       hashtagProtocolContractAddress,
       HashtagProtocolTruffleConf.abi,
-      signer
+      signer,
     );
 
-    const erc721HashtagRegistryAddress = utils.getContractAddressFromTruffleConf(
-      ERC721HashtagRegistry,
-      chain
-    );
+    const erc721HashtagRegistryAddress = utils.getContractAddressFromTruffleConf(ERC721HashtagRegistry, chain);
 
     const erc721HashtagRegistryContract = new ethers.Contract(
       erc721HashtagRegistryAddress,
       ERC721HashtagRegistry.abi,
-      signer
+      signer,
     );
 
     commit("setWeb3Objects", {
@@ -132,7 +124,7 @@ const actions = {
         hashtagProtocolContract,
         erc721HashtagRegistryContract,
       },
-      publisher: process.env.publisherWalletAddress,
+      publisher: this.$config.publisherWalletAddress,
     });
 
     dispatch("getTaggingFee");
@@ -146,7 +138,7 @@ const actions = {
       const ethersProvider = new ethers.providers.Web3Provider(wallet.provider);
       provider = ethersProvider;
       // store the selected wallet name to be retrieved next time the app loads.
-      localStorage.setItem(localstorageWalletKey, wallet.name);
+      localStorage.setItem(this.$config.localstorageWalletKey, wallet.name);
     } else {
       provider = null;
       commit("setWalletName", "");
@@ -157,17 +149,13 @@ const actions = {
   // has been previously selected, it initializes
   // and checks the wallet.
   async reconnectWallet() {
-    const previouslySelectedWallet = window.localStorage.getItem(
-      localstorageWalletKey
-    );
+    const previouslySelectedWallet = window.localStorage.getItem(this.$config.localstorageWalletKey);
     if (!previouslySelectedWallet) {
       return false;
     }
 
     if (previouslySelectedWallet && onboard) {
-      const walletSelected = await onboard.walletSelect(
-        previouslySelectedWallet
-      );
+      const walletSelected = await onboard.walletSelect(previouslySelectedWallet);
       return walletSelected;
     }
   },
@@ -192,7 +180,7 @@ const actions = {
   },
 
   disconnectWallet({ state, commit }) {
-    localStorage.removeItem(localstorageWalletKey);
+    localStorage.removeItem(this.$config.localstorageWalletKey);
     onboard.walletReset();
     state.openModalCloseFn();
     commit("setOpenModalCloseFn", () => {});
@@ -247,11 +235,7 @@ const actions = {
     // The wallet has been popped and is waiting for user
     // to confirm or reject the transaction. When confirmed
     // we will have a txn object.
-    const txn = await hashtagProtocolContract.mint(
-      payload,
-      publisher,
-      state.address
-    );
+    const txn = await hashtagProtocolContract.mint(payload, publisher, state.address);
 
     // We have a txn object. Start a blocknative SDK listener for blockchain events.
     const { emitter } = blocknative.transaction(txn.hash);
@@ -282,16 +266,9 @@ const actions = {
     const { hashtagId, nftContract, nftId } = payload;
 
     // function tag(uint256 _hashtagId, address _nftContract, uint256 _nftId, address _publisher, address _tagger) payable public {
-    const txn = await erc721HashtagRegistryContract.tag(
-      hashtagId,
-      nftContract,
-      nftId,
-      publisher,
-      state.address,
-      {
-        value: ethers.BigNumber.from(fees.tagging),
-      }
-    );
+    const txn = await erc721HashtagRegistryContract.tag(hashtagId, nftContract, nftId, publisher, state.address, {
+      value: ethers.BigNumber.from(fees.tagging),
+    });
 
     // We have a txn object. Start a blocknative SDK listener for blockchain events.
     const { emitter } = blocknative.transaction(txn.hash);
@@ -323,7 +300,7 @@ const actions = {
       state.address,
       {
         value: ethers.BigNumber.from(fees.tagging),
-      }
+      },
     );
 
     // We have a txn object. Start a blocknative SDK listener for blockchain events.
