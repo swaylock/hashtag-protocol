@@ -177,7 +177,8 @@ async function buildImage(hashtag, rebuild) {
     return `images/${hashtag.id}.png`;
   } catch (e) {
     console.log(e);
-    return Promise.reject(e);
+    return `images/pending.png`;
+    // return Promise.reject(e);
   }
 }
 
