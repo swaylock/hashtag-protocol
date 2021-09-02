@@ -1,3 +1,23 @@
+const config = require("platformsh-config").config();
+
+/**
+ * Get Hashtag Metadata API server URL
+ *
+ * Returns Platform.sh environment baseurl if on Platform.sh.
+ * Otherwise returns environment variable.
+ *
+ * @returns string Hashtag Metadata API base url
+ * @see https://github.com/platformsh/config-reader-nodejs
+ */
+function getMetadataApiUrl() {
+  // If we are on Platform.sh
+  if (config.isValidPlatform()) {
+    // "hashtag-api" is the named environment for the api up on Platform.sh
+    return config.getRoute("hashtag-api").replace(/\/$/, "");
+  }
+  return process.env.HTP_METADATA_API_URL.replace(/\/$/, "");
+}
+
 function getContractAddressFromTruffleConf(truffleConf, chainId) {
   if (!truffleConf || !chainId) return "";
   const { networks } = truffleConf;
@@ -10,4 +30,5 @@ function getContractAddressFromTruffleConf(truffleConf, chainId) {
 
 export default {
   getContractAddressFromTruffleConf,
+  getMetadataApiUrl,
 };
