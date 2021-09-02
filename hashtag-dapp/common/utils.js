@@ -13,6 +13,8 @@ function getMetadataApiUrl() {
   // If we are on Platform.sh
   if (config.isValidPlatform()) {
     // "hashtag-api" is the named environment for the api up on Platform.sh
+    // This will return the baseurl for hashtag api specific to the PR or
+    // Git branch the environment is built from.
     return config.getRoute("hashtag-api").replace(/\/$/, "");
   }
   return process.env.HTP_METADATA_API_URL.replace(/\/$/, "");
