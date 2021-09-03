@@ -181,7 +181,8 @@ async function buildImage(hashtag, rebuild) {
     console.log(e);
 
     // Return a fallback image if buildImage fails.
-    return `images/pending.png`;
+    // from the assets folder.
+    return `img/pending.png`;
   }
 }
 
