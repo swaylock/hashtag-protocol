@@ -19,6 +19,8 @@ if (!config.isValidPlatform()) {
 
 const app = express().set("port", PORT);
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "assets")));
+
 // Disable favicon.
 app.get("/favicon.ico", (req, res) => res.status(204));
 
