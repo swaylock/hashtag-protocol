@@ -17,9 +17,7 @@ function getMetadataApiUrl() {
     // Git branch the environment is built from.
     try {
       let route = config.getRoute("hashtag-api");
-      console.log(route);
       route = route.url.replace(/\/$/, "");
-      console.log(route);
       return route;
     } catch (error) {
       console.error(error);

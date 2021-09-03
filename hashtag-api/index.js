@@ -30,7 +30,7 @@ app.get("/:token_id/:rebuild?", async function (req, res) {
   }
 
   let rebuildImg = false;
-  console.log("param rebuild", req.params.rebuild);
+
   if (req.params.rebuild == "rebuild") {
     rebuildImg = true;
   }
