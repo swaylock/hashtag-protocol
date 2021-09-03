@@ -331,15 +331,15 @@ export default {
       cb.writeText(url);
     },
   },
+  data: function () {
+    return {
+      // Todo: replace with loading image?
+      //image: require("~/assets/pending.png"),
+    };
+  },
   computed: {
     image() {
-      // Fetch the Metadata Api URL at runtime.
-      if (utils.getMetadataApiUrl()) {
-        return utils.getMetadataApiUrl() + "/images/" + this.hashtagsByName[0].id + ".png";
-      }
-
-      // If no metadata api is available, return placeholder image.
-      return require("~/assets/pending.png");
+      return utils.getHashtagImage(this.hashtagsByName[0].id);
     },
     randomSharingMessage() {
       const messages = [

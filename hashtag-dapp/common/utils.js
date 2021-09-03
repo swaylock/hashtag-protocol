@@ -1,10 +1,33 @@
 const config = require("platformsh-config").config();
 
+async function getHashtagImage(hashtagId) {
+  const hashtagMetadata = await getHashtagMetadata(hashtagId);
+  if (hashtagMetadata.image) {
+    console.log("getHashtagImage", hashtagMetadata.image);
+    return hashtagMetadata.image;
+  }
+
+  return require("~/assets/pending.png");
+}
+
+async function getHashtagMetadata(hashtagId) {
+  let metadataURL;
+  if ((metadataURL = getMetadataApiUrl())) {
+    try {
+      const endpoint = metadataURL + "/" + hashtagId;
+      let response = await fetch(endpoint);
+      return await response.json();
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  return false;
+}
+
 /**
  * Get Hashtag Metadata API server URL
- *
- * Returns Platform.sh environment baseurl if on Platform.sh.
- * Otherwise returns environment variable.
  *
  * @returns {string | boolean} Hashtag Metadata API base url
  * @see https://github.com/platformsh/config-reader-nodejs
@@ -12,10 +35,10 @@ const config = require("platformsh-config").config();
 function getMetadataApiUrl() {
   // If we are on Platform.sh
   if (config.isValidPlatform() && config.inRuntime()) {
-    // "hashtag-api" is the named environment for the api up on Platform.sh
-    // This will return the baseurl for hashtag api specific to the PR or
-    // Git branch the environment is built from.
     try {
+      // "hashtag-api" is the application name for the metadata api up on Platform.sh
+      // getRoute() will return the baseurl for hashtag api specific to the PR or
+      // Git branch the environment is built from.
       let route = config.getRoute("hashtag-api");
       route = route.url.replace(/\/$/, "");
       return route;
@@ -26,7 +49,7 @@ function getMetadataApiUrl() {
   }
 
   // If we aren't on Platform, return our locally set metadata api
-  // or return false.
+  // otherwise return false.
   return process.env.HTP_METADATA_API_URL || false;
 }
 
@@ -49,4 +72,5 @@ function getContractAddressFromTruffleConf(truffleConf, chainId) {
 export default {
   getContractAddressFromTruffleConf,
   getMetadataApiUrl,
+  getHashtagImage,
 };
