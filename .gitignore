@@ -50,5 +50,3 @@ hashtag-docs/docs/.vuepress/dist/*
 # Exclude public images directory, except for the pending image.
 hashtag-api/public/images/*
 !hashtag-api/public/images/pending.png
-
-
