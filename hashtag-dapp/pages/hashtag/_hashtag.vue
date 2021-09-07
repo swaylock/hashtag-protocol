@@ -3,7 +3,7 @@
     <SocialHead
       :title="hashtagsByName[0].displayHashtag + ' | Hashtag Protocol'"
       :description="randomSharingMessage"
-      :image="image"
+      :image="imageUrl"
     />
     <Header />
     <section class="main" v-if="hashtagsByName && hashtagsByName[0]">
@@ -47,7 +47,7 @@
             <div class="tile is-parent is-4 is-12-mobile">
               <div class="tile is-child box">
                 <h1>
-                  <img :src="image" :alt="hashtagsByName[0].displayHashtag" />
+                  <img :src="imageUrl" :alt="hashtagsByName[0].displayHashtag" />
                 </h1>
               </div>
             </div>
@@ -240,7 +240,6 @@ import SocialHead from "~/components/SocialHead";
 import { PAGED_TAGS_BY_HASHTAG, HASHTAGS_BY_NAME, ALL_TAGS_BY_HASHTAG } from "~/apollo/queries";
 import TimestampFrom from "~/components/TimestampFrom";
 import TimestampFormatted from "~/components/TimestampFormatted";
-import utils from "~/common/utils";
 
 const PAGE_SIZE = 10;
 
@@ -333,14 +332,14 @@ export default {
   },
   data: function () {
     return {
-      // Todo: replace with loading image?
-      //image: require("~/assets/pending.png"),
+      imageUrl: require("~/assets/loader3.svg"),
     };
   },
+  async mounted() {
+    // See plugins/htp-metadata-api.js
+    this.imageUrl = await this.$metadataApiHelpers.getHashtagImage(this.hashtagsByName[0].id);
+  },
   computed: {
-    image() {
-      return utils.getHashtagImage(this.hashtagsByName[0].id);
-    },
     randomSharingMessage() {
       const messages = [
         `${this.hashtagsByName[0].displayHashtag} stored as a non-fungible token (NFT) on the blockchain.`,

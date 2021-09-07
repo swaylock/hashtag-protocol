@@ -35,6 +35,7 @@ export default {
     "~/plugins/vue-filter",
     "~/plugins/vue-moment",
     "~/plugins/vue-screen",
+    "~/plugins/htp-metadata-api",
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
@@ -80,6 +81,7 @@ export default {
     nftSearchSubgraph:
       process.env.VUE_APP_TOP_NFTS_SUBGRAPH_URL || "https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens",
     blocknativeApiKey: process.env.VUE_APP_BLOCKNATIVE_API_KEY || "",
+    metadataApiUrl: process.env.VUE_APP_HTP_METADATA_API_URL || false,
     onboardNetworkID: Number(process.env.VUE_APP_ONBOARD_NETWORK_ID) || Number(5777),
     publisherWalletAddress: process.env.VUE_APP_PUBLISHER_ADDRESS || "0xD677AEd0965AC9B54e709F01A99cEcA205aebC4B",
     localstorageWalletKey: process.env.VUE_APP_ONBOARD_LOCALSTORAGE_WALLET_KEY || "HashtagSelectedWallet",
