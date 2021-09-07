@@ -3,6 +3,8 @@ const express = require("express");
 const path = require("path");
 const moment = require("moment");
 const config = require("platformsh-config").config();
+const cors = require("cors");
+
 require("dotenv").config();
 const hashtag_subgraph = process.env.VUE_APP_HASHTAG_SUBGRAPH_URL;
 
@@ -17,9 +19,17 @@ if (!config.isValidPlatform()) {
   PORT = config.port;
 }
 
+const corsOptions = {
+  origin: "*",
+  credentials: false,
+  optionSuccessStatus: 200,
+};
+
 const app = express().set("port", PORT);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "assets")));
+
+app.use(cors(corsOptions)); // Use this after the variable declaration
 
 // Disable favicon.
 app.get("/favicon.ico", (req, res) => res.status(204));
