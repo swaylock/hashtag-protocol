@@ -59,6 +59,10 @@ export default function ({ app }, inject) {
      */
     getMetadataApiUrl() {
       // If we are on Platform.sh
+      console.log("platformConfig.isValidPlatform()", platformConfig.isValidPlatform());
+      console.log("platformConfig.inRuntime()", platformConfig.inRuntime());
+      console.log(platformConfig.getRoute("hashtag-api"));
+
       if (platformConfig.isValidPlatform() && platformConfig.inRuntime()) {
         try {
           // "hashtag-api" is the application name for the metadata api up on Platform.sh
