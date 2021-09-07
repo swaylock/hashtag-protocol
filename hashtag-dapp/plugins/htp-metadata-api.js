@@ -36,6 +36,7 @@ export default function ({ app }, inject) {
      */
     async getHashtagMetadata(hashtagId) {
       const metadataURL = this.getMetadataApiUrl();
+      console.log("getHashtagMetadata", metadataURL);
       if (metadataURL) {
         try {
           const endpoint = metadataURL + "/" + hashtagId;
