@@ -256,7 +256,12 @@ export default {
     Pagination,
     SocialHead,
   },
-  asyncData({ params }) {
+  async asyncData({ $metadataApiHelpers, params }) {
+    let imageUrl;
+    if (process.server) {
+      imageUrl = await $metadataApiHelpers.getHashtagImage(1);
+    }
+
     let routeHashtag = params.hashtag;
     routeHashtag = routeHashtag.replace("#", "");
     routeHashtag = routeHashtag.toLowerCase();
@@ -271,6 +276,7 @@ export default {
       skip: 0,
       tagsCount: 0,
       pageSize: PAGE_SIZE,
+      imageUrl: imageUrl,
     };
   },
   head() {
@@ -337,7 +343,7 @@ export default {
   },
   async mounted() {
     // See plugins/htp-metadata-api.js
-    this.imageUrl = await this.$metadataApiHelpers.getHashtagImage(this.hashtagsByName[0].id);
+    //this.imageUrl = await this.$metadataApiHelpers.getHashtagImage(this.hashtagsByName[0].id);
   },
   computed: {
     randomSharingMessage() {

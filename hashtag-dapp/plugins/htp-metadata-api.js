@@ -36,7 +36,6 @@ export default function ({ app }, inject) {
      */
     async getHashtagMetadata(hashtagId) {
       const metadataURL = this.getMetadataApiUrl();
-      console.log("getHashtagMetadata", metadataURL);
       if (metadataURL) {
         try {
           const endpoint = metadataURL + "/" + hashtagId;
@@ -61,7 +60,6 @@ export default function ({ app }, inject) {
       // If we are on Platform.sh
       console.log("platformConfig.isValidPlatform()", platformConfig.isValidPlatform());
       console.log("platformConfig.inRuntime()", platformConfig.inRuntime());
-      console.log(platformConfig.getRoute("hashtag-api"));
 
       if (platformConfig.isValidPlatform() && platformConfig.inRuntime()) {
         try {
