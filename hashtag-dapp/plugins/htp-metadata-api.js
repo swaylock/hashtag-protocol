@@ -57,24 +57,7 @@ export default function ({ app }, inject) {
      * @see https://github.com/platformsh/config-reader-nodejs
      */
     getMetadataApiUrl() {
-      // If we are on Platform.sh
-      if (platformConfig.isValidPlatform() && platformConfig.inRuntime()) {
-        try {
-          // "hashtag-api" is the application name for the metadata api up on Platform.sh
-          // getRoute() will return the baseurl for hashtag api specific to the PR or
-          // Git branch the environment is built from.
-          let route = platformConfig.getRoute("hashtag-api");
-          route = route.url.replace(/\/$/, "");
-          return route;
-        } catch (error) {
-          console.error(error);
-          return false;
-        }
-      }
-
-      // If we aren't on Platform, return our locally set metadata api
-      // See nuxt.config.js.
-      return app.$config.metadataApiUrl;
+      return app.store.state.metaDataApiBaseUrl;
     },
   };
   inject("metadataApiHelpers", metadataApiHelpers);

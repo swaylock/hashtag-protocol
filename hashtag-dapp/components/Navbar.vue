@@ -119,7 +119,7 @@ export default {
       supportMenuArr: {
         docs: {
           text: "Docs",
-          path: this.$config.docs,
+          path: this.$store.state.docsBaseUrl,
         },
         discord: {
           text: "Discord",
@@ -131,7 +131,7 @@ export default {
         },
         website: {
           text: "Website",
-          path: this.$config.website,
+          path: this.$store.state.websiteBaseUrl,
         },
       },
     };

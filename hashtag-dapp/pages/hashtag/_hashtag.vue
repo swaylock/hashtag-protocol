@@ -342,7 +342,7 @@ export default {
     },
     copyToClipboard() {
       const cb = navigator.clipboard;
-      const url = this.$config.app + this.$route.path;
+      const url = this.$store.state.dappBaseUrl + this.$route.path;
       cb.writeText(url);
     },
   },
@@ -359,7 +359,7 @@ export default {
     twitterSharingUrl() {
       const encodedString = encodeURIComponent(
         `Check out the hashtag ${this.hashtagsByName[0].displayHashtag} on @HashtagProtoHQ\n\n${
-          this.$config.app + this.$route.path
+          this.$store.state.dappBaseUrl + this.$route.path
         }`,
       );
       return "https://twitter.com/intent/tweet?text=" + encodedString;
@@ -367,7 +367,7 @@ export default {
     facebookSharingUrl() {
       const encodedString = encodeURIComponent(
         `Check out the hashtag ${this.hashtagsByName[0].displayHashtag} on Hashtag Protocol\n\n${
-          this.$config.app + this.$route.path
+          this.$store.state.dappBaseUrl + this.$route.path
         }`,
       );
       return "https://www.facebook.com/share.php?u=" + encodedString;
