@@ -287,12 +287,12 @@ export default {
   },
   head() {
     return {
-      //title: `${this.hashtagsByName[0].displayHashtag} | Hashtag Protocol`,
+      title: `${this.hashtagsByName[0].displayHashtag} | Hashtag Protocol`,
       meta: [
         {
           hid: "description",
           name: "description",
-          //content: this.randomSharingMessage,
+          content: this.randomSharingMessage,
         },
       ],
     };
@@ -345,10 +345,6 @@ export default {
       const url = this.$config.app + this.$route.path;
       cb.writeText(url);
     },
-  },
-  async mounted() {
-    // See plugins/htp-metadata-api.js
-    //this.imageUrl = await this.$metadataApiHelpers.getHashtagImage(this.hashtagsByName[0].id);
   },
   computed: {
     randomSharingMessage() {
