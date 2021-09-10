@@ -100,12 +100,12 @@ export default {
       default: {
         httpEndpoint:
           process.env.VUE_APP_HASHTAG_SUBGRAPH_URL ||
-          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-rinkeby",
+          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-polygon-mumbai",
       },
       hashtagClient: {
         httpEndpoint:
           process.env.VUE_APP_HASHTAG_SUBGRAPH_URL ||
-          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-rinkeby",
+          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-polygon-mumbai",
       },
       nftsClient: {
         httpEndpoint:

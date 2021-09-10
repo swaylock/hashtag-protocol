@@ -1,5 +1,5 @@
 <template>
-  <div class="body">
+  <div class="body" v-if="!loading">
     <SocialHead
       :title="hashtagsByName[0].displayHashtag + ' | Hashtag Protocol'"
       :description="randomSharingMessage"
@@ -47,7 +47,7 @@
             <div class="tile is-parent is-4 is-12-mobile">
               <div class="tile is-child box">
                 <h1>
-                  <img :src="imageUrl" :alt="hashtagsByName[0].displayHashtag" />
+                  <img v-if="imageUrl" :src="imageUrl" :alt="hashtagsByName[0].displayHashtag" />
                 </h1>
               </div>
             </div>
@@ -257,14 +257,12 @@ export default {
     SocialHead,
   },
   async asyncData({ $metadataApiHelpers, params }) {
-    let imageUrl;
-    if (process.server) {
-      imageUrl = await $metadataApiHelpers.getHashtagImage(1);
-    }
-
     let routeHashtag = params.hashtag;
     routeHashtag = routeHashtag.replace("#", "");
     routeHashtag = routeHashtag.toLowerCase();
+
+    let imageUrl;
+    imageUrl = await $metadataApiHelpers.getHashtagImage(routeHashtag);
 
     return {
       activeTab: 0,
@@ -279,20 +277,30 @@ export default {
       imageUrl: imageUrl,
     };
   },
+  data: function () {
+    return {
+      loading: 0,
+      //imageUrl: require("~/assets/loader3.svg"),
+      hashtagsByName: null,
+      tagsByHashtag: null,
+    };
+  },
   head() {
     return {
-      title: `${this.hashtagsByName[0].displayHashtag} | Hashtag Protocol`,
+      //title: `${this.hashtagsByName[0].displayHashtag} | Hashtag Protocol`,
       meta: [
         {
           hid: "description",
           name: "description",
-          content: this.randomSharingMessage,
+          //content: this.randomSharingMessage,
         },
       ],
     };
   },
   apollo: {
+    $loadingKey: "loading",
     tagsByHashtag: {
+      //prefetch: false,
       query: PAGED_TAGS_BY_HASHTAG,
       variables() {
         return {
@@ -304,6 +312,7 @@ export default {
       pollInterval: 1000, // ms
     },
     tagsByHashtagCount: {
+      //prefetch: false,
       query: ALL_TAGS_BY_HASHTAG,
       variables() {
         return {
@@ -317,6 +326,7 @@ export default {
       pollInterval: 1000, // ms
     },
     hashtagsByName: {
+      //prefetch: false,
       query: HASHTAGS_BY_NAME,
       variables() {
         return {
@@ -335,11 +345,6 @@ export default {
       const url = this.$config.app + this.$route.path;
       cb.writeText(url);
     },
-  },
-  data: function () {
-    return {
-      imageUrl: require("~/assets/loader3.svg"),
-    };
   },
   async mounted() {
     // See plugins/htp-metadata-api.js

@@ -11,11 +11,11 @@ export default function ({ app }, inject) {
      * If running on Platform.sh, returns image to HASHTAG token from metadata
      * api running in same environment branch as the dApp.
      *
-     * @param {int} hashtagId Hashtag token id.
-     * @returns URL to HASHTAG token image or back placeholder image not found.
+     * @param {int | string } hashtag Hashtag token id as int or name as string
+     * @returns URL to HASHTAG token image or placeholder image if not found.
      */
-    async getHashtagImage(hashtagId) {
-      const hashtagMetadata = await this.getHashtagMetadata(hashtagId);
+    async getHashtagImage(hashtag) {
+      const hashtagMetadata = await this.getHashtagMetadata(hashtag);
       if (hashtagMetadata.image) {
         return hashtagMetadata.image;
       }
@@ -58,9 +58,6 @@ export default function ({ app }, inject) {
      */
     getMetadataApiUrl() {
       // If we are on Platform.sh
-      console.log("platformConfig.isValidPlatform()", platformConfig.isValidPlatform());
-      console.log("platformConfig.inRuntime()", platformConfig.inRuntime());
-
       if (platformConfig.isValidPlatform() && platformConfig.inRuntime()) {
         try {
           // "hashtag-api" is the application name for the metadata api up on Platform.sh
