@@ -1,3 +1,9 @@
+/**
+ *
+ * @param {string} truffleConf
+ * @param {int} chainId
+ * @returns
+ */
 function getContractAddressFromTruffleConf(truffleConf, chainId) {
   if (!truffleConf || !chainId) return "";
   const { networks } = truffleConf;

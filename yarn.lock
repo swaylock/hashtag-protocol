@@ -21811,7 +21811,7 @@ vue-server-renderer@2.6.11:
     serialize-javascript "^2.1.2"
     source-map "0.5.6"
 
-vue-server-renderer@^2.6.10, vue-server-renderer@^2.6.12:
+vue-server-renderer@^2.6.10, vue-server-renderer@^2.6.12, vue-server-renderer@^2.6.14:
   version "2.6.14"
   resolved "https://registry.yarnpkg.com/vue-server-renderer/-/vue-server-renderer-2.6.14.tgz#c8bffff152df6b47b858818ef8d524d2fc351654"
   integrity sha512-HifYRa/LW7cKywg9gd4ZtvtRuBlstQBao5ZCWlg40fyB4OPoGfEXAzxb0emSLv4pBDOHYx0UjpqvxpiQFEuoLA==
