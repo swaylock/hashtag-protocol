@@ -54,6 +54,8 @@ app.get("/:token/:rebuild?", async function (req, res, next) {
     })
     .catch((error) => {
       // If a custom error is thrown.
+      // @TODO: Better error response. See for example
+      // https://stackoverflow.com/questions/12806386/is-there-any-standard-for-json-api-response-format
       if (error instanceof MetadataApiException) {
         console.error("Bubbled error.   ", error);
         res.status(error.code).send(error.msg);

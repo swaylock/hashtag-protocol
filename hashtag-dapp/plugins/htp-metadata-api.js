@@ -53,8 +53,9 @@ export default function ({ app }, inject) {
     /**
      * Get Hashtag Metadata API server URL
      *
-     * @returns Hashtag Metadata API base url or false.
-     * @see https://github.com/platformsh/config-reader-nodejs
+     * @returns Hashtag Metadata API base url.
+     * 
+     * @see nuxtServerInit() in /stores/index.js
      */
     getMetadataApiUrl() {
       return app.store.state.metaDataApiBaseUrl;

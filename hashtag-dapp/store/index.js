@@ -34,6 +34,7 @@ export const actions = {
 
     // If we are on Platform.sh, override the values set in nuxt.config.js /
     // .env file
+    // @see https://github.com/platformsh/config-reader-nodejs
     if (platformConfig.isValidPlatform() && platformConfig.inRuntime()) {
       try {
         // "hashtag-api" is the application name for the metadata api up on Platform.sh
