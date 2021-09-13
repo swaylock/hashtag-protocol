@@ -36,6 +36,7 @@ export const SNAPSHOT = gql(`
             tagger
             timestamp
             publisher
+            nftChainId
         }
         popular: hashtags(first: 10, orderBy: tagCount, orderDirection: desc) {
             id

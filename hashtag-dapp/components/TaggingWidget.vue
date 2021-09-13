@@ -71,14 +71,18 @@ export default {
             const saveInfo = [];
             for (var i = 0; i < jsonArr.length; i++) {
               const arrInfo = {};
-              arrInfo["contractAddress"] = jsonArr[i].contract_id;
+              arrInfo["contractAddress"] = jsonArr[i].contract_address;
               arrInfo["contractName"] = jsonArr[i].name;
               arrInfo["contractSymbol"] = "test";
               arrInfo["id"] = jsonArr[i].token_id;
               arrInfo["metadataImageURI"] = jsonArr[i].image_url;
               arrInfo["metadataName"] = jsonArr[i].name;
               arrInfo["tokenId"] = jsonArr[i].token_id;
-              arrInfo["chain"] = jsonArr[i].chain;
+              if (jsonArr[i].chain === "ethereum") {
+                arrInfo["chain"] = 1;
+              } else if (jsonArr[i].chain === "polygon") {
+                arrInfo["chain"] = 137;
+              }
               saveInfo.push(arrInfo);
             }
             console.log("save info", saveInfo);
@@ -106,10 +110,7 @@ export default {
         trapFocus: true,
       });
 
-      this.$store.dispatch(
-        "wallet/captureOpenModalCloseFn",
-        taggingModal.close
-      );
+      this.$store.dispatch("wallet/captureOpenModalCloseFn", taggingModal.close);
     },
   },
 };
