@@ -1,14 +1,13 @@
 <template>
   <div class="body">
     <Header />
-    <section class="main" v-if="tagsByDigitalAsset">
+    <section class="main" v-if="isLoaded">
       <div class="container">
-        <h1 class="title is-1">{{ tagsByDigitalAsset[0].nftName }}</h1>
+        <h1 class="title is-1">{{ nftInfo.nftName }}</h1>
         <h2 class="subtitle">
           ERC-721 Digital asset
           <span class="is-pulled-right is-size-6 has-text-weight-bold">
-            <nuxt-link :to="{ name: 'nfts' }">Browse tagged assets</nuxt-link
-            >&nbsp;
+            <nuxt-link :to="{ name: 'nfts' }">Browse tagged assets</nuxt-link>&nbsp;
             <b-icon icon="arrow-up" type="is-dark" size="is-small"></b-icon>
           </span>
         </h2>
@@ -19,10 +18,7 @@
                 <div class="card">
                   <div class="card-image">
                     <figure class="image">
-                      <img
-                        :src="tagsByDigitalAsset[0].nftImage"
-                        :alt="tagsByDigitalAsset[0].nftName"
-                      />
+                      <img :src="nftInfo.nftImage" :alt="nftInfo.nftName" />
                     </figure>
                   </div>
                   <div class="card-content">
@@ -34,19 +30,19 @@
                             <tr draggable="false" class="">
                               <td class="has-text-weight-bold">Name</td>
                               <td>
-                                {{ tagsByDigitalAsset[0].nftName }}
+                                {{ nftInfo.nftName }}
                               </td>
                             </tr>
                             <tr draggable="false" class="">
-                              <td class="has-text-weight-bold">Project</td>
+                              <td class="has-text-weight-bold">Chain</td>
                               <td>
-                                {{ tagsByDigitalAsset[0].nftContractName }}
+                                {{ nftInfo.chainName }}
                               </td>
                             </tr>
                             <tr draggable="false" class="">
                               <td class="has-text-weight-bold">Asset Id</td>
                               <td>
-                                {{ tagsByDigitalAsset[0].nftId }}
+                                {{ nftInfo.nftId }}
                               </td>
                             </tr>
                           </tbody>
@@ -81,17 +77,11 @@
                         >
                           <template slot-scope="props">
                             <b-taglist attached>
-                              <b-tag type="is-primary" size="is-medium">{{
-                                props.option.displayHashtag
-                              }}</b-tag>
-                              <b-tag type="is-dark" size="is-medium">{{
-                                props.option.tagCount
-                              }}</b-tag>
+                              <b-tag type="is-primary" size="is-medium">{{ props.option.displayHashtag }}</b-tag>
+                              <b-tag type="is-dark" size="is-medium">{{ props.option.tagCount }}</b-tag>
                             </b-taglist>
                           </template>
-                          <template slot="empty">
-                            New hashtag! Press enter to continue...
-                          </template>
+                          <template slot="empty"> New hashtag! Press enter to continue... </template>
                           <template slot="selected" slot-scope="props">
                             <div v-bind:class="{ box: isTaggable }">
                               <b-tag
@@ -104,9 +94,7 @@
                                 size="is-medium"
                                 closable
                                 close-type="is-dark"
-                                @close="
-                                  $refs.tagginginput.removeTag(index, $event)
-                                "
+                                @close="$refs.tagginginput.removeTag(index, $event)"
                               >
                                 <div v-if="tag.displayHashtag">
                                   {{ tag.displayHashtag }}
@@ -155,34 +143,20 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr
-                            draggable="false"
-                            v-for="tag in tagsByDigitalAsset"
-                            v-bind:key="tag.id"
-                          >
+                          <tr draggable="false" v-for="tag in tagsByDigitalAsset" v-bind:key="tag.id">
                             <td data-label="Hashtag" class="">
                               <span class="has-text-weight-bold">
-                                <hashtag
-                                  :value="tag.hashtagDisplayHashtag"
-                                ></hashtag>
+                                <hashtag :value="tag.hashtagDisplayHashtag"></hashtag>
                               </span>
                             </td>
                             <td data-label="Tagged" class="">
-                              <timestamp-from
-                                :value="tag.timestamp"
-                              ></timestamp-from>
+                              <timestamp-from :value="tag.timestamp"></timestamp-from>
                             </td>
                             <td data-label="Owner" class="">
-                              <eth-account
-                                :value="tag.tagger"
-                                route="tagger-address"
-                              ></eth-account>
+                              <eth-account :value="tag.tagger" route="tagger-address"></eth-account>
                             </td>
                             <td data-label="Publisher" class="">
-                              <eth-account
-                                :value="tag.publisher"
-                                route="publisher-address"
-                              ></eth-account>
+                              <eth-account :value="tag.publisher" route="publisher-address"></eth-account>
                             </td>
                           </tr>
                         </tbody>
@@ -207,12 +181,10 @@ import Footer from "hashtag-components/src/components/Footer.vue";
 import Hashtag from "~/components/Hashtag";
 import Header from "~/components/Header";
 import TimestampFrom from "~/components/TimestampFrom";
-import {
-  TAGS_BY_DIGITAL_ASSET,
-  FIRST_THOUSAND_HASHTAGS,
-} from "~/apollo/queries";
+import { TAGS_BY_DIGITAL_ASSET, FIRST_THOUSAND_HASHTAGS } from "~/apollo/queries";
 
 import HashtagValidationService from "~/services/HashtagValidationService";
+import axios from "axios";
 
 export default {
   name: "NftDetail",
@@ -222,6 +194,14 @@ export default {
     Hashtag,
     Header,
     TimestampFrom,
+  },
+  data() {
+    return {
+      isLoaded: false,
+    };
+  },
+  mounted() {
+    this.pullNFTFromAPI();
   },
   asyncData({ params }) {
     return {
@@ -235,6 +215,7 @@ export default {
       hashtags: null,
       hashtagInputTags: [],
       mintAndTag: false,
+      nftInfo: null,
     };
   },
   computed: {
@@ -263,8 +244,9 @@ export default {
       if (this.mintAndTag) {
         await this.$store.dispatch("wallet/mintAndTag", {
           hashtag: `#${this.hashtag[0]}`,
-          nftContract: this.tagsByDigitalAsset[0].nftContract,
-          nftId: this.tagsByDigitalAsset[0].nftId,
+          nftContract: this.nftInfo.nftContract,
+          nftId: this.nftInfo.nftId,
+          nftChain: this.nftInfo.chain,
         });
       } else {
         const hashtag = this.hashtag[0];
@@ -275,22 +257,60 @@ export default {
         }
         const hashtags = this.hashtagInputTags || [];
         const findExistingHashtagResult = hashtags.filter(
-          (option) => option.name.toLowerCase() === hashtagValue.toLowerCase()
+          (option) => option.name.toLowerCase() === hashtagValue.toLowerCase(),
         );
 
         await this.$store.dispatch("wallet/tag", {
           hashtagId: findExistingHashtagResult[0].id,
-          nftContract: this.tagsByDigitalAsset[0].nftContract,
-          nftId: this.tagsByDigitalAsset[0].nftId,
+          nftContract: this.nftInfo.nftContract,
+          nftId: this.nftInfo.nftId,
+          nftChain: this.nftInfo.chain,
         });
       }
     },
     // Bulma taginput widget.
     getFilteredTags: function (text) {
       const hashtags = this.hashtags || [];
-      this.hashtagInputTags = hashtags.filter(
-        (tag) => `${tag.name.toLowerCase()}`.indexOf(text.toLowerCase()) === 1
-      );
+      this.hashtagInputTags = hashtags.filter((tag) => `${tag.name.toLowerCase()}`.indexOf(text.toLowerCase()) === 1);
+    },
+    pullNFTFromAPI: async function () {
+      let nftData = await this.$apollo.queries.tagsByDigitalAsset.refetch();
+      nftData = nftData.data.tagsByDigitalAsset[0];
+      let chain = "";
+      if (nftData.nftChainId === "1") {
+        chain = "ethereum";
+      } else if (nftData.nftChainId === "137") {
+        chain = "polygon";
+      }
+      const headers = {
+        Authorization: "32097857-1c85-4b19-b4d6-f79c86c7d2e9",
+      };
+      axios
+        .get("https://api.nftport.xyz/nfts/" + nftData.nftContract + "/" + nftData.nftId, {
+          params: {
+            chain: chain,
+            page_number: 1,
+            page_size: 50,
+          },
+          headers: headers,
+        })
+        .then((response) => {
+          let nftHold = {};
+          nftHold["nftName"] = response.data.nft.metadata.name;
+          let res = response.data.nft.image_url.split("//");
+          if (res[0] == "ipfs:") {
+            nftHold["nftImage"] = "https://ipfs.io/" + res[1];
+          } else {
+            nftHold["nftImage"] = response.data.nft.image_url;
+          }
+          nftHold["nftId"] = response.data.nft.token_id;
+          nftHold["nftDescription"] = response.data.nft.metadata.description;
+          nftHold["chain"] = nftData.nftChainId;
+          nftHold["chainName"] = response.config.params.chain;
+          nftHold["nftContract"] = nftData.nftContract;
+          this.nftInfo = nftHold;
+          this.isLoaded = true;
+        });
     },
     validateTag(hashtag) {
       return this.hashtagValidationService.validateTag(hashtag);
@@ -306,7 +326,7 @@ export default {
 
         const hashtags = this.hashtagInputTags || [];
         const findExistingHashtagResult = hashtags.filter(
-          (option) => option.name.toLowerCase() === hashtagValue.toLowerCase()
+          (option) => option.name.toLowerCase() === hashtagValue.toLowerCase(),
         );
 
         const isNewHashtag = findExistingHashtagResult.length !== 1;
@@ -316,9 +336,7 @@ export default {
     },
   },
   created() {
-    this.hashtagValidationService = new HashtagValidationService(
-      this.$buefy.toast
-    );
+    this.hashtagValidationService = new HashtagValidationService(this.$buefy.toast);
   },
 };
 </script>

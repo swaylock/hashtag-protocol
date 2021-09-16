@@ -254,7 +254,6 @@ const actions = {
   async tag({ state, dispatch }, payload) {
     const ready = await dispatch("readyToTransact");
     if (!ready) return;
-    console.log("Payload:", payload);
     // Prompts user to complete transaction in their wallet.
     await dispatch("updateTransactionState", {
       eventCode: "protocolActionConfirmed",

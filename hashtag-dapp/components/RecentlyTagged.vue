@@ -30,8 +30,8 @@
         :value="props.row.nftName"
       ></nft-link>
     </b-table-column>
-    <b-table-column field="projectName" label="Project" :visible="$screen.widescreen" v-slot="props">
-      {{ props.row.nftContractName }}
+    <b-table-column field="projectName" label="Chain" :visible="$screen.widescreen" v-slot="props">
+      {{ props.row.nftChain }}
     </b-table-column>
     <b-table-column field="hashtagName" label="Hashtag" v-slot="props">
       <hashtag :value="props.row.hashtagDisplayHashtag"></hashtag>
@@ -63,10 +63,9 @@ export default {
     this.pullTagsFromAPI(this.tags);
   },
   methods: {
-    pullTagsFromAPI: async function (taggedData) {
-      //let taggedData = await this.$apollo.queries.tags.refetch();
-      //taggedData = taggedData.data.tags;
-      console.log(taggedData);
+    pullTagsFromAPI: async function () {
+      let taggedData = await this.$apollo.queries.tags.refetch();
+      taggedData = taggedData.data.tags;
       const promises = [];
       const headers = {
         Authorization: "32097857-1c85-4b19-b4d6-f79c86c7d2e9",
@@ -85,6 +84,9 @@ export default {
               page_number: 1,
               page_size: 50,
             },
+            data: {
+              tagInfo: nft,
+            },
             headers: headers,
           }),
         );
@@ -93,16 +95,13 @@ export default {
         let nftData = [];
         response.forEach((nft) => {
           if (nft.data.response == "OK") {
-            nft.data.nft.nftID = nft.data.nft.token_id;
+            const config = JSON.parse(nft.config.data);
+            nft.data.nft.nftId = nft.data.nft.token_id;
             nft.data.nft.nftName = nft.data.nft.metadata.name;
-            taggedData.forEach((elem) => {
-              if (nft.data.nft.contract_address == elem.nftContract && nft.data.nft.token_id == elem.nftId) {
-                nft.data.nft.hashtagDisplayHashtag = elem.hashtagDisplayHashtag;
-              }
-            });
+            nft.data.nft.hashtagDisplayHashtag = config.tagInfo.hashtagDisplayHashtag;
             nft.data.nft.nftContract = nft.data.nft.contract_address;
+            nft.data.nft.nftChain = nft.config.params.chain;
             let res = nft.data.nft.image_url.split("//");
-            console.log(res);
             if (res[0] == "ipfs:") {
               nft.data.nft.image_url = "https://ipfs.io/" + res[1];
             }
@@ -110,7 +109,6 @@ export default {
             nftData.push(nft.data.nft);
           }
         });
-        console.log(nftData);
         this.data = nftData;
       });
     },
