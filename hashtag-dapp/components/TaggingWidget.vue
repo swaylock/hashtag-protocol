@@ -46,6 +46,7 @@ export default {
   },
   methods: {
     getAsyncData: debounce(async function (name) {
+      this.isFetching = true;
       if (!name.length) {
         this.nameContains = [];
         return;
@@ -87,8 +88,10 @@ export default {
             }
             console.log("save info", saveInfo);
             this.nameContains = saveInfo;
+            this.isFetching = false;
             return saveInfo;
           } else {
+            this.isFetching = false;
             return [];
           }
         });
