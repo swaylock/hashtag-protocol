@@ -73,6 +73,7 @@ export default {
       "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-rinkeby",
     nftSearchSubgraph:
       process.env.VUE_APP_TOP_NFTS_SUBGRAPH_URL || "https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens",
+    nftPortAPIKey: process.env.NFTPORT_API_KEY,
 
     // These are set for development purposes only. See store/index.js
     metadataApiBaseUrl: process.env.VUE_APP_HTP_METADATA_API_URL || false,

@@ -258,7 +258,7 @@ export default {
       taggedData = taggedData.data.tagsByTagger;
       const promises = [];
       const headers = {
-        Authorization: "32097857-1c85-4b19-b4d6-f79c86c7d2e9",
+        Authorization: this.$config.nftPortAPIKey,
       };
       taggedData.forEach((nft) => {
         let chain = "";
