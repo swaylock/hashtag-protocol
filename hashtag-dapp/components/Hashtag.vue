@@ -10,14 +10,16 @@
 export default {
   name: "Hashtag",
   props: ["value"],
-  data() {
-    // Modify HASHTAG for pretty url.
-    let dest = this.value;
-    dest = dest.replace("#", "");
-    dest = dest.toLowerCase();
-    return {
-      dest: dest,
-    };
+  computed: {
+    dest() {
+      // Modify HASHTAG for pretty url.
+      let dest = this.value;
+      if (dest) {
+        dest = dest.replace("#", "");
+        dest = dest.toLowerCase();
+      }
+      return dest;
+    },
   },
 };
 </script>

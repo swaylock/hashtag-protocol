@@ -3,10 +3,10 @@
     <nuxt-link
       :to="{
         name: 'type-contract-id',
-        params: { type: type, contract: contract, id: id },
+        params: { type: type, contract: contract, id: id, value: value },
       }"
     >
-      [placeholder]
+      {{ value }}
     </nuxt-link>
   </span>
 </template>
@@ -14,6 +14,6 @@
 <script>
 export default {
   name: "NftLink",
-  props: ["type", "contract", "id"],
+  props: ["type", "contract", "id", "value"],
 };
 </script>

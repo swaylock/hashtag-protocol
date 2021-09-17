@@ -254,7 +254,6 @@ const actions = {
   async tag({ state, dispatch }, payload) {
     const ready = await dispatch("readyToTransact");
     if (!ready) return;
-
     // Prompts user to complete transaction in their wallet.
     await dispatch("updateTransactionState", {
       eventCode: "protocolActionConfirmed",
@@ -263,12 +262,20 @@ const actions = {
     const { web3Objects, fees } = state;
     const { contracts, publisher } = web3Objects;
     const { erc721HashtagRegistryContract } = contracts;
-    const { hashtagId, nftContract, nftId } = payload;
+    const { hashtagId, nftContract, nftId, nftChain } = payload;
 
     // function tag(uint256 _hashtagId, address _nftContract, uint256 _nftId, address _publisher, address _tagger) payable public {
-    const txn = await erc721HashtagRegistryContract.tag(hashtagId, nftContract, nftId, publisher, state.address, {
-      value: ethers.BigNumber.from(fees.tagging),
-    });
+    const txn = await erc721HashtagRegistryContract.tag(
+      hashtagId,
+      nftContract,
+      nftId,
+      publisher,
+      state.address,
+      nftChain,
+      {
+        value: ethers.BigNumber.from(fees.tagging),
+      },
+    );
 
     // We have a txn object. Start a blocknative SDK listener for blockchain events.
     const { emitter } = blocknative.transaction(txn.hash);
@@ -290,7 +297,7 @@ const actions = {
     const { web3Objects, fees } = state;
     const { contracts, publisher } = web3Objects;
     const { erc721HashtagRegistryContract } = contracts;
-    const { hashtag, nftContract, nftId } = payload;
+    const { hashtag, nftContract, nftId, nftChain } = payload;
 
     const txn = await erc721HashtagRegistryContract.mintAndTag(
       hashtag.indexOf("#") === 0 ? hashtag : `#${hashtag}`,
@@ -298,6 +305,7 @@ const actions = {
       nftId,
       publisher,
       state.address,
+      nftChain,
       {
         value: ethers.BigNumber.from(fees.tagging),
       },
