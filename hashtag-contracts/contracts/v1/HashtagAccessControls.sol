@@ -1,22 +1,31 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-pragma solidity 0.6.12;
-
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
  * @title Hashtag Protocol Access Controls contract
  * @notice Maintains a mapping of ethereum addresses and roles they have within the protocol
- * @author Hashtag Protocol
+ * @author Hashtag Protocol 
 */
-contract HashtagAccessControls is AccessControl {
+contract HashtagAccessControls is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 public constant PUBLISHER_ROLE = keccak256("PUBLISHER");
     bytes32 public constant SMART_CONTRACT_ROLE = keccak256("SMART_CONTRACT");
-
-    constructor() public {
+ 
+    function initialize() public initializer {
+        __AccessControl_init();
+        // Give default admin role to the deployer.
+        // setupRole is should only be called within initialize().
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     }
+    // Ensure that only address with admin role can upgrade.
+    function _authorizeUpgrade(address) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
+    function version() pure public virtual returns (string memory) {
+        return "1";
+    }
     /**
      * @notice Checks whether an address has a smart contract role
      * @param _addr Address being checked

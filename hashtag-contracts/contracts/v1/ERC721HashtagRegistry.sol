@@ -1,38 +1,54 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-pragma solidity 0.6.12;
+import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/GSN/Context.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+
 import "./HashtagProtocol.sol";
-import "hardhat/console.sol";
 
 /**
  * @title ERC721HashtagRegistry
  * @notice Contract that allows any ERC721 asset to be tagged by a hashtag within the Hashtag protocol
  * @author Hashtag Protocol
  */
-contract ERC721HashtagRegistry is Context, ReentrancyGuard {
-    using SafeMath for uint256;
+contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyGuardUpgradeable, UUPSUpgradeable {
+    using SafeMathUpgradeable for uint256;
 
     HashtagAccessControls public accessControls;
     HashtagProtocol public hashtagProtocol;
 
     uint256 public constant modulo = 100;
-    uint256 public platformPercentage = 20;
-    uint256 public publisherPercentage = 30;
-    uint256 public remainingPercentage = 50;
+    uint256 public platformPercentage;
+    uint256 public publisherPercentage;
+    uint256 public remainingPercentage;
+    uint256 public totalTags;
+    uint256 public tagFee;
+
+        // ERC721 interface identifier for checking ERC721 contract is valid
+    bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
+    bytes4 private constant _INTERFACE_ID_ERC721_CryptoKitties = 0x9a20483d;
 
     mapping(address => uint256) public accrued;
     mapping(address => uint256) public paid;
-
-    uint256 public totalTags = 0;
-
-    uint256 public tagFee = 0.001 ether;
-
     mapping(uint256 => bool) public permittedNftChainIds;
+        // tag id (will come from the totalTags pointer) -> tag
+    mapping(uint256 => Tag) public tagIdToTag;
+
+    // Stores important information about a tagging event
+    struct Tag {
+        uint256 hashtagId;
+        address nftContract;
+        uint256 nftId;
+        address tagger;
+        uint256 tagstamp;
+        address publisher;
+        uint256 nftChainId;
+    }
 
     // Used to log that an NFT has been tagged
     event HashtagRegistered(
@@ -48,24 +64,6 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
 
     event DrawDown(address indexed who, uint256 amount);
 
-    // Stores important information about a tagging event
-    struct Tag {
-        uint256 hashtagId;
-        address nftContract;
-        uint256 nftId;
-        address tagger;
-        uint256 tagstamp;
-        address publisher;
-        uint256 nftChainId;
-    }
-
-    // tag id (will come from the totalTags pointer) -> tag
-    mapping(uint256 => Tag) public tagIdToTag;
-
-    // ERC721 interface identifier for checking ERC721 contract is valid
-    bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
-    bytes4 private constant _INTERFACE_ID_ERC721_CryptoKitties = 0x9a20483d;
-
     /**
      * @notice Admin only execution guard
      * @dev When applied to a method, only allows execution when the sender has the admin role
@@ -75,12 +73,23 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
         _;
     }
 
-    constructor(
-        HashtagAccessControls _accessControls,
-        HashtagProtocol _hashtagProtocol
-    ) public {
+    // Replaces contructor function for UUPS Proxy contracts. Called upon first deployment.
+    function initialize( HashtagAccessControls _accessControls, HashtagProtocol _hashtagProtocol ) public initializer {
         accessControls = _accessControls;
         hashtagProtocol = _hashtagProtocol;
+        totalTags = 0;
+        tagFee = 0.001 ether;
+        platformPercentage = 20;
+        publisherPercentage = 30;
+        remainingPercentage = 50;
+    }
+
+    // Ensure that only address with admin role can upgrade.
+    function _authorizeUpgrade(address) internal override onlyAdmin {}
+
+    // Simple public function to return contract version.
+    function version() pure public virtual returns (string memory) {
+        return "1";
     }
 
     /**
@@ -163,12 +172,12 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
      * @param _account Target address that has had accrued ETH and which will receive the ETH
      */
     function drawDown(address payable _account) external nonReentrant {
-        uint256 totalDue = accrued[_account].sub(paid[_account]);
-        if (totalDue > 0 && totalDue <= address(this).balance) {
-            paid[_account] = paid[_account].add(totalDue);
-            _account.transfer(totalDue);
+        uint256 balanceDue = accrued[_account].sub(paid[_account]);
+        if (balanceDue > 0 && balanceDue <= address(this).balance) {
+            paid[_account] = paid[_account].add(balanceDue);
+            _account.transfer(balanceDue);
 
-            emit DrawDown(_account, totalDue);
+            emit DrawDown(_account, balanceDue);
         }
     }
 
@@ -312,7 +321,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
             nftContract: _nftContract,
             nftId: _nftId,
             tagger: _tagger,
-            tagstamp: now,
+            tagstamp: block.timestamp,
             publisher: _publisher,
             nftChainId: _nftChainId
         });
@@ -365,7 +374,7 @@ contract ERC721HashtagRegistry is Context, ReentrancyGuard {
         private
         view
     {
-        try IERC721(_nftContract).ownerOf(_nftId) returns (address owner) {
+        try IERC721Upgradeable(_nftContract).ownerOf(_nftId) returns (address owner) {
             require(
                 owner != address(0),
                 "Token does not exist or is owned by the zero address"

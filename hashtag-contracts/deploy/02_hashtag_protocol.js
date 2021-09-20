@@ -11,7 +11,16 @@ module.exports = async ({ deployments }) => {
   await deploy("HashtagProtocol", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: accountHashtagAdmin.address,
-    args: [contractAccessControls.address, accountHashtagPlatform.address],
+    proxy: {
+      proxyContract: "UUPSProxy",
+      execute: {
+        // Function to call when deployed first time.
+        init: {
+          methodName: "initialize",
+          args: [contractAccessControls.address, accountHashtagPlatform.address],
+        },
+      },
+    },
     log: true,
   });
 };

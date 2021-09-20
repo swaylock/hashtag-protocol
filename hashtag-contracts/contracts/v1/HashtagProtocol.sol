@@ -1,24 +1,25 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-pragma solidity 0.6.12;
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165StorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
-import "./interfaces/IERC721Token.sol";
-import "./interfaces/IERC721Receiver.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import {HashtagAccessControls} from "./HashtagAccessControls.sol";
-
-import "@openzeppelin/contracts/introspection/ERC165.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/GSN/Context.sol";
 
 /**
  * @title Hashtag Protocol contract
  * @notice Core smart contract of the protocol that governs the creation of hashtag tokens
  * @author Hashtag Protocol
 */
-contract HashtagProtocol is IERC721Token, ERC165, Context {
-    using SafeMath for uint256;
+contract HashtagProtocol is Initializable, IERC721Upgradeable, ERC165StorageUpgradeable, ContextUpgradeable, UUPSUpgradeable {
+    using SafeMathUpgradeable for uint256;
 
     event MintHashtag(
         uint256 indexed tokenId,
@@ -54,13 +55,13 @@ contract HashtagProtocol is IERC721Token, ERC165, Context {
     bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
 
     /// @notice Token name
-    string public name = "Hashtag Protocol";
+    string public name;
 
     /// @notice Token symbol
-    string public symbol = "HASHTAG";
+    string public symbol;
 
     /// @notice minimum time in seconds that a hashtag is owned
-    uint256 public ownershipTermLength = 730 days;
+    uint256 public ownershipTermLength;
 
     // @notice Function selector for ERC721Receiver.onERC721Received
     // 0x150b7a02
@@ -79,7 +80,7 @@ contract HashtagProtocol is IERC721Token, ERC165, Context {
     mapping(address => mapping(address => bool)) internal operatorApprovals;
 
     /// @notice baseURI for looking up up tokenURI for a token
-    string public baseURI = "https://api.hashtag-protocol.io/";
+    string public baseURI;
 
     /// @notice Definition of a Hashtag which bundles associated metadata
     struct Hashtag {
@@ -104,10 +105,10 @@ contract HashtagProtocol is IERC721Token, ERC165, Context {
     address payable public platform;
 
     /// @notice minimum hashtag length
-    uint256 constant public hashtagMinStringLength = 3;
+    uint256 public hashtagMinStringLength;
 
     /// @notice maximum hashtag length
-    uint256 public hashtagMaxStringLength = 32;
+    uint256 public hashtagMaxStringLength;
 
     /// @notice access controls smart contract
     HashtagAccessControls public accessControls;
@@ -126,15 +127,27 @@ contract HashtagProtocol is IERC721Token, ERC165, Context {
       * @param _accessControls core contract for managing access and roles
       * @param _platform address of the Hashtag protocol core account
      */
-    constructor (HashtagAccessControls _accessControls, address payable _platform) public {
+    function initialize(HashtagAccessControls _accessControls, address payable _platform) public initializer {
         accessControls = _accessControls;
         platform = _platform;
+        name = "Hashtag Protocol";
+        symbol = "HASHTAG";
+        ownershipTermLength = 730 days;
+        baseURI = "https://api.hashtag-protocol.io/";
+        hashtagMinStringLength = 3;
+        hashtagMaxStringLength = 32;
 
         _registerInterface(_INTERFACE_ID_ERC721);
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
+    // Ensure that only address with admin role can upgrade.
+    function _authorizeUpgrade(address) internal override onlyAdmin {}
 
+    // Simple public function to return contract version.
+    function version() pure public virtual returns (string memory) {
+        return "1";
+    }
     /**
      * @notice Admin method for updating the base token URI of a hashtag
      * @param _baseURI Base URI for all tokens
@@ -252,7 +265,7 @@ contract HashtagProtocol is IERC721Token, ERC165, Context {
     */
     function tokenURI(uint256 _tokenId) external view returns (string memory) {
         require(tokenIdToHashtag[_tokenId].creator != address(0), "Token ID must exist");
-        return string(abi.encodePacked(baseURI, Strings.toString(_tokenId)));
+        return string(abi.encodePacked(baseURI, StringsUpgradeable.toString(_tokenId)));
     }
 
     /// @notice Transfers the ownership of an NFT from one address to another address
@@ -287,7 +300,7 @@ contract HashtagProtocol is IERC721Token, ERC165, Context {
             receiverCodeSize := extcodesize(_to)
         }
         if (receiverCodeSize > 0) {
-            bytes4 selector = IERC721Receiver(_to).onERC721Received(
+            bytes4 selector = IERC721ReceiverUpgradeable(_to).onERC721Received(
                 _msgSender(),
                 _from,
                 _tokenId,
@@ -325,7 +338,7 @@ contract HashtagProtocol is IERC721Token, ERC165, Context {
             receiverCodeSize := extcodesize(_to)
         }
         if (receiverCodeSize > 0) {
-            bytes4 selector = IERC721Receiver(_to).onERC721Received(
+            bytes4 selector = IERC721ReceiverUpgradeable(_to).onERC721Received(
                 _msgSender(),
                 _from,
                 _tokenId,
@@ -642,7 +655,7 @@ contract HashtagProtocol is IERC721Token, ERC165, Context {
         }
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returndata) = to.call(abi.encodeWithSelector(
-                IERC721Receiver(to).onERC721Received.selector,
+                IERC721ReceiverUpgradeable(to).onERC721Received.selector,
                 _msgSender(),
                 from,
                 tokenId,

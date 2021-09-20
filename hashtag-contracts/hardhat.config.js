@@ -2,9 +2,9 @@ require("dotenv").config();
 
 require("@nomiclabs/hardhat-waffle");
 require("hardhat-deploy");
-
 //require("@eth-optimism/hardhat-ovm");
 require("@nomiclabs/hardhat-ethers");
+require("@openzeppelin/hardhat-upgrades");
 
 // Used for running ERC721.test.js, using truffle.
 require("@nomiclabs/hardhat-truffle5");
@@ -16,13 +16,26 @@ const { node_url, accounts } = require("./utils/network");
  */
 module.exports = {
   solidity: {
-    version: "0.6.12",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
+    compilers: [ 
+      {
+        version: "0.6.12",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
-    },
+      {
+        version: "0.8.3",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      }
+    ],
   },
   gasReporter: {
     currency: "USD",

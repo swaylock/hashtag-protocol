@@ -9,18 +9,20 @@ module.exports = async ({ deployments }) => {
   await deploy("HashtagAccessControls", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: accountHashtagAdmin.address,
+    proxy: {
+      proxyContract: "UUPSProxy",
+      execute: {
+        methodName: "initialize",
+      },
+    },
     log: true,
   });
 
   // Fetch address of HashtagAccessControls.
   const hashtagAccessControls = await ethers.getContract("HashtagAccessControls", accountHashtagAdmin);
 
-  await hashtagAccessControls.grantRole(
-    DEFAULT_ADMIN_ROLE,
-    accountHashtagAdmin.address, // ADMIN Address
-  );
-  console.log("DEFAULT_ADMIN_ROLE assigned to ", accountHashtagAdmin.address);
-
+  // Note Default admin role is set when contract is deployed.
+  // See deploy/01_access_controls.js
   await hashtagAccessControls.grantRole(
     ethers.utils.id("PUBLISHER"),
     accountHashtagPublisher.address, // PUBLISHER Address

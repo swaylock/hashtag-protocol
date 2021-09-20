@@ -19,7 +19,16 @@ module.exports = async ({ deployments }) => {
   await deploy("ERC721HashtagRegistry", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: accountHashtagAdmin.address,
-    args: [hashtagAccessControls.address, hashtagProtocol.address],
+    proxy: {
+      proxyContract: "UUPSProxy",
+      execute: {
+        // Function to call when deployed first time.
+        init: {
+          methodName: "initialize",
+          args: [hashtagAccessControls.address, hashtagProtocol.address],
+        },
+      },
+    },
     log: true,
   });
 };
