@@ -262,6 +262,7 @@ export default {
     routeHashtag = routeHashtag.toLowerCase();
 
     let imageUrl;
+    // See /plugins/htp-metadata-api.js
     imageUrl = await $metadataApiHelpers.getHashtagImage(routeHashtag);
 
     return {
