@@ -54,7 +54,7 @@ const getters = {
   address: (state) => state.address,
   networkId: (state) => state.networkId,
   currencyName: (state) => {
-    return state.networkId === 137 ? "MATIC" : "ETH";
+    return state.networkId === 137 || state.networkId === 80001 ? "MATIC" : "ETH";
   },
   networkInfo: (state) => {
     return onBoardChainMap[state.networkId];
