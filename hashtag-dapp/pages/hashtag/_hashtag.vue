@@ -123,12 +123,12 @@
                         <tr draggable="false" class="">
                           <td class="has-text-weight-bold">Tagging revenue</td>
                           <td>
-                            {{ hashtagsByName[0].creatorRevenue | toEth }} Ξ Creator<br />
-                            {{ hashtagsByName[0].ownerRevenue | toEth }} Ξ Owner<br />{{
+                            {{ hashtagsByName[0].creatorRevenue | toEth }} {{ currencyName }} Creator<br />
+                            {{ hashtagsByName[0].ownerRevenue | toEth }} {{ currencyName }} Owner<br />{{
                               hashtagsByName[0].publisherRevenue | toEth
                             }}
-                            Ξ Publisher<br />{{ hashtagsByName[0].protocolRevenue | toEth }}
-                            Ξ Protocol
+                            {{ currencyName }} Publisher<br />{{ hashtagsByName[0].protocolRevenue | toEth }}
+                            {{ currencyName }} Protocol
                           </td>
                         </tr>
                       </tbody>
@@ -240,6 +240,7 @@ import SocialHead from "~/components/SocialHead";
 import { PAGED_TAGS_BY_HASHTAG, HASHTAGS_BY_NAME, ALL_TAGS_BY_HASHTAG } from "~/apollo/queries";
 import TimestampFrom from "~/components/TimestampFrom";
 import TimestampFormatted from "~/components/TimestampFormatted";
+import { mapGetters } from "vuex";
 
 const PAGE_SIZE = 10;
 
@@ -348,6 +349,9 @@ export default {
     },
   },
   computed: {
+    computed: {
+      ...mapGetters("wallet", ["currencyName"]),
+    },
     randomSharingMessage() {
       const messages = [
         `${this.hashtagsByName[0].displayHashtag} stored as a non-fungible token (NFT) on the blockchain.`,
