@@ -42,7 +42,7 @@ const state = () => ({
     tagging: null,
     mintAndTag: null,
   },
-  accrued: null,
+  accrued: 0,
   openModalCloseFn: () => {},
 
   transactionState: {},
@@ -53,6 +53,9 @@ const getters = {
   accrued: (state) => state.accrued,
   address: (state) => state.address,
   networkId: (state) => state.networkId,
+  currencyName: (state) => {
+    return state.networkId === 137 || state.networkId === 80001 ? "MATIC" : "ETH";
+  },
   networkInfo: (state) => {
     return onBoardChainMap[state.networkId];
   },

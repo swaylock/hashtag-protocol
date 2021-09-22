@@ -1,13 +1,11 @@
 <template>
   <div class="modal-card hashtag-modal">
     <header class="modal-card-head">
-      <p class="modal-card-title has-text-centered">
-        Earnings summary for {{ address | shortEth }}
-      </p>
+      <p class="modal-card-title has-text-centered">Earnings summary for {{ address | shortEth }}</p>
     </header>
     <section class="modal-card-body">
       <div class="summary has-text-centered">
-        <p class="title is-2">{{ accrued | toEth }} ETH</p>
+        <p class="title is-2">{{ accrued | toEth }} {{ currencyName }}</p>
         <p class="subtitle is-6">TOTAL EARNED</p>
       </div>
     </section>
@@ -24,7 +22,7 @@ import { mapGetters } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters("wallet", ["address", "accrued"]),
+    ...mapGetters("wallet", ["address", "accrued", "currencyName"]),
   },
   methods: {
     drawDownFromRegistry() {

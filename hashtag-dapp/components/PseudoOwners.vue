@@ -34,18 +34,15 @@
                     ><a class=""><span>0x477c...d4ef</span></a></span
                   ></span
                 >
-                <span
-                  data-label="view on Etherscan"
-                  class="is-dark is-bottom is-small b-tooltip"
+                <span data-label="view on Etherscan" class="is-dark is-bottom is-small b-tooltip"
                   ><a
-                    ><span class="icon has-text-grey-light is-small"
-                      ><i class="mdi mdi-ethereum"></i></span></a></span
+                    ><span class="icon has-text-grey-light is-small"><i class="mdi mdi-ethereum"></i></span></a></span
               ></span>
             </td>
             <td data-label="Hashtags" class="has-text-centered">91</td>
             <td data-label="Tag count" class="has-text-centered">144</td>
             <td data-label="Revenue" class="has-text-centered">
-              <span>0.1100 ETH</span>
+              <span>0.1100 {{ currencyName }}</span>
             </td>
             <!---->
           </tr>
@@ -63,18 +60,15 @@
                     ><a><span>0x07bd...5b0e</span></a></span
                   ></span
                 >
-                <span
-                  data-label="view on Etherscan"
-                  class="is-dark is-bottom is-small b-tooltip"
+                <span data-label="view on Etherscan" class="is-dark is-bottom is-small b-tooltip"
                   ><a
-                    ><span class="icon has-text-grey-light is-small"
-                      ><i class="mdi mdi-ethereum"></i></span></a></span
+                    ><span class="icon has-text-grey-light is-small"><i class="mdi mdi-ethereum"></i></span></a></span
               ></span>
             </td>
             <td data-label="Hashtags" class="has-text-centered">82</td>
             <td data-label="Tag count" class="has-text-centered">219</td>
             <td data-label="Revenue" class="has-text-centered">
-              <span>0.0931 ETH</span>
+              <span>0.0931 {{ currencyName }}</span>
             </td>
             <!---->
           </tr>
@@ -92,18 +86,15 @@
                     ><a class=""><span>0xd677...bc4b</span></a></span
                   ></span
                 >
-                <span
-                  data-label="view on Etherscan"
-                  class="is-dark is-bottom is-small b-tooltip"
+                <span data-label="view on Etherscan" class="is-dark is-bottom is-small b-tooltip"
                   ><a
-                    ><span class="icon has-text-grey-light is-small"
-                      ><i class="mdi mdi-ethereum"></i></span></a></span
+                    ><span class="icon has-text-grey-light is-small"><i class="mdi mdi-ethereum"></i></span></a></span
               ></span>
             </td>
             <td data-label="Hashtags" class="has-text-centered">49</td>
             <td data-label="Tag count" class="has-text-centered">133</td>
             <td data-label="Revenue" class="has-text-centered">
-              <span>0.0480 ETH</span>
+              <span>0.0480 {{ currencyName }}</span>
             </td>
             <!---->
           </tr>
@@ -121,18 +112,15 @@
                     ><a><span>0x12d0...e4c2</span></a></span
                   ></span
                 >
-                <span
-                  data-label="view on Etherscan"
-                  class="is-dark is-bottom is-small b-tooltip"
+                <span data-label="view on Etherscan" class="is-dark is-bottom is-small b-tooltip"
                   ><a
-                    ><span class="icon has-text-grey-light is-small"
-                      ><i class="mdi mdi-ethereum"></i></span></a></span
+                    ><span class="icon has-text-grey-light is-small"><i class="mdi mdi-ethereum"></i></span></a></span
               ></span>
             </td>
             <td data-label="Hashtags" class="has-text-centered">39</td>
             <td data-label="Tag count" class="has-text-centered">120</td>
             <td data-label="Revenue" class="has-text-centered">
-              <span>0.0240 ETH</span>
+              <span>0.0240 {{ currencyName }}</span>
             </td>
             <!---->
           </tr>
@@ -144,9 +132,7 @@
             <th colspan="4">
               <div class="has-text-right">
                 <a href="/owners" class="">Browse owners </a>
-                <span class="icon has-text-dark is-small"
-                  ><i class="mdi mdi-arrow-right"></i
-                ></span>
+                <span class="icon has-text-dark is-small"><i class="mdi mdi-arrow-right"></i></span>
               </div>
             </th>
           </tr>
@@ -156,3 +142,13 @@
     <!---->
   </div>
 </template>
+
+<script>
+import { mapGetters } from "vuex";
+
+export default {
+  computed: {
+    ...mapGetters("wallet", ["currencyName"]),
+  },
+};
+</script>
