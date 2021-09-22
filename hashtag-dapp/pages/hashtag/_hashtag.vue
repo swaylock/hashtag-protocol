@@ -349,9 +349,7 @@ export default {
     },
   },
   computed: {
-    computed: {
-      ...mapGetters("wallet", ["currencyName"]),
-    },
+    ...mapGetters("wallet", ["currencyName"]),
     randomSharingMessage() {
       const messages = [
         `${this.hashtagsByName[0].displayHashtag} stored as a non-fungible token (NFT) on the blockchain.`,
