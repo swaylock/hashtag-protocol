@@ -1,5 +1,3 @@
-const platformConfig = require("platformsh-config").config();
-
 export default function ({ app }, inject) {
   /**
    * Helper plugin for interacting with HASHTAG metadata api.
@@ -54,7 +52,7 @@ export default function ({ app }, inject) {
      * Get Hashtag Metadata API server URL
      *
      * @returns Hashtag Metadata API base url.
-     * 
+     *
      * @see nuxtServerInit() in /stores/index.js
      */
     getMetadataApiUrl() {

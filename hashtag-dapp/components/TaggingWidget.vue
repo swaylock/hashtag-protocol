@@ -31,7 +31,7 @@
   </section>
 </template>
 <script>
-import { NFTS_ASSETS_NAME_CONTAINS } from "~/apollo/queries";
+import axios from "axios";
 import debounce from "lodash/debounce";
 import TxnModal from "~/components/TxnModal";
 //import TaggingModal from "~/components/TaggingModal";
@@ -46,21 +46,56 @@ export default {
   },
   methods: {
     getAsyncData: debounce(async function (name) {
+      this.isFetching = true;
       if (!name.length) {
         this.nameContains = [];
         return;
       }
 
-      const { data } = await this.$apollo.query({
-        query: NFTS_ASSETS_NAME_CONTAINS,
-        client: "nftsClient",
-        variables: {
-          first: 100,
-          name: name,
-        },
-      });
-
-      this.nameContains = data.nameContains;
+      const headers = {
+        Authorization: this.$config.nftPortAPIKey,
+      };
+      const { data } = await axios
+        .get("https://api.nftport.xyz/text_search", {
+          params: {
+            chain: "all-chains",
+            text: name,
+            page_number: 1,
+            page_size: 50,
+          },
+          headers: headers,
+        })
+        .then((response) => {
+          if (response.data.response == "OK") {
+            console.log(response);
+            const jsonArr = response.data.search_results;
+            const saveInfo = [];
+            for (var i = 0; i < jsonArr.length; i++) {
+              const arrInfo = {};
+              arrInfo["contractAddress"] = jsonArr[i].contract_address;
+              arrInfo["contractName"] = jsonArr[i].name;
+              arrInfo["contractSymbol"] = "test";
+              arrInfo["id"] = jsonArr[i].token_id;
+              arrInfo["metadataImageURI"] = jsonArr[i].image_url;
+              arrInfo["metadataName"] = jsonArr[i].name;
+              arrInfo["tokenId"] = jsonArr[i].token_id;
+              if (jsonArr[i].chain === "ethereum") {
+                arrInfo["chain"] = 1;
+              } else if (jsonArr[i].chain === "polygon") {
+                arrInfo["chain"] = 137;
+              }
+              saveInfo.push(arrInfo);
+            }
+            console.log("save info", saveInfo);
+            this.nameContains = saveInfo;
+            this.isFetching = false;
+            return saveInfo;
+          } else {
+            this.isFetching = false;
+            return [];
+          }
+        });
+      console.log(data);
     }, 300),
     async onNftSelected(nft) {
       await this.$store.dispatch("protocolAction/updateTargetNft", nft);
@@ -78,10 +113,7 @@ export default {
         trapFocus: true,
       });
 
-      this.$store.dispatch(
-        "wallet/captureOpenModalCloseFn",
-        taggingModal.close
-      );
+      this.$store.dispatch("wallet/captureOpenModalCloseFn", taggingModal.close);
     },
   },
 };
