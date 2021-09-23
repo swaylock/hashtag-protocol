@@ -19,7 +19,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Network</p>
-            <p class="subtitle" v-if="networkInfo">{{ networkInfo.Name }}</p>
+            <p class="subtitle" v-if="networkInfo">{{ networkInfo.name }}</p>
           </div>
         </div>
         <div class="level-item has-text-centered">
