@@ -60,7 +60,7 @@ const getters = {
     return onBoardChainMap[state.networkId];
   },
   explorerName: (state) => {
-    return state.networkId === 137 || state.networkId === 80001 ? "PolyScan" : "Etherscan";
+    return state.networkId === 137 || state.networkId === 80001 ? "PolygonScan" : "Etherscan";
   },
   balance: (state) => state.balance,
   name: (state) => state.name,
