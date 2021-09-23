@@ -87,6 +87,7 @@ const actions = {
       walletSelect: {
         heading: "Connect wallet",
         description: " ",
+        wallets: [{ walletName: "metamask", preferred: true }],
       },
     });
 
