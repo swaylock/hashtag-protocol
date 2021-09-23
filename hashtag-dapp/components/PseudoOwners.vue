@@ -34,7 +34,7 @@
                     ><a class=""><span>0x477c...d4ef</span></a></span
                   ></span
                 >
-                <span data-label="view on Etherscan" class="is-dark is-bottom is-small b-tooltip"
+                <span :data-label="`View on ${explorerName}`" class="is-dark is-bottom is-small b-tooltip"
                   ><a
                     ><span class="icon has-text-grey-light is-small"><i class="mdi mdi-ethereum"></i></span></a></span
               ></span>
@@ -60,7 +60,7 @@
                     ><a><span>0x07bd...5b0e</span></a></span
                   ></span
                 >
-                <span data-label="view on Etherscan" class="is-dark is-bottom is-small b-tooltip"
+                <span :data-label="`View on ${explorerName}`" class="is-dark is-bottom is-small b-tooltip"
                   ><a
                     ><span class="icon has-text-grey-light is-small"><i class="mdi mdi-ethereum"></i></span></a></span
               ></span>
@@ -86,7 +86,7 @@
                     ><a class=""><span>0xd677...bc4b</span></a></span
                   ></span
                 >
-                <span data-label="view on Etherscan" class="is-dark is-bottom is-small b-tooltip"
+                <span :data-label="`View on ${explorerName}`" class="is-dark is-bottom is-small b-tooltip"
                   ><a
                     ><span class="icon has-text-grey-light is-small"><i class="mdi mdi-ethereum"></i></span></a></span
               ></span>
@@ -112,7 +112,7 @@
                     ><a><span>0x12d0...e4c2</span></a></span
                   ></span
                 >
-                <span data-label="view on Etherscan" class="is-dark is-bottom is-small b-tooltip"
+                <span :data-label="`View on ${explorerName}`" class="is-dark is-bottom is-small b-tooltip"
                   ><a
                     ><span class="icon has-text-grey-light is-small"><i class="mdi mdi-ethereum"></i></span></a></span
               ></span>
@@ -148,7 +148,7 @@ import { mapGetters } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters("wallet", ["currencyName"]),
+    ...mapGetters("wallet", ["currencyName", "explorerName"]),
   },
 };
 </script>
