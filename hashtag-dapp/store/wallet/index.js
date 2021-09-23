@@ -59,12 +59,19 @@ const getters = {
   networkInfo: (state) => {
     return onBoardChainMap[state.networkId];
   },
+  explorerName: (state) => {
+    return state.networkId === 137 || state.networkId === 80001 ? "PolyScan" : "Etherscan";
+  },
   balance: (state) => state.balance,
   name: (state) => state.name,
   transactionState: (state) => state.transactionState,
 };
 
 const actions = {
+  nuxtServerInit({ commit }, { $config }) {
+    commit("setWalletNetworkId", $config.onboardNetworkID);
+  },
+
   async initOnboard({ dispatch, commit }) {
     // Initialize onboard.
     onboard = Onboard({
