@@ -12,8 +12,8 @@
     "url": "https://rinkeby.etherscan.io"
   },
   "80001": {
-    "url": "https://mumbai.polygonscan.com/"
     "name": "Polygon Mumbai",
+    "url": "https://mumbai.polygonscan.com"
   },
   "31337": {
     "name": "Hardhat Localdev",
