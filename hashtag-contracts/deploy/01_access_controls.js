@@ -27,6 +27,6 @@ module.exports = async ({ deployments }) => {
     ethers.utils.id("PUBLISHER"),
     accountHashtagPublisher.address, // PUBLISHER Address
   );
-  console.log("PUBLISHER role assigned to ", accountHashtagPublisher.address);
+  //console.log("PUBLISHER role assigned to ", accountHashtagPublisher.address);
 };
 module.exports.tags = ["HashtagAccessControls", "dev"];

@@ -10,9 +10,9 @@ import {HashtagProtocol} from "../HashtagProtocol.sol";
  * @author Hashtag Protocol
 */
 contract HashtagProtocolUpgradeTest is HashtagProtocol {
-    function version() pure public override returns (string memory) {
-        return "upgrade test";
-    }
+    //function version() pure public override returns (string memory) {
+    //    return "upgrade test";
+    //}
     function upgradeTest() pure public returns (bool) {
         return true;
     }
