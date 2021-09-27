@@ -18,7 +18,20 @@
           },
         }"
       >
-        <img :src="props.row.nftImage" :alt="props.row.nftName" class="nft-thumb" />
+        <video
+          v-if="props.row.nftImage.includes('mp4')"
+          autoplay=""
+          controlslist="nodownload"
+          loop=""
+          playsinline=""
+          poster=""
+          preload="metadata"
+          class="nft-thumb"
+          muted=""
+        >
+          <source :src="props.row.nftImage" type="video/mp4" />
+        </video>
+        <img v-else :src="props.row.nftImage" :alt="props.row.nftName" class="nft-thumb" />
       </nuxt-link>
     </b-table-column>
     <b-table-column field="nftName" label="Asset Name" v-slot="props">
@@ -95,6 +108,7 @@ export default {
         let nftData = [];
         response.forEach((nft) => {
           if (nft.data.response == "OK") {
+            console.log(nft);
             const config = JSON.parse(nft.config.data);
             nft.data.nft.nftId = nft.data.nft.token_id;
             nft.data.nft.nftName = nft.data.nft.metadata.name;

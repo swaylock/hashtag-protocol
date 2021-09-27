@@ -53,7 +53,19 @@
                               },
                             }"
                           >
-                            <img :src="tag.nftImage" :alt="tag.nftName" class="nft-thumb" />
+                            <video
+                              v-if="tag.nftImage.includes('mp4')"
+                              autoplay=""
+                              controlslist="nodownload"
+                              loop=""
+                              playsinline=""
+                              poster=""
+                              preload="metadata"
+                              class="nft-thumb"
+                            >
+                              <source :src="tag.nftImage" type="video/mp4" />
+                            </video>
+                            <img v-else :src="tag.nftImage" :alt="tag.nftName" class="nft-thumb" />
                           </nuxt-link>
                         </td>
                         <td data-label="Asset Name">

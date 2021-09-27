@@ -1,6 +1,6 @@
 <template>
   <section>
-    <b-field>
+    <b-field @keyup.native.enter="onEnter">
       <b-autocomplete
         placeholder='Search NFTs by name; eg "Dog"'
         icon="magnify"
@@ -14,7 +14,20 @@
         <template slot-scope="props">
           <div class="media">
             <div class="media-left">
-              <img :src="props.option.metadataImageURI" width="32" />
+              <video
+                v-if="props.option.metadataImageURI.includes('mp4')"
+                autoplay=""
+                controlslist="nodownload"
+                loop=""
+                playsinline=""
+                poster=""
+                preload="metadata"
+                width="32"
+                muted=""
+              >
+                <source :src="props.option.metadataImageURI" type="video/mp4" />
+              </video>
+              <img v-else :src="props.option.metadataImageURI" width="32" />
             </div>
             <div class="media-content">
               {{ props.option.metadataName }}
@@ -28,6 +41,7 @@
         </template>
       </b-autocomplete>
     </b-field>
+    <p class="title is-6 has-text-white">Search Powered By NFTPort</p>
   </section>
 </template>
 <script>
@@ -45,6 +59,13 @@ export default {
     };
   },
   methods: {
+    onEnter: function (event) {
+      this.$router.push({
+        name: "search",
+        params: { value: event.target.value },
+        query: { value: event.target.value },
+      });
+    },
     getAsyncData: debounce(async function (name) {
       this.isFetching = true;
       if (!name.length) {
@@ -55,7 +76,7 @@ export default {
       const headers = {
         Authorization: this.$config.nftPortAPIKey,
       };
-      const { data } = await axios
+      axios
         .get("https://api.nftport.xyz/text_search", {
           params: {
             chain: "all-chains",
@@ -67,7 +88,6 @@ export default {
         })
         .then((response) => {
           if (response.data.response == "OK") {
-            console.log(response);
             const jsonArr = response.data.search_results;
             const saveInfo = [];
             for (var i = 0; i < jsonArr.length; i++) {
@@ -86,7 +106,6 @@ export default {
               }
               saveInfo.push(arrInfo);
             }
-            console.log("save info", saveInfo);
             this.nameContains = saveInfo;
             this.isFetching = false;
             return saveInfo;
@@ -95,7 +114,6 @@ export default {
             return [];
           }
         });
-      console.log(data);
     }, 300),
     async onNftSelected(nft) {
       await this.$store.dispatch("protocolAction/updateTargetNft", nft);

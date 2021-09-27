@@ -18,7 +18,19 @@
                 <div class="card">
                   <div class="card-image">
                     <figure class="image">
-                      <img :src="nftInfo.nftImage" :alt="nftInfo.nftName" />
+                      <video
+                        v-if="nftInfo.nftImage.includes('mp4')"
+                        autoplay=""
+                        controlslist="nodownload"
+                        loop=""
+                        playsinline=""
+                        poster=""
+                        preload="metadata"
+                        class=""
+                      >
+                        <source :src="nftInfo.nftImage" type="video/mp4" />
+                      </video>
+                      <img v-else :src="nftInfo.nftImage" :alt="nftInfo.nftName" />
                     </figure>
                   </div>
                   <div class="card-content">

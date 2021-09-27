@@ -18,9 +18,9 @@
                 </td>
               </tr>
               <tr draggable="false" class="">
-                <td class="has-text-weight-bold">Project</td>
+                <td class="has-text-weight-bold">Chain</td>
                 <td>
-                  {{ nft.contractName }}
+                  {{ nft.chain == 1 ? "ethereum" : "polygon" }}
                 </td>
               </tr>
               <tr draggable="false" class="">

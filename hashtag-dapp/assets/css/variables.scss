@@ -69,6 +69,13 @@ $footer-background-color: $grey-lighter;
 // Removes hamburger in global nav.
 //$navbar-breakpoint: 414px;
 
+.text-overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 $section-padding: 0.25rem 0.8rem;
 $border: $grey-dark;
 $modal-card-head-radius: $radius-large;
