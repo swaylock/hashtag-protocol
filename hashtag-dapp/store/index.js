@@ -7,22 +7,22 @@ export const state = () => ({
   websiteBaseUrl: null,
   docsBaseUrl: null,
   dappBaseUrl: null,
-})
+});
 
 export const mutations = {
-  SET_METADATA_API_BASE_URL(state, url){
-    state.metaDataApiBaseUrl = url
+  SET_METADATA_API_BASE_URL(state, url) {
+    state.metaDataApiBaseUrl = url;
   },
-  SET_WEBSITE_BASE_URL(state, url){
-    state.websiteBaseUrl = url
+  SET_WEBSITE_BASE_URL(state, url) {
+    state.websiteBaseUrl = url;
   },
-  SET_DOCS_BASE_URL(state, url){
-    state.docsBaseUrl = url
+  SET_DOCS_BASE_URL(state, url) {
+    state.docsBaseUrl = url;
   },
-  SET_DAPP_BASE_URL(state, url){
-    state.dappBaseUrl = url
+  SET_DAPP_BASE_URL(state, url) {
+    state.dappBaseUrl = url;
   },
-}
+};
 
 export const actions = {
   nuxtServerInit({ commit }, { $config }) {
@@ -51,14 +51,13 @@ export const actions = {
 
         dappBaseUrl = platformConfig.getRoute("hashtag-dapp");
         dappBaseUrl = dappBaseUrl.url.replace(/\/$/, "");
-
       } catch (error) {
         console.error(error);
       }
     }
-    commit('SET_METADATA_API_BASE_URL', metadataApiBaseUrl);
-    commit('SET_WEBSITE_BASE_URL', websiteBaseUrl);
-    commit('SET_DOCS_BASE_URL', docsBaseUrl);
-    commit('SET_DAPP_BASE_URL', dappBaseUrl);
-  }
-}
+    commit("SET_METADATA_API_BASE_URL", metadataApiBaseUrl);
+    commit("SET_WEBSITE_BASE_URL", websiteBaseUrl);
+    commit("SET_DOCS_BASE_URL", docsBaseUrl);
+    commit("SET_DAPP_BASE_URL", dappBaseUrl);
+  },
+};
