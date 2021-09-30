@@ -36,6 +36,7 @@ export default {
     "~/plugins/vue-moment",
     "~/plugins/vue-screen",
     "~/plugins/htp-metadata-api",
+    "~/plugins/fallback-image",
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)

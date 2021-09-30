@@ -165,9 +165,15 @@
                                   class="nft-thumb"
                                   muted=""
                                 >
-                                  <source :src="tag.nftImage" type="video/mp4" />
+                                  <source :src="tag.nftImage" @error="setPendingImage" type="video/mp4" />
                                 </video>
-                                <img v-else :src="tag.nftImage" :alt="tag.nftName" class="nft-thumb" />
+                                <img
+                                  v-else
+                                  :src="tag.nftImage"
+                                  @error="setPendingImage"
+                                  :alt="tag.nftName"
+                                  class="nft-thumb"
+                                />
                               </nuxt-link>
                             </td>
                             <td data-label="Asset Name" class="">

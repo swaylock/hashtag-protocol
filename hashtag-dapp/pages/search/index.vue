@@ -33,9 +33,9 @@
                     preload="metadata"
                     muted=""
                   >
-                    <source :src="tag.metadataImageURI" type="video/mp4" />
+                    <source :src="tag.metadataImageURI" @error="setPendingImage" type="video/mp4" />
                   </video>
-                  <img v-else :src="tag.metadataImageURI" :alt="tag.nftName" />
+                  <img v-else :src="tag.metadataImageURI" @error="setPendingImage" :alt="tag.nftName" />
                 </figure>
               </div>
               <div class="card-content">

@@ -2,7 +2,19 @@
   <div class="card">
     <div class="card-image">
       <figure class="image">
-        <img :src="nft.metadataImageURI" :alt="nft.metadataName" />
+        <video
+          v-if="nft.metadataImageURI.includes('mp4')"
+          autoplay=""
+          controlslist="nodownload"
+          loop=""
+          playsinline=""
+          poster=""
+          preload="metadata"
+          class=""
+        >
+          <source :src="nft.metadataImageURI" @error="setPendingImage" type="video/mp4" />
+        </video>
+        <img v-else :src="nft.metadataImageURI" @error="setPendingImage" :alt="nft.metadataName" />
       </figure>
     </div>
     <div class="card-content">

@@ -28,9 +28,9 @@
                         preload="metadata"
                         class=""
                       >
-                        <source :src="nftInfo.nftImage" type="video/mp4" />
+                        <source :src="nftInfo.nftImage" @error="setPendingImage" type="video/mp4" />
                       </video>
-                      <img v-else :src="nftInfo.nftImage" :alt="nftInfo.nftName" />
+                      <img v-else :src="nftInfo.nftImage" @error="setPendingImage" :alt="nftInfo.nftName" />
                     </figure>
                   </div>
                   <div class="card-content">
@@ -309,11 +309,11 @@ export default {
         .then((response) => {
           let nftHold = {};
           nftHold["nftName"] = response.data.nft.metadata.name;
-          let res = response.data.nft.image_url.split("//");
+          let res = response.data.nft.cached_image_url.split("//");
           if (res[0] == "ipfs:") {
             nftHold["nftImage"] = "https://ipfs.io/" + res[1];
           } else {
-            nftHold["nftImage"] = response.data.nft.image_url;
+            nftHold["nftImage"] = response.data.nft.cached_image_url;
           }
           nftHold["nftId"] = response.data.nft.token_id;
           nftHold["nftDescription"] = response.data.nft.metadata.description;

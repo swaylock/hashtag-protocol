@@ -29,9 +29,9 @@
           class="nft-thumb"
           muted=""
         >
-          <source :src="props.row.nftImage" type="video/mp4" />
+          <source :src="props.row.nftImage" @error="setPendingImage" type="video/mp4" />
         </video>
-        <img v-else :src="props.row.nftImage" :alt="props.row.nftName" class="nft-thumb" />
+        <img v-else :src="props.row.nftImage" @error="setPendingImage" :alt="props.row.nftName" class="nft-thumb" />
       </nuxt-link>
     </b-table-column>
     <b-table-column field="nftName" label="Asset Name" v-slot="props">
@@ -108,18 +108,17 @@ export default {
         let nftData = [];
         response.forEach((nft) => {
           if (nft.data.response == "OK") {
-            console.log(nft);
             const config = JSON.parse(nft.config.data);
             nft.data.nft.nftId = nft.data.nft.token_id;
             nft.data.nft.nftName = nft.data.nft.metadata.name;
             nft.data.nft.hashtagDisplayHashtag = config.tagInfo.hashtagDisplayHashtag;
             nft.data.nft.nftContract = nft.data.nft.contract_address;
             nft.data.nft.nftChain = nft.config.params.chain;
-            let res = nft.data.nft.image_url.split("//");
+            let res = nft.data.nft.cached_image_url.split("//");
             if (res[0] == "ipfs:") {
               nft.data.nft.image_url = "https://ipfs.io/" + res[1];
             }
-            nft.data.nft.nftImage = nft.data.nft.image_url;
+            nft.data.nft.nftImage = nft.data.nft.cached_image_url;
             nftData.push(nft.data.nft);
           }
         });

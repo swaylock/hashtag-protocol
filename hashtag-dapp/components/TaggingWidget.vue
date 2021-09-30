@@ -25,9 +25,9 @@
                 width="32"
                 muted=""
               >
-                <source :src="props.option.metadataImageURI" type="video/mp4" />
+                <source :src="props.option.metadataImageURI" @error="setPendingImage" type="video/mp4" />
               </video>
-              <img v-else :src="props.option.metadataImageURI" width="32" />
+              <img v-else :src="props.option.metadataImageURI" @error="setPendingImage" width="32" />
             </div>
             <div class="media-content">
               {{ props.option.metadataName }}
@@ -41,7 +41,9 @@
         </template>
       </b-autocomplete>
     </b-field>
-    <p class="title is-6 has-text-white">Search Powered By NFTPort</p>
+    <p class="is-7 pl-2 has-text-white">
+      search powered by <a href="https://www.nftport.xyz/" target="_blank">NFTPort</a>
+    </p>
   </section>
 </template>
 <script>
