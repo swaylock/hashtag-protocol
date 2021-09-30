@@ -53,14 +53,16 @@ const getters = {
   accrued: (state) => state.accrued,
   address: (state) => state.address,
   networkId: (state) => state.networkId,
-  currencyName: (state) => {
-    return state.networkId === 137 || state.networkId === 80001 ? "MATIC" : "ETH";
-  },
   networkInfo: (state) => {
     return onBoardChainMap[state.networkId];
   },
+  // The following two probably could use a better home
+  // as the dapp will be running on polygon for the forseeable future.
+  currencyName: (state) => {
+    return "MATIC";
+  },
   explorerName: (state) => {
-    return state.networkId === 137 || state.networkId === 80001 ? "PolygonScan" : "Etherscan";
+    return "PolygonScan";
   },
   balance: (state) => state.balance,
   name: (state) => state.name,
