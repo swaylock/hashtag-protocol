@@ -21,12 +21,7 @@
       </span>
     </b-tooltip>
     &nbsp;&nbsp;
-    <b-tooltip
-      label="view on Etherscan"
-      position="is-bottom"
-      type="is-dark"
-      size="is-small"
-    >
+    <b-tooltip :label="`View on ${explorerName}`" position="is-bottom" type="is-dark" size="is-small">
       <a :href="this.addressUrl" target="_blank">
         <b-icon icon="ethereum" type="is-grey-light" size="is-small"> </b-icon>
       </a>
@@ -44,7 +39,7 @@ export default {
     route: String,
   },
   computed: {
-    ...mapGetters("wallet", ["homesteadProvider"]),
+    ...mapGetters("wallet", ["homesteadProvider", "explorerName"]),
   },
   data() {
     return {
@@ -53,9 +48,7 @@ export default {
     };
   },
   async mounted() {
-    this.ens = this.homesteadProvider
-      ? await this.homesteadProvider.lookupAddress(this.value)
-      : null;
+    this.ens = this.homesteadProvider ? await this.homesteadProvider.lookupAddress(this.value) : null;
     this.addressUrl = `${this.$config.etherscanBaseUrl}/address/${this.value}`;
   },
 };
