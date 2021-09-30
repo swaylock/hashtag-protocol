@@ -44,8 +44,9 @@ const state = () => ({
   },
   accrued: 0,
   openModalCloseFn: () => {},
-
   transactionState: {},
+  currencyName: "MATIC",
+  explorerName: "PolygonScan",
 });
 
 const getters = {
@@ -58,12 +59,8 @@ const getters = {
   },
   // The following two probably could use a better home
   // as the dapp will be running on polygon for the forseeable future.
-  currencyName: (state) => {
-    return "MATIC";
-  },
-  explorerName: (state) => {
-    return "PolygonScan";
-  },
+  currencyName: (state) => state.currencyName,
+  explorerName: (state) => state.explorerName,
   balance: (state) => state.balance,
   name: (state) => state.name,
   transactionState: (state) => state.transactionState,
