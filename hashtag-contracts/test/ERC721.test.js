@@ -5,7 +5,6 @@ const {
 } = require("@openzeppelin/test-helpers");
 const { ZERO_ADDRESS } = constants;
 
-const web3 = require("web3");
 const chai = require("chai");
 const BN = require("bn.js");
 
@@ -22,11 +21,11 @@ const ERC721ReceiverMock = artifacts.require("ERC721ReceiverMock");
 contract("ERC721", function (accounts) {
   const [
     owner,
+    publisher,
+    operator,
     approved,
     anotherApproved,
-    operator,
     other,
-    publisher,
     creator,
   ] = accounts;
 
@@ -40,19 +39,23 @@ contract("ERC721", function (accounts) {
 
   beforeEach(async function () {
     this.accessControls = await HashtagAccessControls.new({ from: owner });
+    await this.accessControls.initialize();
     await this.accessControls.grantRole(
       await this.accessControls.SMART_CONTRACT_ROLE(),
       owner,
       { from: owner }
     );
 
-    this.token = await HashtagProtocol.new(this.accessControls.address, owner);
-
     // add a publisher to the protocol
     await this.accessControls.grantRole(
       web3.utils.sha3("PUBLISHER"),
       publisher
     );
+
+    this.token = await HashtagProtocol.new(this.accessControls.address, owner);
+    await this.token.initialize(this.accessControls.address, operator);
+
+
   });
 
   //shouldSupportInterfaces(["ERC165", "ERC721", "ERC721Metadata"]);
