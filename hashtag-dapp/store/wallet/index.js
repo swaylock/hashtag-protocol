@@ -255,7 +255,6 @@ const actions = {
    * @returns
    */
   async tag({ state, dispatch }, payload) {
-    console.log("payload", payload);
     const ready = await dispatch("readyToTransact");
     if (!ready) return;
     // Prompts user to complete transaction in their wallet.

@@ -26,12 +26,12 @@
           playsinline=""
           poster=""
           preload="metadata"
-          class="nft-thumb"
           muted=""
+          class="nft-thumb"
         >
           <source :src="props.row.nftImage" @error="setPendingImage" type="video/mp4" />
         </video>
-        <img v-else :src="props.row.nftImage" @error="setPendingImage" :alt="props.row.nftName" class="nft-thumb" />
+        <img v-else :src="props.row.nftImage" @error="setPendingImage" class="nft-thumb" :alt="props.row.nftName" />
       </nuxt-link>
     </b-table-column>
     <b-table-column field="nftName" label="Asset Name" v-slot="props">
