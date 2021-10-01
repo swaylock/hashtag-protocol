@@ -3,13 +3,14 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/token/ERC721/Extensions/IERC721MetadataUpgradeable.sol";
-//import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165StorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "hardhat/console.sol";
 
 import {HashtagAccessControls} from "./HashtagAccessControls.sol";
 
@@ -17,43 +18,23 @@ import {HashtagAccessControls} from "./HashtagAccessControls.sol";
  * @title Hashtag Protocol contract
  * @notice Core smart contract of the protocol that governs the creation of hashtag tokens
  * @author Hashtag Protocol
-*/
+ */
 contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpgradeable {
-
     using AddressUpgradeable for address;
     using StringsUpgradeable for uint256;
     using SafeMathUpgradeable for uint256;
 
-    event NewBaseURI(
-      string baseURI
-    );
+    event NewBaseURI(string baseURI);
 
-    event MintHashtag(
-        uint256 indexed tokenId,
-        string displayHashtag,
-        address indexed publisher,
-        address creator
-    );
+    event MintHashtag(uint256 indexed tokenId, string displayHashtag, address indexed publisher, address creator);
 
-    event HashtagReset(
-        uint256 indexed tokenId,
-        address indexed owner
-    );
+    event HashtagReset(uint256 indexed tokenId, address indexed owner);
 
-    event HashtagRenewed(
-        uint256 indexed tokenId,
-        address indexed caller
-    );
+    event HashtagRenewed(uint256 indexed tokenId, address indexed caller);
 
-    event OwnershipTermLengthUpdated(
-        uint256 originalOwnershipLength,
-        uint256 updatedOwnershipLength
-    );
+    event OwnershipTermLengthUpdated(uint256 originalOwnershipLength, uint256 updatedOwnershipLength);
 
-    event RenewalPeriodUpdated(
-        uint256 originalRenewalPeriod,
-        uint256 updatedRenewalPeriod
-    );
+    event RenewalPeriodUpdated(uint256 originalRenewalPeriod, uint256 updatedRenewalPeriod);
 
     // @notice ERC165 interface for ERC721
     bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
@@ -70,24 +51,24 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
     // @notice Token symbol
     //string public symbol;
 
-        // Token name
+    // Token name
     //string private _name;
 
     // Token symbol
     //string private _symbol;
-    string public constant NAME = 'HTP: HASHTAG Registry';
-    string public constant VERSION = '0.2.0';
+    string public constant NAME = "HTP: HASHTAG Registry";
+    string public constant VERSION = "0.2.0";
 
     /// @notice minimum time in seconds that a hashtag is owned
     uint256 public ownershipTermLength;
 
-    /// @notice baseURI for looking up tokenURI for a token
+    // baseURI for looking up tokenURI for a token
     string public baseURI;
 
     /// @notice current tip of the hashtag tokens (and total supply) as minted consecutively
     uint256 public tokenPointer;
 
-   /// @notice core Hashtag protocol account
+    /// @notice core Hashtag protocol account
     address payable public platform;
 
     /// @notice minimum hashtag length
@@ -110,16 +91,16 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
         string displayVersion;
     }
     // Mapping of tokenId => owner
-    mapping(uint256 => address) internal owners;
+    //mapping(uint256 => address) internal owners;
 
     // Mapping of tokenId => approved address
-    mapping(uint256 => address) internal approvals;
+    //mapping(uint256 => address) internal approvals;
 
     // Mapping of owner => number of tokens owned
-    mapping(address => uint256) internal balances;
+    //mapping(address => uint256) internal balances;
 
     // Mapping of owner => operator => approved
-    mapping(address => mapping(address => bool)) internal operatorApprovals;
+    // mapping(address => mapping(address => bool)) internal operatorApprovals;
 
     /// @notice lookup of Hashtag info from token ID
     mapping(uint256 => Hashtag) public tokenIdToHashtag;
@@ -159,9 +140,10 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
         public
         view
         virtual
-        override(ERC721Upgradeable, ERC165StorageUpgradeable) 
-        returns (bool) {
-            return super.supportsInterface(interfaceId);
+        override(ERC721Upgradeable, ERC165StorageUpgradeable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 
     /// Minting
@@ -170,7 +152,7 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
         string calldata _hashtag,
         address payable _publisher,
         address _creator
-    ) payable external returns (uint256 _tokenId) {
+    ) external payable returns (uint256 _tokenId) {
         require(accessControls.isPublisher(_publisher), "Mint: The publisher must be whitelisted");
 
         // Perform basic hashtag validation
@@ -180,18 +162,19 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
         tokenPointer = tokenPointer.add(1);
         uint256 tokenId = tokenPointer;
 
-        // create the hashtag
+        // mint the token, transferring it to the platform.
+        _safeMint(platform, tokenId);
+
+        // Store HASHTAG data in state.
         tokenIdToHashtag[tokenId] = Hashtag({
-            displayVersion : _hashtag,
-            originalPublisher : _publisher,
-            creator : _creator
+            displayVersion: _hashtag,
+            originalPublisher: _publisher,
+            creator: _creator
         });
 
-        // store a reverse lookup and mint the tag
+        // Store a reverse lookup.
         hashtagToTokenId[lowerHashtagToMint] = tokenId;
 
-        // Minting events
-        emit Transfer(address(0), platform, tokenId);
         emit MintHashtag(tokenId, _hashtag, _publisher, _creator);
 
         return tokenId;
@@ -216,7 +199,7 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
      * @param _tokenId The identifier for the hashtag being recycled
      */
     function recycleHashtag(uint256 _tokenId) external {
-        require(exists(_tokenId), "recycleHashtag: Invalid token ID");
+        require(_exists(_tokenId), "recycleHashtag: Invalid token ID");
         require(ownerOf(_tokenId) != platform, "recycleHashtag: Already owned by the platform");
 
         uint256 lastTransferTime = tokenIdToLastTransferTime[_tokenId];
@@ -225,7 +208,7 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
             "recycleHashtag: Token not eligible for recycling yet"
         );
 
-        _transferFrom(_tokenId, getApproved(_tokenId), platform, ownerOf(_tokenId));
+        _transfer(ownerOf(_tokenId), platform, _tokenId);
 
         emit HashtagReset(_tokenId, _msgSender());
     }
@@ -235,7 +218,7 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
     /**
      * @notice Admin method for updating the base token URI of a hashtag
      * @param newBaseURI Base URI for all tokens
-    */
+     */
     function setBaseURI(string calldata newBaseURI) public onlyAdmin {
         baseURI = newBaseURI;
         emit NewBaseURI(baseURI);
@@ -244,7 +227,7 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
     /**
      * @notice Admin method for updating the max string length of a hashtag
      * @param _hashtagMaxStringLength max length
-    */
+     */
     function setHashtagMaxStringLength(uint256 _hashtagMaxStringLength) public onlyAdmin {
         hashtagMaxStringLength = _hashtagMaxStringLength;
         //emit HashtagMaxStringLengthUpdated(hashtagMaxStringLength, _hashtagMaxStringLength);
@@ -253,7 +236,7 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
     /**
      * @notice Admin method for updating the ownership length for all hashtag tokens i.e. a global param
      * @param _ownershipTermLength New length in unix epoch seconds
-    */
+     */
     function setOwnershipTermLength(uint256 _ownershipTermLength) public onlyAdmin {
         emit OwnershipTermLengthUpdated(ownershipTermLength, _ownershipTermLength);
         ownershipTermLength = _ownershipTermLength;
@@ -262,50 +245,70 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
     /**
      * @notice Admin functionality for updating the address that receives the commission on behalf of the platform
      * @param _platform Address that receives minted NFTs
-    */
-    function setPlatform(address payable _platform) onlyAdmin external {
+     */
+    function setPlatform(address payable _platform) external onlyAdmin {
         platform = _platform;
     }
 
     /**
      * @notice Admin functionality for updating the access controls
      * @param _accessControls Address of the access controls contract
-    */
-    function updateAccessControls(HashtagAccessControls _accessControls) onlyAdmin external {
+     */
+    function updateAccessControls(HashtagAccessControls _accessControls) external onlyAdmin {
         require(address(_accessControls) != address(0), "HashtagProtocol.updateAccessControls: Cannot be zero");
         accessControls = _accessControls;
     }
 
+    //function approve(address _approved, uint256 _tokenId) public virtual override {
+    //  address owner = ownerOf(_tokenId);
+    //  require(_msgSender() == owner || isApprovedForAll(owner, _msgSender()), "ERC721_INVALID_SENDER");
+    //
+    //  approvals[_tokenId] = _approved;
+    //  emit Approval(owner, _approved, _tokenId);
+    //}
+
+    // function setApprovalForAll(address _operator, bool _approved) public virtual override {
+    //   operatorApprovals[_msgSender()][_operator] = _approved;
+    //   emit ApprovalForAll(_msgSender(), _operator, _approved);
+    // }
+
+    //function balanceOf(address owner) public view virtual override returns (uint256) {
+    //  require(owner != address(0), "ERC721: balance query for the zero address");
+    //  return balances[owner];
+    //}
+
     /// Public read functions
 
-    function ownerOf(uint256 _tokenId) public view virtual override returns (address) {
-        address owner = owners[_tokenId];
-        if (owner == address(0) && tokenIdToHashtag[_tokenId].creator != address(0)) {
-            return platform;
-        }
+    //function ownerOf(uint256 _tokenId) public view virtual override returns (address) {
+    //  address owner = owners[_tokenId];
+    //  if (owner == address(0) && tokenIdToHashtag[_tokenId].creator != address(0)) {
+    //    return platform;
+    //  }
+    //
+    //  require(owner != address(0), "ERC721: owner query for nonexistent token");
+    //  return owner;
+    //}
 
-        require(owner != address(0), "ERC721_ZERO_OWNER");
-        return owner;
-    }
+    // function getApproved(uint256 _tokenId) public view override returns (address) {
+    //   require(_exists(_tokenId), "ERC721: approved query for nonexistent token");
+    //   return approvals[_tokenId];
+    // }
 
-    function getApproved(uint256 _tokenId) override public view returns (address) {
-        return approvals[_tokenId];
-    }
-
-    function isApprovedForAll(address _owner, address _operator) override public view returns (bool) {
-        return operatorApprovals[_owner][_operator];
-    }
+    // function isApprovedForAll(address _owner, address _operator) public view override returns (bool) {
+    //   return operatorApprovals[_owner][_operator];
+    // }
 
     /**
      * @notice Returns the commission addresses related to a token
      * @param _tokenId ID of a hashtag
      * @return _platform Platform commission address
      * @return _owner Address of the owner of the hashtag
-    */
-    function getPaymentAddresses(uint256 _tokenId) public view returns (
-        address payable _platform,
-        address payable _owner
-    ) {
+     */
+    function getPaymentAddresses(uint256 _tokenId)
+        public
+        view
+        returns (address payable _platform, address payable _owner)
+    {
         return (platform, payable(ownerOf(_tokenId)));
     }
 
@@ -313,45 +316,54 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
      * @notice Returns creator of a token
      * @param _tokenId ID of a hashtag
      * @return _creator creator of the hashtag
-    */
+     */
     function getCreatorAddress(uint256 _tokenId) public view returns (address _creator) {
         return tokenIdToHashtag[_tokenId].creator;
     }
 
-    /**
-     * @dev See {IERC721-transferFrom}.
-     */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public virtual override {
-        //solhint-disable-next-line max-line-length
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
-
-        address owner = ownerOf(tokenId);
-        address spender = _msgSender();
-        address approvedAddress = getApproved(tokenId);
-
-        if (owner == platform) {
-            require(
-                spender == owner ||
-                accessControls.isSmartContract(spender) ||
-                isApprovedForAll(owner, spender) ||
-                approvedAddress == spender,
-                "ERC721_INVALID_SPENDER"
-            );
-        } else {
-            require(
-                spender == owner ||
-                isApprovedForAll(owner, spender) ||
-                approvedAddress == spender,
-                "ERC721_INVALID_SPENDER"
-            );
-        }
-
-        _transferFrom(tokenId, approvedAddress, to, from);
-    }
+    //**
+    //* @notice Transfer ownership of an NFT -- THE CALLER IS RESPONSIBLE
+    //*         TO CONFIRM THAT `_to` IS CAPABLE OF RECEIVING NFTS OR ELSE
+    //*         THEY MAY BE PERMANENTLY LOST
+    //* @dev Throws unless `msg.sender` is the current owner, an authorized
+    //*      operator, or the approved address for this NFT. Throws if `_from` is
+    //*      not the current owner. Throws if `_to` is the zero address. Throws if
+    //*      `_tokenId` is not a valid NFT.
+    //* @param _from The current owner of the NFT
+    //* @param _to The new owner
+    //* @param _tokenId The NFT to transfer
+    //*/
+    //function transferFrom(
+    //  address _from,
+    //  address _to,
+    //  uint256 _tokenId
+    //) public override {
+    //  require(_to != address(0), "ERC721: transfer to the zero address");
+    //  require(_to != platform, "ERC721_CANNOT_TRANSFER_TO_PLATFORM");
+    //
+    //  address owner = ownerOf(_tokenId);
+    //  require(_from == owner, "ERC721: transfer of token that is not own");
+    //
+    //  address spender = _msgSender();
+    //  address approvedAddress = getApproved(_tokenId);
+    //
+    //  if (owner == platform) {
+    //    require(
+    //      spender == owner ||
+    //        accessControls.isSmartContract(spender) ||
+    //        isApprovedForAll(owner, spender) ||
+    //        approvedAddress == spender,
+    //      "ERC721: transfer caller is not owner nor approved"
+    //    );
+    //  } else {
+    //    require(
+    //      spender == owner || isApprovedForAll(owner, spender) || approvedAddress == spender,
+    //      "ERC721: transfer caller is not owner nor approved"
+    //    );
+    //  }
+    //
+    //  _transferFrom(_tokenId, approvedAddress, _to, _from);
+    //}
 
     /// Internal
 
@@ -362,33 +374,34 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
         bytes32 codehash;
         bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
         // solhint-disable-next-line no-inline-assembly
-        assembly {codehash := extcodehash(account)}
+        assembly {
+            codehash := extcodehash(account)
+        }
         return (codehash != accountHash && codehash != 0x0);
     }
 
     /**
-     * @notice Existence check on a token
-     * @param _tokenId token ID
-     * @return true if exists
-    */
-    function _exists(uint256 _tokenId) internal view virtual override returns (bool) {
-        return tokenIdToHashtag[_tokenId].creator != address(0);
-    }
+     * @dev See {IERC721Metadata-tokenURI}.
+     */
+    //function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+    //  require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+    //  return string(abi.encodePacked(baseURI, StringsUpgradeable.toString(tokenId)));
+    //}
 
     /**
-     * @notice Existence check on a token
-     * @param _tokenId token ID
+     * @notice Existence check on a HASHTAG token
+     * @param tokenId token ID
      * @return true if exists
-    */
-    function exists(uint256 _tokenId) public view returns (bool) {
-        return tokenIdToHashtag[_tokenId].creator != address(0);
+     */
+    function exists(uint256 tokenId) external view returns (bool) {
+        return _exists(tokenId);
     }
 
     /**
      * @notice Private method used for validating a hashtag before minting
      * @dev A series of assertions are performed reverting the transaction for any validation violations
      * @param _hashtag Proposed hashtag string
-    */
+     */
     function _assertHashtagIsValid(string memory _hashtag) private view returns (string memory) {
         bytes memory hashtagStringBytes = bytes(_hashtag);
         require(
@@ -408,11 +421,14 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
 
             // Generally ensure that the character is alpha numeric
             bool isInvalidCharacter = !(char >= 0x30 && char <= 0x39) && //0-9
-            !(char >= 0x41 && char <= 0x5A) && //A-Z
-            !(char >= 0x61 && char <= 0x7A);
+                !(char >= 0x41 && char <= 0x5A) && //A-Z
+                !(char >= 0x61 && char <= 0x7A);
             //a-z
 
-            require(!isInvalidCharacter, "Invalid character found: Hashtag may only contain characters A-Z, a-z, 0-9 and #");
+            require(
+                !isInvalidCharacter,
+                "Invalid character found: Hashtag may only contain characters A-Z, a-z, 0-9 and #"
+            );
 
             // Should the char be alphabetic, increment alphabetCharCount
             if ((char >= 0x41 && char <= 0x5A) || (char >= 0x61 && char <= 0x7A)) {
@@ -430,11 +446,11 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
      * @notice Converts a string to its lowercase equivalent
      * @param _base String to convert
      * @return string Lowercase version of string supplied
-    */
+     */
     function _lower(string memory _base) private pure returns (string memory) {
         bytes memory bStr = bytes(_base);
         bytes memory bLower = new bytes(bStr.length);
-        for (uint i = 0; i < bStr.length; i++) {
+        for (uint256 i = 0; i < bStr.length; i++) {
             // Uppercase character...
             if ((bStr[i] >= 0x41) && (bStr[i] <= 0x5A)) {
                 // So we add 32 to make it lowercase
@@ -446,38 +462,39 @@ contract HashtagProtocol is ERC721Upgradeable, ERC165StorageUpgradeable, UUPSUpg
         return string(bLower);
     }
 
-    /**
-     * @notice Internal method for handling token transfer flow, has special case handling for platform transfers as
-     *         to not change its balance which is always set to zero by design
-     * @param _tokenId The identifier for an NFT
-     * @param _approvedAddress The approval address, can set set to zero address
-     * @param _to Who will be receiving the token after transfer
-     * @param _from Who is transferring the token
-     */
-    function _transferFrom(uint256 _tokenId, address _approvedAddress, address _to, address _from) private {
-        if (_approvedAddress != address(0)) {
-            approvals[_tokenId] = address(0);
-        }
-
-        owners[_tokenId] = _to;
-
-        if (_from != platform) {
-            balances[_from] = balances[_from].sub(1);
-        }
-
-        // Ensure last transfer time is set to now
-        tokenIdToLastTransferTime[_tokenId] = block.timestamp;
-
-        if (_to != platform) {
-            balances[_to] = balances[_to].add(1);
-        }
-
-        emit Transfer(
-            _from,
-            _to,
-            _tokenId
-        );
-    }
+    // /**
+    //  * @notice Internal method for handling token transfer flow, has special case handling for platform transfers as
+    //  *         to not change its balance which is always set to zero by design
+    //  * @param _tokenId The identifier for an NFT
+    //  * @param _approvedAddress The approval address, can set set to zero address
+    //  * @param _to Who will be receiving the token after transfer
+    //  * @param _from Who is transferring the token
+    //  */
+    // function _transferFrom(
+    //   uint256 _tokenId,
+    //   address _approvedAddress,
+    //   address _to,
+    //   address _from
+    // ) private {
+    //   if (_approvedAddress != address(0)) {
+    //     approvals[_tokenId] = address(0);
+    //   }
+    //
+    //   owners[_tokenId] = _to;
+    //
+    //   if (_from != platform) {
+    //     balances[_from] = balances[_from].sub(1);
+    //   }
+    //
+    //   // Ensure last transfer time is set to now
+    //   tokenIdToLastTransferTime[_tokenId] = block.timestamp;
+    //
+    //   if (_to != platform) {
+    //     balances[_to] = balances[_to].add(1);
+    //   }
+    //
+    //   emit Transfer(_from, _to, _tokenId);
+    // }
 
     function _baseURI() internal view override(ERC721Upgradeable) returns (string memory) {
         return baseURI;
