@@ -267,6 +267,9 @@ export default {
           nftChain: this.nftInfo.chain,
         });
       }
+
+      // Reset the tagging input
+      this.hashtag = [];
     },
     // Bulma taginput widget.
     getFilteredTags: function (text) {
