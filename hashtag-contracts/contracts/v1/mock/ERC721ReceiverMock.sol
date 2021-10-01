@@ -10,14 +10,17 @@ contract ERC721ReceiverMock is IERC721Receiver {
 
     event Received(address operator, address from, uint256 tokenId, bytes data, uint256 gas);
 
-    constructor (bytes4 retval, bool reverts) {
+    constructor(bytes4 retval, bool reverts) {
         _retval = retval;
         _reverts = reverts;
     }
 
-    function onERC721Received(address operator, address from, uint256 tokenId, bytes memory data)
-    public override returns (bytes4)
-    {
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes memory data
+    ) public override returns (bytes4) {
         require(!_reverts, "ERC721ReceiverMock: reverting");
         emit Received(operator, from, tokenId, data, gasleft());
         return _retval;

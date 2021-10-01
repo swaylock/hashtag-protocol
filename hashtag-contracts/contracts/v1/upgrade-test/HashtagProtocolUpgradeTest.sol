@@ -13,7 +13,7 @@ contract HashtagProtocolUpgradeTest is HashtagProtocol {
     //function version() pure public override returns (string memory) {
     //    return "upgrade test";
     //}
-    function upgradeTest() pure public returns (bool) {
+    function upgradeTest() public pure returns (bool) {
         return true;
     }
 }

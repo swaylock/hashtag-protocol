@@ -10,10 +10,11 @@ import {ERC721HashtagRegistry} from "../ERC721HashtagRegistry.sol";
  * @author Hashtag Protocol 
 */
 contract ERC721HashtagRegistryUpgradeTest is ERC721HashtagRegistry {
-    function version() pure public override returns (string memory) {
+    function version() public pure override returns (string memory) {
         return "upgrade test";
     }
-    function upgradeTest() pure public returns (bool) {
+
+    function upgradeTest() public pure returns (bool) {
         return true;
     }
 }

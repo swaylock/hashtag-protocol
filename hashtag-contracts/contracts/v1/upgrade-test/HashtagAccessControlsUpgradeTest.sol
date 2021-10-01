@@ -10,10 +10,11 @@ import {HashtagAccessControls} from "../HashtagAccessControls.sol";
  * @author Hashtag Protocol 
 */
 contract HashtagAccessControlsUpgradeTest is HashtagAccessControls {
-    function version() pure public override returns (string memory) {
+    function version() public pure override returns (string memory) {
         return "upgrade test";
     }
-    function upgradeTest() pure public returns (bool) {
+
+    function upgradeTest() public pure returns (bool) {
         return true;
     }
 }

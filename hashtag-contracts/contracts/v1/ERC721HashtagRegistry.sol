@@ -29,14 +29,14 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
     uint256 public totalTags;
     uint256 public tagFee;
 
-        // ERC721 interface identifier for checking ERC721 contract is valid
+    // ERC721 interface identifier for checking ERC721 contract is valid
     bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
     bytes4 private constant _INTERFACE_ID_ERC721_CryptoKitties = 0x9a20483d;
 
     mapping(address => uint256) public accrued;
     mapping(address => uint256) public paid;
     mapping(uint256 => bool) public permittedNftChainIds;
-        // tag id (will come from the totalTags pointer) -> tag
+    // tag id (will come from the totalTags pointer) -> tag
     mapping(uint256 => Tag) public tagIdToTag;
 
     // Stores important information about a tagging event
@@ -74,7 +74,7 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
     }
 
     // Replaces contructor function for UUPS Proxy contracts. Called upon first deployment.
-    function initialize( HashtagAccessControls _accessControls, HashtagProtocol _hashtagProtocol ) public initializer {
+    function initialize(HashtagAccessControls _accessControls, HashtagProtocol _hashtagProtocol) public initializer {
         accessControls = _accessControls;
         hashtagProtocol = _hashtagProtocol;
         totalTags = 0;
@@ -88,7 +88,7 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
     function _authorizeUpgrade(address) internal override onlyAdmin {}
 
     // Simple public function to return contract version.
-    function version() pure public virtual returns (string memory) {
+    function version() public pure virtual returns (string memory) {
         return "1";
     }
 
@@ -110,15 +110,9 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
         address _tagger,
         uint256 _nftChainId
     ) external payable {
-        require(
-            accessControls.isPublisher(_publisher),
-            "Mint and tag: The publisher must be whitelisted"
-        );
+        require(accessControls.isPublisher(_publisher), "Mint and tag: The publisher must be whitelisted");
         require(msg.value >= tagFee, "Mint and tag: You must send the tag fee");
-        require(
-            this.getPermittedNftChainId(_nftChainId),
-            "Mint and tag: Tagging target chain not permitted"
-        );
+        require(this.getPermittedNftChainId(_nftChainId), "Mint and tag: Tagging target chain not permitted");
 
         uint256 hashtagId = hashtagProtocol.mint(_hashtag, _publisher, _tagger);
         _tag(hashtagId, _nftContract, _nftId, _publisher, _tagger, _nftChainId);
@@ -141,28 +135,12 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
         address _tagger,
         uint256 _nftChainId
     ) public payable nonReentrant {
-        require(
-            accessControls.isPublisher(_publisher),
-            "Tag: The publisher must be whitelisted"
-        );
+        require(accessControls.isPublisher(_publisher), "Tag: The publisher must be whitelisted");
         require(msg.value >= tagFee, "Tag: You must send the fee");
-        require(
-            hashtagProtocol.exists(_hashtagId),
-            "Tag: The hashtag ID supplied is invalid - non-existent token!"
-        );
-        require(
-            this.getPermittedNftChainId(_nftChainId),
-            "Tag: Tagging target chain not permitted"
-        );
+        require(hashtagProtocol.exists(_hashtagId), "Tag: The hashtag ID supplied is invalid - non-existent token!");
+        require(this.getPermittedNftChainId(_nftChainId), "Tag: Tagging target chain not permitted");
 
-        _tag(
-            _hashtagId,
-            _nftContract,
-            _nftId,
-            _publisher,
-            _tagger,
-            _nftChainId
-        );
+        _tag(_hashtagId, _nftContract, _nftId, _publisher, _tagger, _nftChainId);
     }
 
     /**
@@ -237,14 +215,8 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
      * @notice Admin functionality for updating the access controls
      * @param _accessControls Address of the access controls contract
      */
-    function updateAccessControls(HashtagAccessControls _accessControls)
-        external
-        onlyAdmin
-    {
-        require(
-            address(_accessControls) != address(0),
-            "ERC721HashtagRegistry.updateAccessControls: Cannot be zero"
-        );
+    function updateAccessControls(HashtagAccessControls _accessControls) external onlyAdmin {
+        require(address(_accessControls) != address(0), "ERC721HashtagRegistry.updateAccessControls: Cannot be zero");
         accessControls = _accessControls;
     }
 
@@ -253,19 +225,14 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
      * @param _platformPercentage percentage for platform
      * @param _publisherPercentage percentage for publisher
      */
-    function updatePercentages(
-        uint256 _platformPercentage,
-        uint256 _publisherPercentage
-    ) external onlyAdmin {
+    function updatePercentages(uint256 _platformPercentage, uint256 _publisherPercentage) external onlyAdmin {
         require(
             _platformPercentage.add(_publisherPercentage) <= 100,
             "ERC721HashtagRegistry.updatePercentages: percentages must not be over 100"
         );
         platformPercentage = _platformPercentage;
         publisherPercentage = _publisherPercentage;
-        remainingPercentage = modulo.sub(platformPercentage).sub(
-            publisherPercentage
-        );
+        remainingPercentage = modulo.sub(platformPercentage).sub(publisherPercentage);
     }
 
     /**
@@ -273,10 +240,7 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
      * @param _nftChainId EVM compatible chain id.
      * @param _setting Boolean, set true for enabled, false for disabled.
      */
-    function setPermittedNftChainId(uint256 _nftChainId, bool _setting)
-        external
-        onlyAdmin
-    {
+    function setPermittedNftChainId(uint256 _nftChainId, bool _setting) external onlyAdmin {
         permittedNftChainIds[_nftChainId] = _setting;
     }
 
@@ -285,11 +249,7 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
      * @param _nftChainId EVM compatible chain id.
      * @return true for enabled, false for disabled.
      */
-    function getPermittedNftChainId(uint256 _nftChainId)
-        external
-        view
-        returns (bool)
-    {
+    function getPermittedNftChainId(uint256 _nftChainId) external view returns (bool) {
         return permittedNftChainIds[_nftChainId];
     }
 
@@ -326,59 +286,31 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
             nftChainId: _nftChainId
         });
 
-        (address _platform, address _owner) = hashtagProtocol
-            .getPaymentAddresses(_hashtagId);
+        (address _platform, address _owner) = hashtagProtocol.getPaymentAddresses(_hashtagId);
 
         // pre-auction
         if (_owner == _platform) {
-            accrued[_platform] = accrued[_platform].add(
-                msg.value.mul(platformPercentage).div(modulo)
-            );
-            accrued[_publisher] = accrued[_publisher].add(
-                msg.value.mul(publisherPercentage).div(modulo)
-            );
+            accrued[_platform] = accrued[_platform].add(msg.value.mul(platformPercentage).div(modulo));
+            accrued[_publisher] = accrued[_publisher].add(msg.value.mul(publisherPercentage).div(modulo));
 
             address creator = hashtagProtocol.getCreatorAddress(_hashtagId);
-            accrued[creator] = accrued[creator].add(
-                msg.value.mul(remainingPercentage).div(modulo)
-            );
+            accrued[creator] = accrued[creator].add(msg.value.mul(remainingPercentage).div(modulo));
         }
         // post-auction
         else {
-            accrued[_platform] = accrued[_platform].add(
-                msg.value.mul(platformPercentage).div(modulo)
-            );
-            accrued[_publisher] = accrued[_publisher].add(
-                msg.value.mul(publisherPercentage).div(modulo)
-            );
+            accrued[_platform] = accrued[_platform].add(msg.value.mul(platformPercentage).div(modulo));
+            accrued[_publisher] = accrued[_publisher].add(msg.value.mul(publisherPercentage).div(modulo));
 
-            accrued[_owner] = accrued[_owner].add(
-                msg.value.mul(remainingPercentage).div(modulo)
-            );
+            accrued[_owner] = accrued[_owner].add(msg.value.mul(remainingPercentage).div(modulo));
         }
 
         // Log that an NFT has been tagged
-        emit HashtagRegistered(
-            _tagger,
-            _nftContract,
-            _publisher,
-            _hashtagId,
-            _nftId,
-            tagId,
-            tagFee,
-            _nftChainId
-        );
+        emit HashtagRegistered(_tagger, _nftContract, _publisher, _hashtagId, _nftId, tagId, tagFee, _nftChainId);
     }
 
-    function _assertNftExists(address _nftContract, uint256 _nftId)
-        private
-        view
-    {
+    function _assertNftExists(address _nftContract, uint256 _nftId) private view {
         try IERC721Upgradeable(_nftContract).ownerOf(_nftId) returns (address owner) {
-            require(
-                owner != address(0),
-                "Token does not exist or is owned by the zero address"
-            );
+            require(owner != address(0), "Token does not exist or is owned by the zero address");
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
