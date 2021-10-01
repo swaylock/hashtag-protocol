@@ -223,7 +223,7 @@ export default {
       id: params.id,
       tagsByHashtag: null,
       hashtagsByName: null,
-      hashtag: null,
+      hashtag: [],
       hashtags: null,
       hashtagInputTags: [],
       mintAndTag: false,
@@ -232,7 +232,7 @@ export default {
   },
   computed: {
     isTaggable() {
-      return this.hashtag;
+      return this.hashtag.length;
     },
   },
   apollo: {
@@ -279,6 +279,9 @@ export default {
           nftChain: this.nftInfo.chain,
         });
       }
+
+      // Reset the tagging input
+      this.hashtag = [];
     },
     // Bulma taginput widget.
     getFilteredTags: function (text) {
