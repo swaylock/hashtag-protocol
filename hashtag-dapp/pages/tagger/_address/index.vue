@@ -124,7 +124,26 @@
                                   },
                                 }"
                               >
-                                <img :src="tag.nftImage" :alt="tag.nftName" class="nft-thumb" />
+                                <video
+                                  v-if="tag.nftImage.includes('mp4')"
+                                  autoplay=""
+                                  controlslist="nodownload"
+                                  loop=""
+                                  playsinline=""
+                                  poster=""
+                                  preload="metadata"
+                                  class="nft-thumb"
+                                  muted=""
+                                >
+                                  <source :src="tag.nftImage" @error="setPendingImage" type="video/mp4" />
+                                </video>
+                                <img
+                                  v-else
+                                  :src="tag.nftImage"
+                                  @error="setPendingImage"
+                                  :alt="tag.nftName"
+                                  class="nft-thumb"
+                                />
                               </nuxt-link>
                             </td>
                             <td data-label="Asset Name" class="">
@@ -295,11 +314,11 @@ export default {
             nft.data.nft.nftContract = nft.data.nft.contract_address;
             nft.data.nft.nftChain = nft.config.params.chain;
             nft.data.nft.tagger = config.tagInfo.tagger;
-            let res = nft.data.nft.image_url.split("//");
+            let res = nft.data.nft.cached_image_url.split("//");
             if (res[0] == "ipfs:") {
-              nft.data.nft.image_url = "https://ipfs.io/" + res[1];
+              nft.data.nft.cached_image_url = "https://ipfs.io/" + res[1];
             }
-            nft.data.nft.nftImage = nft.data.nft.image_url;
+            nft.data.nft.nftImage = nft.data.nft.cached_image_url;
             nft.data.nft.id = count;
             count++;
             nftData.push(nft.data.nft);

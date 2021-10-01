@@ -7,19 +7,11 @@
           <div class="card">
             <div class="card-image">
               <figure class="image">
-                <img
-                  v-if="this.nft"
-                  :src="this.nft.metadataImageURI"
-                  alt="Image"
-                />
+                <img v-if="this.nft" :src="this.nft.metadataImageURI" alt="Image" />
               </figure>
             </div>
             <div class="card-content">
-              <span
-                class="has-text-weight-bold is-size-6 is-block"
-                v-if="this.nft"
-                >{{ this.nft.metadataName }}</span
-              >
+              <span class="has-text-weight-bold is-size-6 is-block" v-if="this.nft">{{ this.nft.metadataName }}</span>
               <Span class="is-size-7 is-block">Known Origin</Span>
             </div>
           </div>
@@ -27,9 +19,7 @@
         <div class="tile">
           <div class="content form-wrapper">
             <h2 class="is-title is-size-4 is-block">Tag this asset</h2>
-            <p class="is-block is-size-6">
-              Choose a HASHTAG to describe this digital asset.
-            </p>
+            <p class="is-block is-size-6">Choose a HASHTAG to describe this digital asset.</p>
 
             <form>
               <div class="field">
@@ -55,18 +45,12 @@
                     >
                       <template slot-scope="props">
                         <b-taglist attached>
-                          <b-tag type="is-primary" size="is-medium"
-                            >{{ props.option.displayHashtag }}
-                          </b-tag>
-                          <b-tag type="is-dark" size="is-medium"
-                            >{{ props.option.tagCount }}
-                          </b-tag>
+                          <b-tag type="is-primary" size="is-medium">{{ props.option.displayHashtag }} </b-tag>
+                          <b-tag type="is-dark" size="is-medium">{{ props.option.tagCount }} </b-tag>
                         </b-taglist>
                       </template>
                       <template slot="empty">
-                        <span class="new-hashtag"
-                          >Unique HASHTAG! Press enter to continue...</span
-                        >
+                        <span class="new-hashtag">Unique HASHTAG! Press enter to continue...</span>
                       </template>
                     </b-taginput>
                   </b-field>
@@ -119,12 +103,7 @@ export default {
   computed: {
     ...mapGetters("wallet", ["address", "transactionState"]),
     isTaggable() {
-      return (
-        this.nftName &&
-        this.nftName.length > 0 &&
-        this.hashtag &&
-        this.hashtag.length > 0
-      );
+      return this.nftName && this.nftName.length > 0 && this.hashtag && this.hashtag.length > 0;
     },
   },
   apollo: {
@@ -151,9 +130,7 @@ export default {
       console.log("getFilteredTags", hashtags.length);
       this.hashtagInputTags = hashtags.filter((tag) => {
         //console.log("getFilteredTags", tag);
-        return (
-          tag && `${tag.name.toLowerCase()}`.indexOf(text.toLowerCase()) === 1
-        );
+        return tag && `${tag.name.toLowerCase()}`.indexOf(text.toLowerCase()) === 1;
       });
     },
     /**
@@ -214,7 +191,7 @@ export default {
 
         const hashtags = this.hashtags || [];
         const findExistingHashtagResult = hashtags.filter(
-          (tag) => tag.name.toLowerCase() === hashtagValue.toLowerCase()
+          (tag) => tag.name.toLowerCase() === hashtagValue.toLowerCase(),
         );
 
         await this.$store.dispatch("wallet/tag", {
@@ -238,16 +215,11 @@ export default {
     tagAssetValidation(hashtag) {
       const tagContentValid = this.validateTag(hashtag);
       if (tagContentValid) {
-        const hashtagValue =
-          this.hashtag[0] && this.hashtag[0].name
-            ? this.hashtag[0].name
-            : this.hashtag[0];
+        const hashtagValue = this.hashtag[0] && this.hashtag[0].name ? this.hashtag[0].name : this.hashtag[0];
 
         const isNewHashtag =
           (this.hashtagInputTags || []).filter((option) => {
-            return (
-              option.name.toLowerCase().indexOf(hashtagValue.toLowerCase()) >= 0
-            );
+            return option.name.toLowerCase().indexOf(hashtagValue.toLowerCase()) >= 0;
           }).length === 0;
 
         this.mintAndTag = isNewHashtag;
@@ -274,9 +246,7 @@ export default {
     });
   },
   created() {
-    this.hashtagValidationService = new HashtagValidationService(
-      this.$buefy.toast
-    );
+    this.hashtagValidationService = new HashtagValidationService(this.$buefy.toast);
   },
 };
 </script>

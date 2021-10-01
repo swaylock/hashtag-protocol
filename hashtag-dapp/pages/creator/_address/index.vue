@@ -3,14 +3,11 @@
     <Header />
     <section class="main" v-if="creatorByAcc">
       <div class="container">
-        <h1 class="title is-1">
-          Creator: <eth-account :value="creator"></eth-account>
-        </h1>
+        <h1 class="title is-1">Creator: <eth-account :value="creator"></eth-account></h1>
         <h2 class="subtitle">
           Hashtag Protocol Token Creator
           <span class="is-pulled-right is-size-6 has-text-weight-bold">
-            <nuxt-link :to="{ name: 'creators' }">Browse creators</nuxt-link
-            >&nbsp;
+            <nuxt-link :to="{ name: 'creators' }">Browse creators</nuxt-link>&nbsp;
             <b-icon icon="arrow-up" type="is-dark" size="is-small"></b-icon>
           </span>
         </h2>
@@ -57,18 +54,13 @@
                         <tr draggable="false" class="">
                           <td class="has-text-weight-bold">Tagging revenue</td>
                           <td>
-                            <eth-amount
-                              :value="creatorByAcc.tagFees"
-                            ></eth-amount>
+                            <eth-amount :value="creatorByAcc.tagFees"></eth-amount>
                           </td>
                         </tr>
                         <tr draggable="false" class="">
                           <td class="has-text-weight-bold">Total revenue</td>
                           <td>
-                            <eth-amount-sum
-                              :value1="creatorByAcc.tagFees"
-                              :value2="0"
-                            ></eth-amount-sum>
+                            <eth-amount-sum :value1="creatorByAcc.tagFees" :value2="0"></eth-amount-sum>
                           </td>
                         </tr>
                       </tbody>
@@ -82,9 +74,7 @@
         <div class="columns is-tablet is-centered">
           <div class="column is-12">
             <article class="is-white box">
-              <h2 class="title is-4 is-spaced">
-                Activity for <eth-account :value="creator"></eth-account>
-              </h2>
+              <h2 class="title is-4 is-spaced">Activity for <eth-account :value="creator"></eth-account></h2>
               <b-tabs v-model="activeTab" :animated="false">
                 <b-tab-item label="Hashtags">
                   <div class="b-table">
@@ -104,27 +94,15 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr
-                            draggable="false"
-                            class=""
-                            v-for="hashtag in hashtagsByCreator"
-                            v-bind:key="hashtag.id"
-                          >
+                          <tr draggable="false" class="" v-for="hashtag in hashtagsByCreator" v-bind:key="hashtag.id">
                             <td data-label="Hashtag" class="">
-                              <hashtag
-                                :value="hashtag.displayHashtag"
-                              ></hashtag>
+                              <hashtag :value="hashtag.displayHashtag"></hashtag>
                             </td>
                             <td data-label="Created" class="">
-                              <timestamp-from
-                                :value="hashtag.timestamp"
-                              ></timestamp-from>
+                              <timestamp-from :value="hashtag.timestamp"></timestamp-from>
                             </td>
                             <td data-label="Publisher" class="">
-                              <eth-account
-                                :value="hashtag.publisher"
-                                route="publisher-address"
-                              ></eth-account>
+                              <eth-account :value="hashtag.publisher" route="publisher-address"></eth-account>
                             </td>
                           </tr>
                         </tbody>
@@ -147,7 +125,7 @@
                               <div class="th-wrap"></div>
                             </th>
                             <th>
-                              <div class="th-wrap">Asset Name</div>
+                              <div class="th-wrap">Chain</div>
                             </th>
                             <th>
                               <div class="th-wrap">Project</div>
@@ -163,8 +141,8 @@
                             </th>
                           </tr>
                         </thead>
-                        <tbody>
-                          <tr v-for="tag in tagsByTagger" v-bind:key="tag.id">
+                        <tbody v-if="nftInfo">
+                          <tr v-for="tag in nftInfo" v-bind:key="tag.id">
                             <td class="has-text-centered">
                               <nuxt-link
                                 :to="{
@@ -176,10 +154,25 @@
                                   },
                                 }"
                               >
-                                <img
-                                  :src="tag.nftImage"
-                                  :alt="tag.nftName"
+                                <video
+                                  v-if="tag.nftImage.includes('mp4')"
+                                  autoplay=""
+                                  controlslist="nodownload"
+                                  loop=""
+                                  playsinline=""
+                                  poster=""
+                                  preload="metadata"
+                                  muted=""
                                   class="nft-thumb"
+                                >
+                                  <source :src="tag.nftImage" @error="setPendingImage" type="video/mp4" />
+                                </video>
+                                <img
+                                  v-else
+                                  :src="tag.nftImage"
+                                  @error="setPendingImage"
+                                  class="nft-thumb"
+                                  :alt="tag.nftName"
                                 />
                               </nuxt-link>
                             </td>
@@ -189,26 +182,20 @@
                                 :name="tag.nftName"
                                 :contract="tag.nftContract"
                                 :id="tag.nftId"
+                                :value="tag.nftName"
                               ></nft-link>
                             </td>
-                            <td data-label="Asset Name" class="">
-                              {{ tag.nftContractName }}
+                            <td data-label="Chain" class="">
+                              {{ tag.nftChain }}
                             </td>
                             <td data-label="Hashtag" class="">
-                              <hashtag
-                                :value="tag.hashtagDisplayHashtag"
-                              ></hashtag>
+                              <hashtag :value="tag.hashtagDisplayHashtag"></hashtag>
                             </td>
                             <td data-label="Tagged" class="">
-                              <timestamp-from
-                                :value="tag.timestamp"
-                              ></timestamp-from>
+                              <timestamp-from :value="tag.timestamp"></timestamp-from>
                             </td>
                             <td data-label="Tagger" class="">
-                              <eth-account
-                                :value="tag.tagger"
-                                route="tagger-address"
-                              ></eth-account>
+                              <eth-account :value="tag.tagger" route="tagger-address"></eth-account>
                             </td>
                           </tr>
                         </tbody>
@@ -248,6 +235,7 @@ import Hashtag from "~/components/Hashtag";
 import TimestampFrom from "~/components/TimestampFrom";
 import NftLink from "~/components/NftLink";
 import Pagination from "~/components/Pagination";
+import axios from "axios";
 
 const PAGE_SIZE = 10;
 
@@ -285,7 +273,19 @@ export default {
         skip: 0,
         taggedCount: 0,
       },
+      nftInfo: null,
     };
+  },
+  mounted() {
+    this.pullTagsFromAPI();
+  },
+  watch: {
+    // whenever question changes, this function will run
+    tagsByTagger: function (val) {
+      if (val) {
+        this.pullTagsFromAPI();
+      }
+    },
   },
   apollo: {
     creatorByAcc: {
@@ -347,6 +347,61 @@ export default {
     },
     taggedContentTabSelected(pageId) {
       this.taggedContentTab.skip = pageId * PAGE_SIZE;
+    },
+    pullTagsFromAPI: async function () {
+      let taggedData = await this.$apollo.queries.tagsByTagger.refetch();
+      taggedData = taggedData.data.tagsByTagger;
+      const promises = [];
+      const headers = {
+        Authorization: this.$config.nftPortAPIKey,
+      };
+      taggedData.forEach((nft) => {
+        let chain = "";
+        if (nft.nftChainId === "1") {
+          chain = "ethereum";
+        } else if (nft.nftChainId === "137") {
+          chain = "polygon";
+        }
+        promises.push(
+          axios.get("https://api.nftport.xyz/nfts/" + nft.nftContract + "/" + nft.nftId, {
+            params: {
+              chain: chain,
+              page_number: 1,
+              page_size: 50,
+            },
+            data: {
+              tagInfo: nft,
+            },
+            headers: headers,
+          }),
+        );
+      });
+      await axios.all(promises).then((response) => {
+        let nftData = [];
+        let count = 0;
+        response.forEach((nft) => {
+          if (nft.data.response == "OK") {
+            const config = JSON.parse(nft.config.data);
+            nft.data.nft.nftId = nft.data.nft.token_id;
+            nft.data.nft.nftName = nft.data.nft.metadata.name;
+            nft.data.nft.timestamp = config.tagInfo.timestamp;
+            nft.data.nft.hashtagDisplayHashtag = config.tagInfo.hashtagDisplayHashtag;
+            nft.data.nft.publisher = config.tagInfo.publisher;
+            nft.data.nft.nftContract = nft.data.nft.contract_address;
+            nft.data.nft.nftChain = nft.config.params.chain;
+            nft.data.nft.tagger = config.tagInfo.tagger;
+            let res = nft.data.nft.cached_image_url.split("//");
+            if (res[0] == "ipfs:") {
+              nft.data.nft.cached_image_url = "https://ipfs.io/" + res[1];
+            }
+            nft.data.nft.nftImage = nft.data.nft.cached_image_url;
+            nft.data.nft.id = count;
+            count++;
+            nftData.push(nft.data.nft);
+          }
+        });
+        this.nftInfo = nftData;
+      });
     },
   },
 };

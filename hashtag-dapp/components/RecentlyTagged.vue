@@ -18,7 +18,20 @@
           },
         }"
       >
-        <img :src="props.row.nftImage" :alt="props.row.nftName" class="nft-thumb" />
+        <video
+          v-if="props.row.nftImage.includes('mp4')"
+          autoplay=""
+          controlslist="nodownload"
+          loop=""
+          playsinline=""
+          poster=""
+          preload="metadata"
+          muted=""
+          class="nft-thumb"
+        >
+          <source :src="props.row.nftImage" @error="setPendingImage" type="video/mp4" />
+        </video>
+        <img v-else :src="props.row.nftImage" @error="setPendingImage" class="nft-thumb" :alt="props.row.nftName" />
       </nuxt-link>
     </b-table-column>
     <b-table-column field="nftName" label="Asset Name" v-slot="props">
@@ -101,11 +114,11 @@ export default {
             nft.data.nft.hashtagDisplayHashtag = config.tagInfo.hashtagDisplayHashtag;
             nft.data.nft.nftContract = nft.data.nft.contract_address;
             nft.data.nft.nftChain = nft.config.params.chain;
-            let res = nft.data.nft.image_url.split("//");
+            let res = nft.data.nft.cached_image_url.split("//");
             if (res[0] == "ipfs:") {
               nft.data.nft.image_url = "https://ipfs.io/" + res[1];
             }
-            nft.data.nft.nftImage = nft.data.nft.image_url;
+            nft.data.nft.nftImage = nft.data.nft.cached_image_url;
             nftData.push(nft.data.nft);
           }
         });
