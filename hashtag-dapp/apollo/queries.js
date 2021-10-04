@@ -87,6 +87,7 @@ export const PAGED_TAGS_BY_HASHTAG = gql`
       nftContractName
       nftImage
       nftName
+      nftChainId
       nftDescription
       nftId
       tagger

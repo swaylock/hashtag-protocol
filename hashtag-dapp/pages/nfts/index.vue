@@ -36,6 +36,9 @@
                           <div class="th-wrap">Tagged</div>
                         </th>
                         <th>
+                          <div class="th-wrap">Tagger</div>
+                        </th>
+                        <th>
                           <div class="th-wrap">Publisher</div>
                         </th>
                       </tr>
@@ -53,7 +56,25 @@
                               },
                             }"
                           >
-                            <img :src="tag.nftImage" :alt="tag.nftName" class="nft-thumb" />
+                            <video
+                              v-if="tag.nftImage.includes('mp4')"
+                              autoplay=""
+                              controlslist="nodownload"
+                              loop=""
+                              playsinline=""
+                              poster=""
+                              preload="metadata"
+                              class="nft-thumb"
+                            >
+                              <source :src="tag.nftImage" @error="setPendingImage" type="video/mp4" />
+                            </video>
+                            <img
+                              v-else
+                              :src="tag.nftImage"
+                              @error="setPendingImage"
+                              :alt="tag.nftName"
+                              class="nft-thumb"
+                            />
                           </nuxt-link>
                         </td>
                         <td data-label="Asset Name">
@@ -72,7 +93,10 @@
                           <hashtag :value="tag.hashtagDisplayHashtag"></hashtag>
                         </td>
                         <td>
-                          <timestamp-from :value="tag.timestamp"></timestamp-from>
+                          <timestamp-from :value="tag.timestamp" class="nowrap"></timestamp-from>
+                        </td>
+                        <td data-label="Tagger">
+                          <eth-account :value="tag.tagger" route="tagger-address"></eth-account>
                         </td>
                         <td>
                           <eth-account :value="tag.publisher" route="publisher-address"></eth-account>
@@ -197,13 +221,14 @@ export default {
             nft.data.nft.timestamp = config.tagInfo.timestamp;
             nft.data.nft.hashtagDisplayHashtag = config.tagInfo.hashtagDisplayHashtag;
             nft.data.nft.publisher = config.tagInfo.publisher;
+            nft.data.nft.tagger = config.tagInfo.tagger;
             nft.data.nft.nftContract = nft.data.nft.contract_address;
             nft.data.nft.nftChain = nft.config.params.chain;
-            let res = nft.data.nft.image_url.split("//");
+            let res = nft.data.nft.cached_image_url.split("//");
             if (res[0] == "ipfs:") {
               nft.data.nft.image_url = "https://ipfs.io/" + res[1];
             }
-            nft.data.nft.nftImage = nft.data.nft.image_url;
+            nft.data.nft.nftImage = nft.data.nft.cached_image_url;
             nft.data.nft.id = count;
             count++;
             nftData.push(nft.data.nft);

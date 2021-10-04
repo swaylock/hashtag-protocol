@@ -1,22 +1,26 @@
 {
   "1": {
-    "Name": "Mainnet",
+    "name": "Mainnet",
     "url": "https://etherscan.io"
   },
   "4": {
-    "Name": "Rinkeby",
+    "name": "Rinkeby",
     "url": "https://rinkeby.etherscan.io"
   },
   "5777": {
-    "Name": "Ganache Localdev",
+    "name": "Ganache Localdev",
     "url": "https://rinkeby.etherscan.io"
   },
+  "137": {
+    "name": "Polygon Mainnet",
+    "url": "https://polygonscan.com"
+  },
   "80001": {
-    "Name": "Polygon Mumbai",
-    "url": "https://mumbai.polygonscan.com/"
+    "name": "Polygon Mumbai",
+    "url": "https://mumbai.polygonscan.com"
   },
   "31337": {
-    "Name": "Hardhat Localdev",
+    "name": "Hardhat Localdev",
     "url": "https://rinkeby.etherscan.io"
   }
 }
