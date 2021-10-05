@@ -3,9 +3,16 @@ const {
   shouldBehaveLikeERC721Metadata,
 } = require('./ERC721.behavior');
 
+const {
+  shouldBehaveLikeERC721Pausable
+} = require('./extensions/ERC721Pausable.behavior');
+
+const {
+  shouldBehaveLikeERC721Burnable
+} = require('./extensions/ERC721Burnable.behavior');
+
 const HashtagAccessControls = artifacts.require("HashtagAccessControls");
 const HashtagProtocol = artifacts.require("HashtagProtocol");
-const ERC721ReceiverMock = artifacts.require("ERC721ReceiverMock");
 
 contract('ERC721', function (accounts) {
 
@@ -39,7 +46,8 @@ contract('ERC721', function (accounts) {
   const name = "Hashtag Protocol";
   const symbol = "HASHTAG";
 
-  console.log(accounts);
   shouldBehaveLikeERC721('ERC721', ...accounts);
-  //shouldBehaveLikeERC721Metadata('ERC721', name, symbol, ...accounts);
+  shouldBehaveLikeERC721Pausable('ERC721', ...accounts);
+  shouldBehaveLikeERC721Burnable('ERC721', ...accounts);
+  shouldBehaveLikeERC721Metadata('ERC721', name, symbol, ...accounts);
 });
