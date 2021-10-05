@@ -19,6 +19,9 @@ export default {
       if (hashtag.id) {
         /* eslint-disable-next-line no-console */
         console.log("minting widget existing Hashtag", hashtag);
+        this.$router.push({
+          path: `/hashtag/${hashtag.hashtagWithoutHash}`,
+        });
       } else {
         await this.$store.dispatch("protocolAction/updateNewHashtag", hashtag);
         await this.$store.dispatch("protocolAction/updateProtocolAction", "mintHashtag");
