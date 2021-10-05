@@ -1,10 +1,6 @@
 <template>
   <div class="body" v-if="!loading">
-    <SocialHead
-      :title="hashtagsByName[0].displayHashtag + ' | Hashtag Protocol'"
-      :description="randomSharingMessage"
-      :image="imageUrl"
-    />
+    <SocialHead :title="displayHashtag + ' | Hashtag Protocol'" :description="randomSharingMessage" :image="imageUrl" />
     <Header />
     <section class="main" v-if="hashtagsByName && hashtagsByName[0]">
       <div class="container">
@@ -308,7 +304,7 @@ export default {
   },
   head() {
     return {
-      title: `${this.hashtagsByName[0].displayHashtag} | Hashtag Protocol`,
+      title: `${this.displayHashtag} | Hashtag Protocol`,
       meta: [
         {
           hid: "description",
@@ -432,10 +428,13 @@ export default {
   },
   computed: {
     ...mapGetters("wallet", ["currencyName"]),
+    displayHashtag() {
+      return this.hashtagsByName && this.hashtagsByName[0].displayHashtag;
+    },
     randomSharingMessage() {
       const messages = [
-        `${this.hashtagsByName[0].displayHashtag} stored as a non-fungible token (NFT) on the blockchain.`,
-        `Not your typical hashtag. This is ${this.hashtagsByName[0].displayHashtag} as an NFT.`,
+        `${this.displayHashtag} stored as a non-fungible token (NFT) on the blockchain.`,
+        `Not your typical hashtag. This is ${this.displayHashtag} as an NFT.`,
         `Hashtag Protocol enables social content tagging for the decentralized internet.`,
       ];
       const randomNumber = Math.floor(Math.random() * 3);
@@ -443,7 +442,7 @@ export default {
     },
     twitterSharingUrl() {
       const encodedString = encodeURIComponent(
-        `Check out the hashtag ${this.hashtagsByName[0].displayHashtag} on @HashtagProtoHQ\n\n${
+        `Check out the hashtag ${this.displayHashtag} on @HashtagProtoHQ\n\n${
           this.$store.state.dappBaseUrl + this.$route.path
         }`,
       );
@@ -451,7 +450,7 @@ export default {
     },
     facebookSharingUrl() {
       const encodedString = encodeURIComponent(
-        `Check out the hashtag ${this.hashtagsByName[0].displayHashtag} on Hashtag Protocol\n\n${
+        `Check out the hashtag ${this.displayHashtag} on Hashtag Protocol\n\n${
           this.$store.state.dappBaseUrl + this.$route.path
         }`,
       );
