@@ -7,7 +7,7 @@
           <div class="columns is-tablet is-centered">
             <div class="column is-5 is-12-mobile">
               <article class="tile is-child">
-                <p class="title is-4 has-text-white">Create a HASHTAG token</p>
+                <p class="title is-4 has-text-white">Search HASHTAG tokens</p>
                 <MintingWidget />
               </article>
             </div>
