@@ -461,6 +461,22 @@ export const FIRST_THOUSAND_HASHTAGS = gql(`
   }
 `);
 
+export const HASHTAGS_SEARCH = gql(`
+  query hashtagsSearch($name: String!) {
+    hashtagsSearch: hashtags(first: 10, where: { hashtagWithoutHash_contains: $name }) {
+      id
+      name
+      displayHashtag
+      hashtagWithoutHash
+      owner
+      creator
+      publisher
+      timestamp
+      tagCount
+    }
+  }
+`);
+
 export const NFTS_ASSETS_NAME_CONTAINS = gql(`
   query nameContains($first: Int!, $name: String!) {
     nameContains: tokens(first: $first, where: {metadataName_contains: $name}) {

@@ -2,10 +2,10 @@
   <form>
     <div class="field">
       <div class="control">
-        <b-field v-if="hashtags">
+        <b-field>
           <b-taginput
             v-model="hashtag"
-            :data="hashtagInputTags"
+            :data="hashtags"
             attached
             autocomplete
             :allow-new="false"
@@ -18,7 +18,7 @@
             :has-counter="false"
             placeholder="Search for hashtag"
             :before-adding="selectHashtag"
-            @typing="getFilteredTags"
+            @typing="getHashtags"
             @keyup.native="checkIfEnterKey"
           >
             <template slot-scope="props">
@@ -44,23 +44,19 @@
 </template>
 <script>
 import HashtagValidationService from "~/services/HashtagValidationService";
-import { FIRST_THOUSAND_HASHTAGS } from "~/apollo/queries";
+import { HASHTAGS_SEARCH } from "~/apollo/queries";
+import debounce from "lodash/debounce";
+
 export default {
   name: "HashtagSearch",
   props: ["widget"],
   data() {
     return {
-      hashtagInputTags: [],
       nameContains: [],
       isFetching: false,
-      hashtag: null,
+      hashtag: [],
+      hashtags: [],
     };
-  },
-  apollo: {
-    hashtags: {
-      query: FIRST_THOUSAND_HASHTAGS,
-      pollInterval: 1000, // ms
-    },
   },
   methods: {
     /**
@@ -68,15 +64,20 @@ export default {
      *
      * @param string text entered into tagging widget
      */
-    getFilteredTags: function (text) {
-      const hashtags = this.hashtags || [];
-      this.hashtagInputTags = hashtags.filter((tag) => {
-        //console.log("getFilteredTags", tag);
-        return (
-          tag && `${tag.name.toLowerCase()}`.indexOf(text.toLowerCase()) === 1
-        );
-      });
-    },
+    getHashtags: debounce(async function (text) {
+      const variables = {
+        name: text,
+      };
+
+      this.$apollo
+        .query({
+          query: HASHTAGS_SEARCH,
+          variables,
+        })
+        .then(({ data }) => {
+          this.hashtags = data.hashtagsSearch;
+        });
+    }, 150),
     /**
      * Run the hashtag entered through validation.
      */
