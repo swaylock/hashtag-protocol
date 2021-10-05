@@ -23,12 +23,8 @@
           >
             <template slot-scope="props">
               <b-taglist attached>
-                <b-tag type="is-primary" size="is-medium"
-                  >{{ props.option.displayHashtag }}
-                </b-tag>
-                <b-tag type="is-dark" size="is-medium"
-                  >{{ props.option.tagCount }}
-                </b-tag>
+                <b-tag type="is-primary" size="is-medium">{{ props.option.displayHashtag }} </b-tag>
+                <b-tag type="is-dark" size="is-medium">{{ props.option.tagCount }} </b-tag>
               </b-taglist>
             </template>
             <template slot="empty">
@@ -132,9 +128,7 @@ export default {
     },
   },
   created() {
-    this.hashtagValidationService = new HashtagValidationService(
-      this.$buefy.toast
-    );
+    this.hashtagValidationService = new HashtagValidationService(this.$buefy.toast);
   },
 };
 </script>

@@ -40,51 +40,22 @@
                     />
                     <h2 class="title is-5">Newest hashtags</h2>
                     <template>
-                      <b-table
-                        :data="hashtags ? hashtags.slice(0, 10) : []"
-                        focusable
-                      >
+                      <b-table :data="hashtags ? hashtags.slice(0, 10) : []" focusable>
                         <template slot="footer" v-if="!isCustom">
                           <div class="has-text-right">
-                            <nuxt-link :to="{ name: 'hashtags' }"
-                              >Browse hashtags
-                            </nuxt-link>
+                            <nuxt-link :to="{ name: 'hashtags' }">Browse hashtags </nuxt-link>
                             &nbsp;
-                            <b-icon
-                              icon="arrow-right"
-                              type="is-dark"
-                              size="is-small"
-                            >
-                            </b-icon>
+                            <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                           </div>
                         </template>
-                        <b-table-column
-                          field="name"
-                          label="Hashtag"
-                          width="40"
-                          v-slot="props"
-                        >
+                        <b-table-column field="name" label="Hashtag" width="40" v-slot="props">
                           <hashtag :value="props.row.displayHashtag"></hashtag>
                         </b-table-column>
-                        <b-table-column
-                          field="timestamp"
-                          label="Created"
-                          v-slot="props"
-                        >
-                          <TimestampFrom
-                            :value="props.row.timestamp"
-                          ></TimestampFrom>
+                        <b-table-column field="timestamp" label="Created" v-slot="props">
+                          <TimestampFrom :value="props.row.timestamp"></TimestampFrom>
                         </b-table-column>
-                        <b-table-column
-                          field="creator"
-                          label="Creator"
-                          :visible="$screen.desktop"
-                          v-slot="props"
-                        >
-                          <eth-account
-                            :value="props.row.creator"
-                            route="creator-address"
-                          ></eth-account>
+                        <b-table-column field="creator" label="Creator" :visible="$screen.desktop" v-slot="props">
+                          <eth-account :value="props.row.creator" route="creator-address"></eth-account>
                         </b-table-column>
                         <b-table-column
                           field="publisher"
@@ -92,10 +63,7 @@
                           :visible="$screen.widescreen"
                           v-slot="props"
                         >
-                          <eth-account
-                            :value="props.row.publisher"
-                            route="publisher-address"
-                          ></eth-account>
+                          <eth-account :value="props.row.publisher" route="publisher-address"></eth-account>
                         </b-table-column>
                       </b-table>
                     </template>
@@ -144,46 +112,19 @@
                               Browse creators
                             </nuxt-link>
                             &nbsp;
-                            <b-icon
-                              icon="arrow-right"
-                              type="is-dark"
-                              size="is-small"
-                            >
-                            </b-icon>
+                            <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                           </div>
                         </template>
-                        <b-table-column
-                          field="id"
-                          label="Creator"
-                          v-slot="props"
-                        >
-                          <eth-account
-                            :value="props.row.id"
-                            route="creator-address"
-                          ></eth-account>
+                        <b-table-column field="id" label="Creator" v-slot="props">
+                          <eth-account :value="props.row.id" route="creator-address"></eth-account>
                         </b-table-column>
-                        <b-table-column
-                          field="mintedCount"
-                          label="Hashtags"
-                          centered
-                          v-slot="props"
-                        >
+                        <b-table-column field="mintedCount" label="Hashtags" centered v-slot="props">
                           {{ props.row.mintCount }}
                         </b-table-column>
-                        <b-table-column
-                          field="tagCount"
-                          label="Tag count"
-                          centered
-                          v-slot="props"
-                        >
+                        <b-table-column field="tagCount" label="Tag count" centered v-slot="props">
                           {{ props.row.tagCount }}
                         </b-table-column>
-                        <b-table-column
-                          field="revenue"
-                          label="Revenue"
-                          centered
-                          v-slot="props"
-                        >
+                        <b-table-column field="revenue" label="Revenue" centered v-slot="props">
                           <eth-amount :value="props.row.tagFees"></eth-amount>
                         </b-table-column>
                       </b-table>
@@ -212,46 +153,19 @@
                               Browse publishers
                             </nuxt-link>
                             &nbsp;
-                            <b-icon
-                              icon="arrow-right"
-                              type="is-dark"
-                              size="is-small"
-                            >
-                            </b-icon>
+                            <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                           </div>
                         </template>
-                        <b-table-column
-                          field="id"
-                          label="Publisher"
-                          v-slot="props"
-                        >
-                          <eth-account
-                            :value="props.row.id"
-                            route="publisher-address"
-                          ></eth-account>
+                        <b-table-column field="id" label="Publisher" v-slot="props">
+                          <eth-account :value="props.row.id" route="publisher-address"></eth-account>
                         </b-table-column>
-                        <b-table-column
-                          field="mintedCount"
-                          label="Hashtags"
-                          centered
-                          v-slot="props"
-                        >
+                        <b-table-column field="mintedCount" label="Hashtags" centered v-slot="props">
                           {{ props.row.mintCount }}
                         </b-table-column>
-                        <b-table-column
-                          field="tagCount"
-                          label="Tag count"
-                          centered
-                          v-slot="props"
-                        >
+                        <b-table-column field="tagCount" label="Tag count" centered v-slot="props">
                           {{ props.row.tagCount }}
                         </b-table-column>
-                        <b-table-column
-                          field="revenue"
-                          label="Revenue"
-                          centered
-                          v-slot="props"
-                        >
+                        <b-table-column field="revenue" label="Revenue" centered v-slot="props">
                           <eth-amount :value="props.row.tagFees"></eth-amount>
                         </b-table-column>
                       </b-table>
@@ -284,30 +198,13 @@
                               Browse taggers
                             </nuxt-link>
                             &nbsp;
-                            <b-icon
-                              icon="arrow-right"
-                              type="is-dark"
-                              size="is-small"
-                            >
-                            </b-icon>
+                            <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                           </div>
                         </template>
-                        <b-table-column
-                          field="id"
-                          label="Tagger"
-                          v-slot="props"
-                        >
-                          <eth-account
-                            :value="props.row.id"
-                            route="tagger-address"
-                          ></eth-account>
+                        <b-table-column field="id" label="Tagger" v-slot="props">
+                          <eth-account :value="props.row.id" route="tagger-address"></eth-account>
                         </b-table-column>
-                        <b-table-column
-                          field="tagCount"
-                          label="Tag count"
-                          centered
-                          v-slot="props"
-                        >
+                        <b-table-column field="tagCount" label="Tag count" centered v-slot="props">
                           {{ props.row.tagCount }}
                         </b-table-column>
                       </b-table>
@@ -336,27 +233,13 @@
                               Browse hashtags
                             </nuxt-link>
                             &nbsp;
-                            <b-icon
-                              icon="arrow-right"
-                              type="is-dark"
-                              size="is-small"
-                            >
-                            </b-icon>
+                            <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                           </div>
                         </template>
-                        <b-table-column
-                          field="name"
-                          label="Hashtag"
-                          v-slot="props"
-                        >
+                        <b-table-column field="name" label="Hashtag" v-slot="props">
                           <hashtag :value="props.row.displayHashtag"></hashtag>
                         </b-table-column>
-                        <b-table-column
-                          field="tagCount"
-                          label="Tag count"
-                          centered
-                          v-slot="props"
-                        >
+                        <b-table-column field="tagCount" label="Tag count" centered v-slot="props">
                           {{ props.row.tagCount }}
                         </b-table-column>
                       </b-table>
@@ -382,9 +265,7 @@
                   <article class="is-white coming-soon">
                     <h2 class="title is-5">Top owners</h2>
                     <div class="coming-soon-img">
-                      <a href="/auction"
-                        ><img src="~/assets/coming-soon-banner.png"
-                      /></a>
+                      <a href="/auction"><img src="~/assets/coming-soon-banner.png" /></a>
                     </div>
                     <pseudo-owners />
                   </article>

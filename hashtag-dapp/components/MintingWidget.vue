@@ -21,10 +21,7 @@ export default {
         console.log("minting widget existing Hashtag", hashtag);
       } else {
         await this.$store.dispatch("protocolAction/updateNewHashtag", hashtag);
-        await this.$store.dispatch(
-          "protocolAction/updateProtocolAction",
-          "mintHashtag"
-        );
+        await this.$store.dispatch("protocolAction/updateProtocolAction", "mintHashtag");
         await this.$store.dispatch("wallet/updateTransactionState", {
           eventCode: "mintConfirm",
         });
@@ -66,10 +63,7 @@ export default {
         if (this.validateTag(newHashtag)) {
           // This is a valid, new hashtag, update the application.
           await this.$store.dispatch("wallet/updateNewHashtag", newHashtag);
-          await this.$store.dispatch(
-            "protocolAction/updateProtocolAction",
-            "mintHashtag"
-          );
+          await this.$store.dispatch("protocolAction/updateProtocolAction", "mintHashtag");
           // Web3 txn state.
           await this.$store.dispatch("wallet/updateTransactionState", {
             eventCode: "mintConfirm",
@@ -82,10 +76,7 @@ export default {
             trapFocus: true,
           });
 
-          this.$store.dispatch(
-            "wallet/captureOpenModalCloseFn",
-            mintModal.close
-          );
+          this.$store.dispatch("wallet/captureOpenModalCloseFn", mintModal.close);
         }
       }
     },
