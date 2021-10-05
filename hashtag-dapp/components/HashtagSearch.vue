@@ -28,9 +28,7 @@
               </b-taglist>
             </template>
             <template slot="empty">
-              <span class="new-hashtag"
-                >Unique HASHTAG! Press enter to continue...</span
-              >
+              <span class="new-hashtag">Unique HASHTAG! Press enter to mint it...</span>
             </template>
           </b-taginput>
         </b-field>
