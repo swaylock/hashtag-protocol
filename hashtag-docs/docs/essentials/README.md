@@ -9,8 +9,7 @@ While taggers certainly derive some value from tagging content, we believe the
 lion's share of the value is siloed, obscured and monopolized in a few
 centralized social networks.
 
-> **We envision a paradigm shift where hashtags are mediated by a decentralized
-> crypto-economic network rather than a few central authorities.**
+> **We envision a paradigm shift where content tagging value streams are mediated by a decentralized crypto-economic network rather than a few central authorities.**
 
 The result will be a global information architecture that is more freely and
 efficiently accessed than today and a system with potential use cases that may
