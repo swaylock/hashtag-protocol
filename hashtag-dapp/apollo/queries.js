@@ -463,7 +463,7 @@ export const FIRST_THOUSAND_HASHTAGS = gql(`
 
 export const HASHTAGS_SEARCH = gql(`
   query hashtagsSearch($name: String!) {
-    hashtagsSearch: hashtags(first: 10, where: { hashtagWithoutHash_contains: $name }) {
+    hashtagsSearch: hashtags(first: 10, where: { hashtagWithoutHash_contains: $name }, orderBy: hashtagWithoutHash, orderDirection: desc) {
       id
       name
       displayHashtag
