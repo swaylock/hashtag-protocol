@@ -76,7 +76,7 @@ export default {
      * Run the hashtag entered through validation.
      */
     validateTag(hashtag) {
-      return this.hashtagValidationService.validateTag(hashtag);
+      return this.hashtagValidationService.validateTag(hashtag, this.hashtags);
     },
     /**
      * Hashtag is selected.
