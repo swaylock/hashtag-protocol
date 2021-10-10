@@ -60,7 +60,7 @@ export default {
      */
     getHashtags: debounce(async function (text) {
       const variables = {
-        name: text,
+        name: text.toLowerCase(),
       };
 
       this.$apollo
