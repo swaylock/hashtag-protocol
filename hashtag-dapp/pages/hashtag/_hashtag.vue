@@ -1,18 +1,12 @@
 <template>
   <div class="body" v-if="!loading">
-    <SocialHead
-      :title="hashtagsByName[0].displayHashtag + ' | Hashtag Protocol'"
-      :description="randomSharingMessage"
-      :image="imageUrl"
-    />
+    <SocialHead :title="displayHashtag + ' | Hashtag Protocol'" :description="randomSharingMessage" :image="imageUrl" />
     <Header />
     <section class="main" v-if="hashtagsByName && hashtagsByName[0]">
       <div class="container">
         <div class="columns">
           <div class="column is-6">
-            <nuxt-link :to="{ name: 'hashtags' }">
-              Browse Hashtag tokens
-            </nuxt-link>
+            <nuxt-link :to="{ name: 'hashtags' }"> Browse Hashtag tokens </nuxt-link>
           </div>
           <div class="column is-6 has-text-right">
             <b-dropdown aria-role="list" class="has-text-left" position="is-bottom-left">
@@ -157,7 +151,7 @@
                               <div class="th-wrap">Asset Name</div>
                             </th>
                             <th>
-                              <div class="th-wrap">Project</div>
+                              <div class="th-wrap">Chain</div>
                             </th>
                             <th>
                               <div class="th-wrap">Tagged</div>
@@ -170,8 +164,8 @@
                             </th>
                           </tr>
                         </thead>
-                        <tbody v-if="tagsByHashtag">
-                          <tr v-for="tag in tagsByHashtag" v-bind:key="tag.id" draggable="false" class="">
+                        <tbody v-if="nftInfo">
+                          <tr v-for="tag in nftInfo" v-bind:key="tag.id" draggable="false" class="">
                             <td class="has-text-centered">
                               <nuxt-link
                                 :to="{
@@ -183,7 +177,26 @@
                                   },
                                 }"
                               >
-                                <img :src="tag.nftImage" :alt="tag.nftName" class="nft-thumb" />
+                                <video
+                                  v-if="tag.nftImage.includes('mp4')"
+                                  autoplay=""
+                                  controlslist="nodownload"
+                                  loop=""
+                                  playsinline=""
+                                  poster=""
+                                  preload="metadata"
+                                  class="nft-thumb"
+                                  muted=""
+                                >
+                                  <source :src="tag.nftImage" @error="setPendingImage" type="video/mp4" />
+                                </video>
+                                <img
+                                  v-else
+                                  :src="tag.nftImage"
+                                  @error="setPendingImage"
+                                  :alt="tag.nftName"
+                                  class="nft-thumb"
+                                />
                               </nuxt-link>
                             </td>
                             <td data-label="Asset Name">
@@ -192,10 +205,11 @@
                                 :name="tag.nftName"
                                 :contract="tag.nftContract"
                                 :id="tag.nftId"
+                                :value="tag.nftName"
                               ></nft-link>
                             </td>
                             <td data-label="Project" class="">
-                              {{ tag.nftContractName }}
+                              {{ tag.nftChain }}
                             </td>
                             <td data-label="Tagged" class="">
                               <timestamp-from :value="tag.timestamp"></timestamp-from>
@@ -213,12 +227,8 @@
                     </div>
                   </div>
                 </b-tab-item>
-                <b-tab-item label="IPFS" :disabled="true">
-                  Coming soon...
-                </b-tab-item>
-                <b-tab-item label="Unstoppable domains" :disabled="true">
-                  Coming soon...
-                </b-tab-item>
+                <b-tab-item label="IPFS" :disabled="true"> Coming soon... </b-tab-item>
+                <b-tab-item label="Unstoppable domains" :disabled="true"> Coming soon... </b-tab-item>
               </b-tabs>
             </article>
           </div>
@@ -240,6 +250,7 @@ import SocialHead from "~/components/SocialHead";
 import { PAGED_TAGS_BY_HASHTAG, HASHTAGS_BY_NAME, ALL_TAGS_BY_HASHTAG } from "~/apollo/queries";
 import TimestampFrom from "~/components/TimestampFrom";
 import TimestampFormatted from "~/components/TimestampFormatted";
+import axios from "axios";
 import { mapGetters } from "vuex";
 
 const PAGE_SIZE = 10;
@@ -285,11 +296,15 @@ export default {
       //imageUrl: require("~/assets/loader3.svg"),
       hashtagsByName: null,
       tagsByHashtag: null,
+      nftInfo: null,
     };
+  },
+  mounted() {
+    this.pullTagsFromAPI();
   },
   head() {
     return {
-      title: `${this.hashtagsByName[0].displayHashtag} | Hashtag Protocol`,
+      title: `${this.displayHashtag} | Hashtag Protocol`,
       meta: [
         {
           hid: "description",
@@ -298,6 +313,14 @@ export default {
         },
       ],
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    tagsByHashtag: function (val) {
+      if (val) {
+        this.pullTagsFromAPI();
+      }
+    },
   },
   apollo: {
     $loadingKey: "loading",
@@ -347,13 +370,71 @@ export default {
       const url = this.$store.state.dappBaseUrl + this.$route.path;
       cb.writeText(url);
     },
+    pullTagsFromAPI: async function () {
+      let taggedData = await this.$apollo.queries.tagsByHashtag.refetch();
+      taggedData = taggedData.data.tagsByHashtag;
+      const promises = [];
+      const headers = {
+        Authorization: this.$config.nftPortAPIKey,
+      };
+      taggedData.forEach((nft) => {
+        let chain = "";
+        if (nft.nftChainId === "1") {
+          chain = "ethereum";
+        } else if (nft.nftChainId === "137") {
+          chain = "polygon";
+        }
+        promises.push(
+          axios.get("https://api.nftport.xyz/nfts/" + nft.nftContract + "/" + nft.nftId, {
+            params: {
+              chain: chain,
+              page_number: 1,
+              page_size: 50,
+            },
+            data: {
+              tagInfo: nft,
+            },
+            headers: headers,
+          }),
+        );
+      });
+      await axios.all(promises).then((response) => {
+        let nftData = [];
+        let count = 0;
+        response.forEach((nft) => {
+          if (nft.data.response == "OK") {
+            const config = JSON.parse(nft.config.data);
+            nft.data.nft.nftId = nft.data.nft.token_id;
+            nft.data.nft.nftName = nft.data.nft.metadata.name;
+            nft.data.nft.timestamp = config.tagInfo.timestamp;
+            nft.data.nft.hashtagDisplayHashtag = config.tagInfo.hashtagDisplayHashtag;
+            nft.data.nft.publisher = config.tagInfo.publisher;
+            nft.data.nft.nftContract = nft.data.nft.contract_address;
+            nft.data.nft.nftChain = nft.config.params.chain;
+            nft.data.nft.tagger = config.tagInfo.tagger;
+            let res = nft.data.nft.cached_image_url.split("//");
+            if (res[0] == "ipfs:") {
+              nft.data.nft.image_url = "https://ipfs.io/" + res[1];
+            }
+            nft.data.nft.nftImage = nft.data.nft.cached_image_url;
+            nft.data.nft.id = count;
+            count++;
+            nftData.push(nft.data.nft);
+          }
+        });
+        this.nftInfo = nftData;
+      });
+    },
   },
   computed: {
     ...mapGetters("wallet", ["currencyName"]),
+    displayHashtag() {
+      return this.hashtagsByName && this.hashtagsByName[0].displayHashtag;
+    },
     randomSharingMessage() {
       const messages = [
-        `${this.hashtagsByName[0].displayHashtag} stored as a non-fungible token (NFT) on the blockchain.`,
-        `Not your typical hashtag. This is ${this.hashtagsByName[0].displayHashtag} as an NFT.`,
+        `${this.displayHashtag} stored as a non-fungible token (NFT) on the blockchain.`,
+        `Not your typical hashtag. This is ${this.displayHashtag} as an NFT.`,
         `Hashtag Protocol enables social content tagging for the decentralized internet.`,
       ];
       const randomNumber = Math.floor(Math.random() * 3);
@@ -361,7 +442,7 @@ export default {
     },
     twitterSharingUrl() {
       const encodedString = encodeURIComponent(
-        `Check out the hashtag ${this.hashtagsByName[0].displayHashtag} on @HashtagProtoHQ\n\n${
+        `Check out the hashtag ${this.displayHashtag} on @HashtagProtoHQ\n\n${
           this.$store.state.dappBaseUrl + this.$route.path
         }`,
       );
@@ -369,7 +450,7 @@ export default {
     },
     facebookSharingUrl() {
       const encodedString = encodeURIComponent(
-        `Check out the hashtag ${this.hashtagsByName[0].displayHashtag} on Hashtag Protocol\n\n${
+        `Check out the hashtag ${this.displayHashtag} on Hashtag Protocol\n\n${
           this.$store.state.dappBaseUrl + this.$route.path
         }`,
       );

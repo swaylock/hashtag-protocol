@@ -44,8 +44,9 @@ const state = () => ({
   },
   accrued: 0,
   openModalCloseFn: () => {},
-
   transactionState: {},
+  currencyName: "MATIC",
+  explorerName: "PolygonScan",
 });
 
 const getters = {
@@ -53,18 +54,23 @@ const getters = {
   accrued: (state) => state.accrued,
   address: (state) => state.address,
   networkId: (state) => state.networkId,
-  currencyName: (state) => {
-    return state.networkId === 137 || state.networkId === 80001 ? "MATIC" : "ETH";
-  },
   networkInfo: (state) => {
     return onBoardChainMap[state.networkId];
   },
+  // The following two probably could use a better home
+  // as the dapp will be running on polygon for the forseeable future.
+  currencyName: (state) => state.currencyName,
+  explorerName: (state) => state.explorerName,
   balance: (state) => state.balance,
   name: (state) => state.name,
   transactionState: (state) => state.transactionState,
 };
 
 const actions = {
+  nuxtServerInit({ commit }, { $config }) {
+    commit("setWalletNetworkId", $config.onboardNetworkID);
+  },
+
   async initOnboard({ dispatch, commit }) {
     // Initialize onboard.
     onboard = Onboard({
