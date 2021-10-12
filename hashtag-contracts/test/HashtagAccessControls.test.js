@@ -1,58 +1,40 @@
-const { ethers, deployments } = require("hardhat");
-const { expect } = require("chai");
+const { expectEvent } = require('@openzeppelin/test-helpers');
+const { ethers, upgrades } = require('hardhat');
 
-// we create a setup function that can be called by every test and setup variable for easy to read tests
-async function setup() {
-  // The deployment fixture is handled by deploy/01_access_controls.js
-  await deployments.fixture(["HashtagAccessControls"]);
+let accounts;
 
-  // Get an instantiated contract in the form of a ethers.js Contract instance:
-  const contracts = {
-    contractAccessControls: await ethers.getContract("HashtagAccessControls"),
-  };
+before('Setup test', async function () {
+
+  const HashtagAccessControls = await ethers.getContractFactory('HashtagAccessControls');
 
   // See namedAccounts section of hardhat.config.js
   const namedAccounts = await ethers.getNamedSigners();
-  const accounts = {
-    accountHashtagAdmin: namedAccounts["accountHashtagAdmin"],
-    accountHashtagPublisher: namedAccounts["accountHashtagPublisher"],
+
+  accounts = {
+    HashtagAdmin: namedAccounts["accountHashtagAdmin"],
+    HashtagPublisher: namedAccounts["accountHashtagPublisher"],
+    HashtagPlatform: namedAccounts["accountHashtagPlatform"],
   };
 
-  return {
-    ...accounts,
-    ...contracts,
-  };
-}
+  hashtagAccessControls = await upgrades.deployProxy(
+    HashtagAccessControls, 
+    { kind: 'uups' }
+  );
 
-describe("HashtagAccessControl Tests", function () {
+});
 
-  describe("Validate setup", async function () {
+describe("HashtagAccessControl", function () {
+  describe("Validate setup/initialization", async function () {
     it("named account accountHashtagAdmin should be admin", async function () {
-      // before the test, we call the fixture function.
-      // while mocha have hooks to perform these automatically, they force you
-      // to declare the variable in greater scope which can introduce subtle errors
-      // as such we prefer to have the setup called right at the beginning of the test.
-      const { contractAccessControls, accountHashtagAdmin } = await setup();
-      expect(await contractAccessControls.isAdmin(accountHashtagAdmin.address)).to.be.equal(true);
+
+      expect(await hashtagAccessControls.isAdmin(accounts.HashtagAdmin.address)).to.be.equal(true);
     });
   });
+});
 
-  describe("Validate setup", async function () {
-    it("named account accountHashtagAdmin should be admin", async function () {
-      // before the test, we call the fixture function.
-      // while mocha have hooks to perform these automatically, they force you
-      // to declare the variable in greater scope which can introduce subtle errors
-      // as such we prefer to have the setup called right at the beginning of the test.
-      const { contractAccessControls, accountHashtagAdmin } = await setup();
-      expect(await contractAccessControls.isAdmin(accountHashtagAdmin.address)).to.be.equal(true);
-    });
-  });
-
-  describe("Publisher", async function () {
-    it("should admin as contract creator", async function () {
-      const { contractAccessControls, accountHashtagPublisher } = await setup();
-      await contractAccessControls.grantRole(ethers.utils.id("PUBLISHER"), accountHashtagPublisher.address);
-      expect(await contractAccessControls.isPublisher(accountHashtagPublisher.address)).to.be.equal(true);
-    });
+describe("Publisher", async function () {
+  it("should admin as contract creator", async function () {
+    await hashtagAccessControls.grantRole(ethers.utils.id("PUBLISHER"), accounts.HashtagPublisher.address);
+    expect(await hashtagAccessControls.isPublisher(accounts.HashtagPublisher.address)).to.be.equal(true);
   });
 });

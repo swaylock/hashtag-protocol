@@ -1,15 +1,15 @@
 const {
   shouldBehaveLikeERC721,
   shouldBehaveLikeERC721Metadata,
-} = require('./ERC721.behavior');
+} = require('./behaviors/ERC721.behavior');
 
 const {
   shouldBehaveLikeERC721Pausable
-} = require('./extensions/ERC721Pausable.behavior');
+} = require('./behaviors/ERC721Pausable.behavior');
 
 const {
   shouldBehaveLikeERC721Burnable
-} = require('./extensions/ERC721Burnable.behavior');
+} = require('./behaviors/ERC721Burnable.behavior');
 
 const HashtagAccessControls = artifacts.require("HashtagAccessControls");
 const HashtagProtocol = artifacts.require("HashtagProtocol");

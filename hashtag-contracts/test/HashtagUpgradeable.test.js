@@ -1,17 +1,29 @@
+const { expectEvent } = require('@openzeppelin/test-helpers');
 const { ethers, upgrades } = require('hardhat');
 const { assert } = require("chai");
+
 
 let factories, deployed, accounts;
 
 before('get factories', async function () {
 
+  // Load up artifacts to test for the "Upgraded" event after contract is
+  // upgraded. Wondering if there's a cleaner way to handle this, deriving
+  // from deployed contract instead of compiled artifacts.
+  HashtagAccessControls = artifacts.require("HashtagAccessControls");
+  HashtagProtocol = artifacts.require("HashtagProtocol");
+  ERC721HashtagRegistry = artifacts.require("ERC721HashtagRegistry");
+  HashtagAccessControlsUpgrade = artifacts.require("HashtagAccessControlsUpgrade");
+  HashtagProtocolUpgrade = artifacts.require("HashtagProtocolUpgrade");
+  ERC721HashtagRegistryUpgrade = artifacts.require("ERC721HashtagRegistryUpgrade");
+
   factories = {
     HashtagAccessControls: await ethers.getContractFactory('HashtagAccessControls'),
-    HashtagAccessControlsUpgradeTest: await ethers.getContractFactory('HashtagAccessControlsUpgradeTest'),
+    HashtagAccessControlsUpgrade: await ethers.getContractFactory('HashtagAccessControlsUpgrade'),
     HashtagProtocol: await ethers.getContractFactory('HashtagProtocol'),
-    HashtagProtocolUpgradeTest: await ethers.getContractFactory('HashtagProtocolUpgradeTest'),
+    HashtagProtocolUpgrade: await ethers.getContractFactory('HashtagProtocolUpgrade'),
     ERC721HashtagRegistry: await ethers.getContractFactory('ERC721HashtagRegistry'),
-    ERC721HashtagRegistryUpgradeTest: await ethers.getContractFactory('ERC721HashtagRegistryUpgradeTest'),
+    ERC721HashtagRegistryUpgrade: await ethers.getContractFactory('ERC721HashtagRegistryUpgrade'),
   };
 
   // See namedAccounts section of hardhat.config.js
@@ -34,13 +46,22 @@ before('get factories', async function () {
 describe("HashtagAccessControl", function () {
   it('is upgradeable', async function () {
 
-    deployed.HashtagAccessControls = await upgrades.deployProxy(factories.HashtagAccessControls, { kind: 'uups' });
+    // Deploy the initial proxy contract.
+    deployed.HashtagAccessControls = await upgrades.deployProxy(
+      factories.HashtagAccessControls, 
+      { kind: 'uups' }
+    );
     assert(await deployed.HashtagAccessControls.isAdmin(accounts.accountHashtagAdmin.address) === true);
-    assert(await deployed.HashtagAccessControls.version() === "1");
 
-    deployed.HashtagAccessControls = await upgrades.upgradeProxy(deployed.HashtagAccessControls.address, factories.HashtagAccessControlsUpgradeTest);
+    // Upgrade the proxy.
+    deployed.HashtagAccessControls = await upgrades.upgradeProxy(
+      deployed.HashtagAccessControls.address,
+      factories.HashtagAccessControlsUpgrade
+    );
+
+    const deployTxn = deployed.HashtagAccessControls.deployTransaction.hash;
+    await expectEvent.inTransaction(deployTxn, HashtagAccessControlsUpgrade, 'Upgraded');
     assert(await deployed.HashtagAccessControls.isAdmin(accounts.accountHashtagAdmin.address) === true);
-    assert(await deployed.HashtagAccessControls.version() === "upgrade test");
     assert(await deployed.HashtagAccessControls.upgradeTest() === true);
 
   });
@@ -49,15 +70,28 @@ describe("HashtagAccessControl", function () {
 describe("HashtagProtocol", function () {
   it('is upgradeable', async function () {
 
-    deployed.HashtagProtocol = await upgrades.deployProxy(factories.HashtagProtocol, [deployed.HashtagAccessControls.address, accounts.accountHashtagPlatform.address],{ kind: 'uups' });
+    // Deploy the initial proxy contract.
+    deployed.HashtagProtocol = await upgrades.deployProxy(
+      factories.HashtagProtocol,
+      [
+        deployed.HashtagAccessControls.address,
+        accounts.accountHashtagPlatform.address
+      ],
+      { kind: 'uups' }
+    );
     assert(await deployed.HashtagProtocol.name() === "Hashtag Protocol");
     assert(await deployed.HashtagProtocol.symbol() ==="HASHTAG");
-    assert(await deployed.HashtagProtocol.version() === "1");
 
-    deployed.HashtagProtocol = await upgrades.upgradeProxy(deployed.HashtagProtocol.address, factories.HashtagProtocolUpgradeTest);
+    // Upgrade the proxy.
+    deployed.HashtagProtocol = await upgrades.upgradeProxy(
+      deployed.HashtagProtocol.address,
+      factories.HashtagProtocolUpgrade
+    );
+
+    const deployTxn = deployed.HashtagProtocol.deployTransaction.hash;
+    await expectEvent.inTransaction(deployTxn, HashtagAccessControlsUpgrade, 'Upgraded');
     assert(await deployed.HashtagProtocol.name() === "Hashtag Protocol");
     assert(await deployed.HashtagProtocol.symbol() ==="HASHTAG");
-    assert(await deployed.HashtagProtocol.version() === "upgrade test");
     assert(await deployed.HashtagProtocol.upgradeTest() === true);
   });
 });
@@ -65,9 +99,23 @@ describe("HashtagProtocol", function () {
 describe("ERC721HashtagRegistry", function () {
   it('is upgradeable', async function () {
 
-    deployed.ERC721HashtagRegistry = await upgrades.deployProxy(factories.ERC721HashtagRegistry, [deployed.HashtagAccessControls.address, accounts.accountHashtagPlatform.address],{ kind: 'uups' });
+    // Deploy the initial proxy contract.
+    deployed.ERC721HashtagRegistry = await upgrades.deployProxy(
+      factories.ERC721HashtagRegistry,
+      [
+        deployed.HashtagAccessControls.address,
+        deployed.HashtagProtocol.address
+      ],
+      { kind: 'uups' }
+    );
 
-    deployed.ERC721HashtagRegistry = await upgrades.upgradeProxy(deployed.ERC721HashtagRegistry.address, factories.ERC721HashtagRegistryUpgradeTest);
-
+    // Upgrade the proxy.
+    deployed.ERC721HashtagRegistry = await upgrades.upgradeProxy(
+      deployed.ERC721HashtagRegistry.address,
+      factories.ERC721HashtagRegistryUpgrade
+    );
+    const deployTxn = deployed.ERC721HashtagRegistry.deployTransaction.hash;
+    await expectEvent.inTransaction(deployTxn, HashtagAccessControlsUpgrade, 'Upgraded');
+    assert(await deployed.ERC721HashtagRegistry.upgradeTest() === true);
   });
 });

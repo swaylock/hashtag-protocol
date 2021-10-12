@@ -1,20 +1,15 @@
-# ERC721 Tests
+# ERC721 Standard Tests
 
-This folder contains HTP modified version of the OpenZeppelin tests for the ERC721
-upgradeable token.
+This ERC721 test suite is derived from the tests provided in the OpenZeppelin base
+contracts repository. It's meant to test the core functionality of the ERC721
+standard common to all ERC721 contracts.
 
-We did this to implement the core ERC721 standard tests, with some slight tweaks
-to respect our ERC721 Implementation. This test suite is in addition to the
-custom tests found in test/HashtagProtocol.test.js
+Tests are not included in the imported contracts package, so these are manually copied and pasted here. In addition, the tests provided by OpenZeppelin have been adjusted slightly to work with the Hashtag
+Protocol use case.
 
-It was download directly from the OpenZeppelin repository from the tag that
-matches our contract version.
+To run call `hardhat test test/ERC721/ERC721.test.js` from within the
+`hashtag-contracts` directory.
 
-<https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/tree/v4.3.1/test/token/ERC721>
+The original tests can be found here:
 
-There are many tools/methods out there for quickly downloading a directory from
-Github.
-
-We used this one:
-
-<https://kinolien.github.io/gitzip/>
+<https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/tree/master/test/token/ERC721>
