@@ -1,188 +1,164 @@
-const { expectEvent } = require('@openzeppelin/test-helpers');
-const { ethers, deployments } = require("hardhat");
-const { expect } = require("chai");
-const { utils, BigNumber, constants } = ethers;
+const { expectEvent } = require("@openzeppelin/test-helpers");
 
-// we create a setup function that can be called by every test and setup variable for easy to read tests
-async function setup(type) {
-  // it first ensure the deployment is executed and reset (use of evm_snapshot for fast test)
-  await deployments.fixture([
-    "HashtagProtocol",
-    "HashtagAccessControls",
-    "ERC721HashtagRegistry",
-    "ERC721BurnableMock",
-  ]);
+const { ethers, upgrades, artifacts } = require("hardhat");
+const { expect, assert } = require("chai");
 
-  ERC721HashtagRegistry = artifacts.require("ERC721HashtagRegistry");
+const { utils, constants } = ethers;
 
-  // See namedAccounts section of hardhat.config.js
-  const namedAccounts = await ethers.getNamedSigners();
-  const unnamedAccounts = await ethers.getUnnamedSigners();
-  const accounts = {
-    accountHashtagAdmin: namedAccounts["accountHashtagAdmin"],
-    accountHashtagPublisher: namedAccounts["accountHashtagPublisher"],
-    accountHashtagPlatform: namedAccounts["accountHashtagPlatform"],
-    accountBuyer: unnamedAccounts[0],
-    accountRandomOne: unnamedAccounts[1],
-    accountRandomTwo: unnamedAccounts[2],
-    accountTagger: unnamedAccounts[3],
-  };
+let accounts, factories, artifact, HashtagAccessControls, HashtagProtocol, ERC721HashtagRegistry, ERC721Mock;
+let taggingFee, platformPercentage, publisherPercentage, taggerPercentage;
 
-  // Get an instantiated contracts in the form of a ethers.js Contract instances:
-  const contracts = {
-    contractAccessControls: await ethers.getContract("HashtagAccessControls"),
-    contractHashtagProtocol: await ethers.getContract("HashtagProtocol"),
-    contractERC721Registry: await ethers.getContract("ERC721HashtagRegistry"),
-    contractERC721Mock: await ethers.getContract("ERC721BurnableMock"),
-  };
+describe("ERC721HashtagRegistry", function () {
+  beforeEach("Setup test", async function () {
+    // See namedAccounts section of hardhat.config.js
+    const namedAccounts = await ethers.getNamedSigners();
+    const unnamedAccounts = await ethers.getUnnamedSigners();
+    accounts = {
+      HashtagAdmin: namedAccounts["accountHashtagAdmin"],
+      HashtagPublisher: namedAccounts["accountHashtagPublisher"],
+      HashtagPlatform: namedAccounts["accountHashtagPlatform"],
+      Buyer: unnamedAccounts[0],
+      RandomOne: unnamedAccounts[1],
+      RandomTwo: unnamedAccounts[2],
+      Creator: unnamedAccounts[3],
+      Tagger: unnamedAccounts[4],
+    };
 
-  // Fetch tags fee
-  let taggingFee = await contracts.contractERC721Registry.tagFee();
-  taggingFee = taggingFee.toString();
+    factories = {
+      HashtagAccessControls: await ethers.getContractFactory("HashtagAccessControls"),
+      HashtagProtocol: await ethers.getContractFactory("HashtagProtocol"),
+      ERC721HashtagRegistry: await ethers.getContractFactory("ERC721HashtagRegistry"),
+      ERC721BurnableMock: await ethers.getContractFactory("ERC721BurnableMock"),
+    };
 
-  let platformPercentage = await contracts.contractERC721Registry.platformPercentage();
-  platformPercentage = platformPercentage.toString();
+    artifact = {
+      ERC721HashtagRegistry: await artifacts.readArtifactSync("ERC721HashtagRegistry"),
+    };
 
-  let publisherPercentage = await contracts.contractERC721Registry.publisherPercentage();
-  publisherPercentage = publisherPercentage.toString();
+    // Deploy the initial proxy contract.
+    HashtagAccessControls = await upgrades.deployProxy(factories.HashtagAccessControls, { kind: "uups" });
+    assert((await HashtagAccessControls.isAdmin(accounts.HashtagAdmin.address)) === true);
 
-  let taggerPercentage = await contracts.contractERC721Registry.remainingPercentage();
-  taggerPercentage = taggerPercentage.toString();
+    await HashtagAccessControls.grantRole(
+      await HashtagAccessControls.SMART_CONTRACT_ROLE(),
+      accounts.HashtagAdmin.address,
+      { from: accounts.HashtagAdmin.address },
+    );
 
+    // add a publisher to the protocol
+    await HashtagAccessControls.grantRole(web3.utils.sha3("PUBLISHER"), accounts.HashtagPublisher.address);
 
-  // Set permitted target NFT chain id (1).
-  await contracts.contractERC721Registry.setPermittedNftChainId(constants.One, true);
+    // Deploy the initial proxy contract.
+    HashtagProtocol = await upgrades.deployProxy(
+      factories.HashtagProtocol,
+      [HashtagAccessControls.address, accounts.HashtagPlatform.address],
+      { kind: "uups" },
+    );
 
-  
-  // Pre-mint a HASHTAG token for tagging.
-  await contracts.contractHashtagProtocol
-    .connect(accounts.accountTagger)
-    .mint("#kittypower", accounts.accountHashtagPublisher.address, accounts.accountTagger.address);
-  const hashtagId = await contracts.contractHashtagProtocol.hashtagToTokenId("#kittypower");
+    ERC721HashtagRegistry = await upgrades.deployProxy(
+      factories.ERC721HashtagRegistry,
+      [HashtagAccessControls.address, HashtagProtocol.address],
+      { kind: "uups" },
+    );
 
-  // Mint two mock target nfts.
-  await contracts.contractERC721Mock.mint(accounts.accountRandomOne.address, constants.One); //#1
-  await contracts.contractERC721Mock.mint(accounts.accountRandomOne.address, constants.Two); //#2
+    ERC721Mock = await factories.ERC721BurnableMock.deploy("NFT", "NFT");
+    await ERC721Mock.deployed();
 
-  // If the test type is "drawdown", pre-tag some assets user accounts will have
-  // something to drawdown.
-  if (type == "drawdown") {
-    await contracts.contractERC721Registry
-      .connect(accounts.accountTagger)
-      .tag(
-        "#macbook",
-        contracts.contractERC721Mock.address, // Target nft contract
-        constants.One, // Target nft id
-        accounts.accountHashtagPublisher.address,
-        accounts.accountTagger.address,
-        constants.One, // Target chain id.
-        { value: taggingFee },
-      );
-  }
+    // Fetch tags fee
+    taggingFee = await ERC721HashtagRegistry.tagFee();
+    taggingFee = taggingFee.toString();
 
-  return {
-    ...contracts,
-    ...accounts,
-    hashtagId,
-    taggingFee,
-    platformPercentage,
-    publisherPercentage,
-    taggerPercentage,
-  };
-}
+    platformPercentage = await ERC721HashtagRegistry.platformPercentage();
+    platformPercentage = platformPercentage.toString();
 
-describe("ERC721HashtagRegistry Tests", function () {
-  describe("Validate setup", async function () {
-    it("should have total tags of zero", async function () {
-      const { contractERC721Registry } = await setup();
-      expect(await contractERC721Registry.totalTags()).to.be.equal(0);
-    });
+    publisherPercentage = await ERC721HashtagRegistry.publisherPercentage();
+    publisherPercentage = publisherPercentage.toString();
 
-    it("should have Eth mainnet (chain id 1) permitted", async function () {
-      const { contractERC721Registry } = await setup();
-      expect((await contractERC721Registry.getPermittedNftChainId(1)) == true);
-    });
+    taggerPercentage = await ERC721HashtagRegistry.remainingPercentage();
+    taggerPercentage = taggerPercentage.toString();
 
-    it("should have Polygon mainnet (chain id 137) not permitted", async function () {
-      const { contractERC721Registry } = await setup();
-      expect((await contractERC721Registry.getPermittedNftChainId(137)) == false);
+    // Set permitted target NFT chain id.
+    await ERC721HashtagRegistry.setPermittedNftChainId(constants.One, true);
+
+    // Mint a HASHTAG token for tagging.
+    await HashtagProtocol.mint("#kittypower", accounts.HashtagPublisher.address, accounts.Tagger.address);
+    //await HashtagProtocol.hashtagToTokenId("#kittypower");
+
+    // Mint two target nfts.
+    const nftOneId = constants.One;
+    const nftTwoId = constants.Two;
+    await ERC721Mock.mint(accounts.RandomOne.address, nftOneId); //#1
+    await ERC721Mock.mint(accounts.RandomOne.address, nftTwoId); //#2
+  });
+
+  describe("Validate setup", function () {
+    describe("Initial state", async function () {
+      it("should have total tags of zero", async function () {
+        expect(await ERC721HashtagRegistry.totalTags()).to.be.equal("0");
+      });
+
+      it("should have Eth mainnet (chain id 1) permitted", async function () {
+        expect((await ERC721HashtagRegistry.getPermittedNftChainId(1)) == true);
+      });
+
+      it("should have Polygon mainnet (chain id 137) not permitted", async function () {
+        expect((await ERC721HashtagRegistry.getPermittedNftChainId(137)) == false);
+      });
     });
   });
 
   describe("Only addresses with Admin access", async function () {
     it("can set tag fee", async function () {
-      const { contractERC721Registry, accountHashtagAdmin, accountRandomTwo, taggingFee } = await setup();
-      expect(await contractERC721Registry.tagFee()).to.be.equal(taggingFee);
-      await contractERC721Registry.connect(accountHashtagAdmin).setTagFee(utils.parseEther("1"));
-      expect(await contractERC721Registry.tagFee()).to.be.equal(utils.parseEther("1"));
+      expect(await ERC721HashtagRegistry.tagFee()).to.be.equal(taggingFee);
+      await ERC721HashtagRegistry.connect(accounts.HashtagAdmin).setTagFee(utils.parseEther("1"));
+      expect(await ERC721HashtagRegistry.tagFee()).to.be.equal(utils.parseEther("1"));
 
-      await expect(contractERC721Registry.connect(accountRandomTwo).setTagFee(utils.parseEther("1"))).to.be.reverted;
+      await expect(ERC721HashtagRegistry.connect(accounts.RandomTwo).setTagFee(utils.parseEther("1"))).to.be.reverted;
     });
 
     it("should update access controls", async function () {
-      const { contractERC721Registry, accountHashtagAdmin, accountRandomTwo } = await setup();
-      await contractERC721Registry.connect(accountHashtagAdmin).updateAccessControls(accountRandomTwo.address);
-      expect(await contractERC721Registry.accessControls()).to.be.equal(accountRandomTwo.address);
+      await ERC721HashtagRegistry.connect(accounts.HashtagAdmin).updateAccessControls(accounts.RandomTwo.address);
+      expect(await ERC721HashtagRegistry.accessControls()).to.be.equal(accounts.RandomTwo.address);
 
-      await expect(contractERC721Registry.connect(accountRandomTwo).updateAccessControls(accountRandomTwo.address)).to
-        .be.reverted;
+      await expect(ERC721HashtagRegistry.connect(accounts.RandomTwo).updateAccessControls(accounts.RandomTwo.address))
+        .to.be.reverted;
     });
 
     it("should revert when updating access controls to zero address", async function () {
-      const { contractERC721Registry, accountHashtagAdmin } = await setup();
       await expect(
-        contractERC721Registry.connect(accountHashtagAdmin).updateAccessControls(constants.AddressZero),
+        ERC721HashtagRegistry.connect(accounts.HashtagAdmin).updateAccessControls(constants.AddressZero),
       ).to.be.revertedWith("ERC721HashtagRegistry.updateAccessControls: Cannot be zero");
     });
   });
 
-  describe("Tag", async function () {
+  describe("Tagging", async function () {
     it("should be able to mint and tag", async function () {
       const targetNftId = constants.One;
       const targetNftChainId = constants.One;
-      const {
-        contractERC721Registry,
-        contractERC721Mock,
-        accountHashtagPlatform,
-        accountHashtagPublisher,
-        accountTagger,
-        taggingFee,
-        platformPercentage,
-        publisherPercentage,
-        taggerPercentage,
-      } = await setup();
 
       // Try tagging with a new hashtag.
-      const receipt = await
-        contractERC721Registry
-          .connect(accountTagger)
-          .tag(
-            "#macbook",
-            contractERC721Mock.address,
-            targetNftId,
-            accountHashtagPublisher.address,
-            accountTagger.address,
-            targetNftChainId,
-            { value: taggingFee },
-          );
-
-      await expectEvent.inTransaction(
-        receipt.hash,
-        ERC721HashtagRegistry,
-        'HashtagRegistered',
-        {
-          tagger: accountTagger.address,
-          nftContract: contractERC721Mock.address,
-          publisher: accountHashtagPublisher.address,
-          hashtagId: constants.Two,
-          nftId: targetNftId,
-          tagId: constants.One,
-          tagFee: taggingFee,
-          nftChainId: targetNftChainId,
-        },
+      const receipt = await ERC721HashtagRegistry.connect(accounts.Tagger).tag(
+        "#macbook",
+        ERC721Mock.address,
+        targetNftId,
+        accounts.HashtagPublisher.address,
+        accounts.Tagger.address,
+        targetNftChainId,
+        { value: taggingFee },
       );
 
-      expect(await contractERC721Registry.totalTags()).to.be.equal(1);
+      await expectEvent.inTransaction(receipt.hash, artifact.ERC721HashtagRegistry, "HashtagRegistered", {
+        tagger: accounts.Tagger.address,
+        nftContract: ERC721Mock.address,
+        publisher: accounts.HashtagPublisher.address,
+        hashtagId: constants.Two,
+        nftId: targetNftId,
+        tagId: constants.One,
+        tagFee: taggingFee,
+        nftChainId: targetNftChainId,
+      });
+
+      expect(await ERC721HashtagRegistry.totalTags()).to.be.equal(1);
 
       const {
         _hashtagId,
@@ -192,72 +168,59 @@ describe("ERC721HashtagRegistry Tests", function () {
         _tagstamp,
         _publisher,
         _nftChainId,
-      } = await contractERC721Registry.getTagInfo(constants.One);
+      } = await ERC721HashtagRegistry.getTagInfo(constants.One);
 
       // The newly minted HASHTAG should have id = 2
       // because HASHTAG #1 was minted in the setup script.
       expect(_hashtagId).to.be.equal(constants.Two);
-      expect(_nftContract).to.be.equal(contractERC721Mock.address);
+      expect(_nftContract).to.be.equal(ERC721Mock.address);
       expect(_nftId).to.be.equal(targetNftId);
-      expect(_tagger).to.be.equal(accountTagger.address);
+      expect(_tagger).to.be.equal(accounts.Tagger.address);
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
-      expect(_publisher).to.be.equal(accountHashtagPublisher.address);
+      expect(_publisher).to.be.equal(accounts.HashtagPublisher.address);
       expect(_nftChainId).to.be.equal(targetNftChainId);
 
       // Check accrued values
       // Only one tag event happened, so it's tagging fee/participant %
-      expect(await contractERC721Registry.accrued(accountHashtagPublisher.address)).to.be.equal(taggingFee*(publisherPercentage/100));
-      expect(await contractERC721Registry.accrued(accountHashtagPlatform.address)).to.be.equal(taggingFee*(platformPercentage/100));
-      expect(await contractERC721Registry.accrued(accountTagger.address)).to.be.equal(taggingFee*(taggerPercentage/100));
+      expect(await ERC721HashtagRegistry.accrued(accounts.HashtagPublisher.address)).to.be.equal(
+        taggingFee * (publisherPercentage / 100),
+      );
+      expect(await ERC721HashtagRegistry.accrued(accounts.HashtagPlatform.address)).to.be.equal(
+        taggingFee * (platformPercentage / 100),
+      );
+      expect(await ERC721HashtagRegistry.accrued(accounts.Tagger.address)).to.be.equal(
+        taggingFee * (taggerPercentage / 100),
+      );
     });
 
     it("should be able to tag a cryptokittie with #kittypower (pre-auction of #kittypower)", async function () {
       const targetNftId = constants.One;
       const targetNftChainId = constants.One;
       const tagId = constants.One; // the id of the tagging event.
-      const {
-        contractERC721Registry,
-        contractERC721Mock,
-        accountHashtagPlatform,
-        accountHashtagPublisher,
-        accountTagger,
-        hashtagId,
-        taggingFee,
-        platformPercentage,
-        publisherPercentage,
-        taggerPercentage,
-      } = await setup();
 
-      receipt = await contractERC721Registry
-        .connect(accountTagger)
-          .tag(
-            "#kittypower",
-            contractERC721Mock.address,
-            targetNftId,
-            accountHashtagPublisher.address,
-            accountTagger.address,
-            targetNftChainId,
-            { value: taggingFee },
-          );
-
-      await expectEvent.inTransaction(
-        receipt.hash,
-        ERC721HashtagRegistry,
-        'HashtagRegistered',
-        {
-          tagger: accountTagger.address,
-          nftContract: contractERC721Mock.address,
-          publisher: accountHashtagPublisher.address,
-          hashtagId: hashtagId,
-          nftId: targetNftId,
-          tagId: constants.One,
-          tagFee: taggingFee,
-          nftChainId: targetNftChainId,
-        },
+      const receipt = await ERC721HashtagRegistry.connect(accounts.Tagger).tag(
+        "#kittypower",
+        ERC721Mock.address,
+        targetNftId,
+        accounts.HashtagPublisher.address,
+        accounts.Tagger.address,
+        targetNftChainId,
+        { value: taggingFee },
       );
 
-      expect(await contractERC721Registry.totalTags()).to.be.equal(1);
+      await expectEvent.inTransaction(receipt.hash, artifact.ERC721HashtagRegistry, "HashtagRegistered", {
+        tagger: accounts.Tagger.address,
+        nftContract: ERC721Mock.address,
+        publisher: accounts.HashtagPublisher.address,
+        hashtagId: constants.One,
+        nftId: targetNftId,
+        tagId: constants.One,
+        tagFee: taggingFee,
+        nftChainId: targetNftChainId,
+      });
+
+      expect(await ERC721HashtagRegistry.totalTags()).to.be.equal(1);
 
       const {
         _hashtagId,
@@ -267,101 +230,78 @@ describe("ERC721HashtagRegistry Tests", function () {
         _tagstamp,
         _publisher,
         _nftChainId,
-      } = await contractERC721Registry.getTagInfo(tagId);
+      } = await ERC721HashtagRegistry.getTagInfo(tagId);
 
-      expect(_hashtagId).to.be.equal(hashtagId);
-      expect(_nftContract).to.be.equal(contractERC721Mock.address);
+      expect(_hashtagId).to.be.equal(constants.One);
+      expect(_nftContract).to.be.equal(ERC721Mock.address);
       expect(_nftId).to.be.equal(targetNftId);
-      expect(_tagger).to.be.equal(accountTagger.address);
+      expect(_tagger).to.be.equal(accounts.Tagger.address);
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
-      expect(_publisher).to.be.equal(accountHashtagPublisher.address);
+      expect(_publisher).to.be.equal(accounts.HashtagPublisher.address);
       expect(_nftChainId).to.be.equal(targetNftChainId);
 
       // check accrued values
-      expect(await contractERC721Registry.accrued(accountHashtagPublisher.address)).to.be.equal(taggingFee*(publisherPercentage/100));
-      expect(await contractERC721Registry.accrued(accountHashtagPlatform.address)).to.be.equal(taggingFee*(platformPercentage/100));
-      expect(await contractERC721Registry.accrued(accountTagger.address)).to.be.equal(taggingFee*(taggerPercentage/100));
+      expect(await ERC721HashtagRegistry.accrued(accounts.HashtagPublisher.address)).to.be.equal(
+        taggingFee * (publisherPercentage / 100),
+      );
+      expect(await ERC721HashtagRegistry.accrued(accounts.HashtagPlatform.address)).to.be.equal(
+        taggingFee * (platformPercentage / 100),
+      );
+      expect(await ERC721HashtagRegistry.accrued(accounts.Tagger.address)).to.be.equal(
+        taggingFee * (taggerPercentage / 100),
+      );
     });
 
     it("should be able to tag a Polygon NFT with #kittycat (pre-auction of #kittycat)", async function () {
       // Attempt to tag this actual Matic NFT
       // https://opensea.io/assets/matic/0xd5a5ddd6f4e7d839db2978e8a4ee9923ac088cb3/9268
       const targetNftAddress = utils.getAddress("0xd5a5ddd6f4e7d839db2978e8a4ee9923ac088cb3");
-      const targetNftId = '9368';
-      const matic = '137';
-      const {
-        contractERC721Registry,
-        hashtagId,
-        accountHashtagAdmin,
-        accountHashtagPublisher,
-        accountTagger,
-        taggingFee,
-      } = await setup();
+      const targetNftId = "9368";
+      const matic = "137";
 
       // Permit tagging of assets on chain id 137.
-      await contractERC721Registry.connect(accountHashtagAdmin).setPermittedNftChainId(matic, true);
-      expect((await contractERC721Registry.getPermittedNftChainId(matic)) == true);
+      await ERC721HashtagRegistry.connect(accounts.HashtagAdmin).setPermittedNftChainId(matic, true);
+      expect((await ERC721HashtagRegistry.getPermittedNftChainId(matic)) == true);
 
-      const receipt = await contractERC721Registry
-        .connect(accountTagger)
-          .tag(
-            "#kittypower",
-            targetNftAddress,
-            targetNftId,
-            accountHashtagPublisher.address,
-            accountTagger.address,
-            matic, 
-            { value: taggingFee }
-          );
-
-      await expectEvent.inTransaction(
-        receipt.hash,
-        ERC721HashtagRegistry,
-        'HashtagRegistered',
-        {
-          tagger: accountTagger.address,
-          nftContract: targetNftAddress,
-          publisher: accountHashtagPublisher.address,
-          hashtagId: hashtagId,
-          nftId: targetNftId,
-          tagId: constants.One,
-          tagFee: taggingFee,
-          nftChainId: matic,
-        },
+      const receipt = await ERC721HashtagRegistry.connect(accounts.Tagger).tag(
+        "#kittypower",
+        targetNftAddress,
+        targetNftId,
+        accounts.HashtagPublisher.address,
+        accounts.Tagger.address,
+        matic,
+        { value: taggingFee },
       );
+
+      await expectEvent.inTransaction(receipt.hash, artifact.ERC721HashtagRegistry, "HashtagRegistered", {
+        tagger: accounts.Tagger.address,
+        nftContract: targetNftAddress,
+        publisher: accounts.HashtagPublisher.address,
+        hashtagId: constants.One,
+        nftId: targetNftId,
+        tagId: constants.One,
+        tagFee: taggingFee,
+        nftChainId: matic,
+      });
     });
 
     it("should be able to tag a cryptokittie on mainnet with #kittypower (pre and post auction of #kittypower)", async function () {
       const targetNftChainId = constants.One;
       const targetNftId = constants.One;
-      const {
-        contractERC721Registry,
-        hashtagId,
-        contractERC721Mock,
-        accountHashtagPlatform,
-        accountHashtagPublisher,
-        accountTagger,
-        taggingFee,
-        platformPercentage,
-        publisherPercentage,
-        taggerPercentage,
-      } = await setup();
 
       // Tag pre auction and make sure that accrued values are correct
-      await contractERC721Registry
-        .connect(accountTagger)
-        .tag(
-          "#kittypower",
-          contractERC721Mock.address,
-          targetNftId,
-          accountHashtagPublisher.address,
-          accountTagger.address,
-          targetNftChainId,
-          { value: taggingFee },
-        );
+      await ERC721HashtagRegistry.connect(accounts.Tagger).tag(
+        "#kittypower",
+        ERC721Mock.address,
+        targetNftId,
+        accounts.HashtagPublisher.address,
+        accounts.Tagger.address,
+        targetNftChainId,
+        { value: taggingFee },
+      );
 
-      expect(await contractERC721Registry.totalTags()).to.be.equal(1);
+      expect(await ERC721HashtagRegistry.totalTags()).to.be.equal(1);
 
       const {
         _hashtagId,
@@ -371,220 +311,178 @@ describe("ERC721HashtagRegistry Tests", function () {
         _tagstamp,
         _publisher,
         _nftChainId,
-      } = await contractERC721Registry.getTagInfo(hashtagId);
+      } = await ERC721HashtagRegistry.getTagInfo(constants.One);
 
-      expect(_hashtagId).to.be.equal(hashtagId);
-      expect(_nftContract).to.be.equal(contractERC721Mock.address);
+      expect(_hashtagId).to.be.equal(constants.One);
+      expect(_nftContract).to.be.equal(ERC721Mock.address);
       expect(_nftId).to.be.equal(targetNftId);
-      expect(_tagger).to.be.equal(accountTagger.address);
+      expect(_tagger).to.be.equal(accounts.Tagger.address);
       expect(_tagstamp).to.exist;
       expect(Number(_tagstamp.toString())).to.be.gt(0);
-      expect(_publisher).to.be.equal(accountHashtagPublisher.address);
+      expect(_publisher).to.be.equal(accounts.HashtagPublisher.address);
       expect(_nftChainId).to.be.equal(targetNftChainId);
 
       // check accrued values
-      expect(await contractERC721Registry.accrued(accountHashtagPublisher.address)).to.be.equal(taggingFee*(publisherPercentage/100));
-      expect(await contractERC721Registry.accrued(accountHashtagPlatform.address)).to.be.equal(taggingFee*(platformPercentage/100));
-      expect(await contractERC721Registry.accrued(accountTagger.address)).to.be.equal(taggingFee*(taggerPercentage/100));
+      expect(await ERC721HashtagRegistry.accrued(accounts.HashtagPublisher.address)).to.be.equal(
+        taggingFee * (publisherPercentage / 100),
+      );
+      expect(await ERC721HashtagRegistry.accrued(accounts.HashtagPlatform.address)).to.be.equal(
+        taggingFee * (platformPercentage / 100),
+      );
+      expect(await ERC721HashtagRegistry.accrued(accounts.Tagger.address)).to.be.equal(
+        taggingFee * (taggerPercentage / 100),
+      );
     });
 
     it("should be able to tag a cryptokittie on mainnet with #kittycat (pre and post auction of #kittycat)", async function () {
       // Tag pre auction and make sure that accrued values are correct
       const targetNftId = constants.One;
       const targetNftChainId = constants.One;
-      const {
-        contractERC721Registry,
-        hashtagId,
-        contractERC721Mock,
-        contractHashtagProtocol,
-        accountHashtagPlatform,
-        accountHashtagPublisher,
-        accountTagger,
-        accountBuyer,
-        taggingFee,
-        platformPercentage,
-        publisherPercentage,
-        taggerPercentage
-      } = await setup();
 
       // Tag targetNft #1.
-      await contractERC721Registry
-        .connect(accountTagger)
-        .tag(
-          "#kittypower",
-          contractERC721Mock.address,
-          targetNftId,
-          accountHashtagPublisher.address,
-          accountTagger.address,
-          targetNftChainId,
-          { value: taggingFee },
-        );
+      await ERC721HashtagRegistry.connect(accounts.Tagger).tag(
+        "#kittypower",
+        ERC721Mock.address,
+        targetNftId,
+        accounts.HashtagPublisher.address,
+        accounts.Tagger.address,
+        targetNftChainId,
+        { value: taggingFee },
+      );
 
-      expect(await contractERC721Registry.totalTags()).to.be.equal(1);
+      expect(await ERC721HashtagRegistry.totalTags()).to.be.equal(1);
 
       // check accrued values
-      expect(await contractERC721Registry.accrued(accountHashtagPublisher.address)).to.be.equal(taggingFee*(publisherPercentage/100));
-      expect(await contractERC721Registry.accrued(accountHashtagPlatform.address)).to.be.equal(taggingFee*(platformPercentage/100));
-      expect(await contractERC721Registry.accrued(accountTagger.address)).to.be.equal(taggingFee*(taggerPercentage/100));
+      expect(await ERC721HashtagRegistry.accrued(accounts.HashtagPublisher.address)).to.be.equal(
+        taggingFee * (publisherPercentage / 100),
+      );
+      expect(await ERC721HashtagRegistry.accrued(accounts.HashtagPlatform.address)).to.be.equal(
+        taggingFee * (platformPercentage / 100),
+      );
+      expect(await ERC721HashtagRegistry.accrued(accounts.Tagger.address)).to.be.equal(
+        taggingFee * (taggerPercentage / 100),
+      );
 
       // Transfer #kittypower to accountBuyer. Simulates purchase.
-      await contractHashtagProtocol
-        .connect(accountHashtagPlatform)
-        .transferFrom(accountHashtagPlatform.address, accountBuyer.address, hashtagId);
+      await HashtagProtocol.connect(accounts.HashtagPlatform).transferFrom(
+        accounts.HashtagPlatform.address,
+        accounts.Buyer.address,
+        constants.One,
+      );
 
       // Tag targetNFT #2 with #kittypower.
       const targetNftTwo = constants.Two;
-      await contractERC721Registry
-        .connect(accountTagger)
-        .tag(
-          "#kittypower",
-          contractERC721Mock.address,
-          targetNftTwo,
-          accountHashtagPublisher.address,
-          accountTagger.address,
-          targetNftChainId,
-          { value: taggingFee },
-        );
+      await ERC721HashtagRegistry.connect(accounts.Tagger).tag(
+        "#kittypower",
+        ERC721Mock.address,
+        targetNftTwo,
+        accounts.HashtagPublisher.address,
+        accounts.Tagger.address,
+        targetNftChainId,
+        { value: taggingFee },
+      );
 
-      expect(await contractERC721Registry.totalTags()).to.be.equal(2);
+      expect(await ERC721HashtagRegistry.totalTags()).to.be.equal(2);
 
       // Now check accrued for all players. Publisher 2x tags, Platform 2x tags,
-      // accountTagger and accountBuyer 1x tag each.
-      expect(await contractERC721Registry.totalDue(accountHashtagPublisher.address)).to.be.equal(
-        2*(taggingFee*(publisherPercentage/100))
+      // accounts.Tagger and accountBuyer 1x tag each.
+      expect(await ERC721HashtagRegistry.totalDue(accounts.HashtagPublisher.address)).to.be.equal(
+        2 * (taggingFee * (publisherPercentage / 100)),
       );
-      expect(await contractERC721Registry.totalDue(accountHashtagPlatform.address)).to.be.equal(
-        2*(taggingFee*(platformPercentage/100))
+      expect(await ERC721HashtagRegistry.totalDue(accounts.HashtagPlatform.address)).to.be.equal(
+        2 * (taggingFee * (platformPercentage / 100)),
       );
-      expect(await contractERC721Registry.totalDue(accountTagger.address)).to.be.equal(
-        taggingFee*(taggerPercentage/100)
+      expect(await ERC721HashtagRegistry.totalDue(accounts.Tagger.address)).to.be.equal(
+        taggingFee * (taggerPercentage / 100),
       );
-      expect(await contractERC721Registry.totalDue(accountBuyer.address)).to.be.equal(
-        taggingFee*(taggerPercentage/100)
+      expect(await ERC721HashtagRegistry.totalDue(accounts.Buyer.address)).to.be.equal(
+        taggingFee * (taggerPercentage / 100),
       );
     });
 
     it("mints new HASHTAG when it does not exist", async function () {
       const targetNftChainId = constants.One;
       const targetNftId = constants.One;
-      const { contractERC721Registry, contractERC721Mock, accountHashtagPublisher, accountTagger, taggingFee } = await setup();
 
-      const receipt = await contractERC721Registry
-        .connect(accountHashtagPublisher)
-          .tag(
-            "#unknowntag", // Non-existent HASHTAG
-            contractERC721Mock.address,
-            constants.One,
-            accountHashtagPublisher.address,
-            accountTagger.address,
-            targetNftChainId,
-            { value: taggingFee },
-          );
-
-      await expectEvent.inTransaction(
-        receipt.hash,
-        ERC721HashtagRegistry,
-        'HashtagRegistered',
-        {
-          tagger: accountTagger.address,
-          nftContract: contractERC721Mock.address,
-          publisher: accountHashtagPublisher.address,
-          hashtagId: "2",
-          nftId: targetNftId,
-          tagId: constants.One,
-          tagFee: taggingFee,
-          nftChainId: targetNftChainId,
-        },
+      const receipt = await ERC721HashtagRegistry.connect(accounts.HashtagPublisher).tag(
+        "#unknowntag", // Non-existent HASHTAG
+        ERC721Mock.address,
+        constants.One,
+        accounts.HashtagPublisher.address,
+        accounts.Tagger.address,
+        targetNftChainId,
+        { value: taggingFee },
       );
+
+      await expectEvent.inTransaction(receipt.hash, artifact.ERC721HashtagRegistry, "HashtagRegistered", {
+        tagger: accounts.Tagger.address,
+        nftContract: ERC721Mock.address,
+        publisher: accounts.HashtagPublisher.address,
+        hashtagId: "2",
+        nftId: targetNftId,
+        tagId: constants.One,
+        tagFee: taggingFee,
+        nftChainId: targetNftChainId,
+      });
     });
 
     it("Reverts when new hashtag is invalid.", async function () {
-      const {
-        contractERC721Registry,
-        contractHashtagProtocol,
-        hashtagId,
-        accountHashtagPublisher,
-        accountTagger,
-        taggingFee
-      } = await setup();
       const targetNftChainId = constants.One;
 
       await expect(
-        contractERC721Registry.tag(
-            "#bad hashtag",
-            contractHashtagProtocol.address,
-            constants.One,
-            accountHashtagPublisher.address,
-            accountTagger.address,
-            targetNftChainId,
-            { value: taggingFee },
-          ),
+        ERC721HashtagRegistry.tag(
+          "#bad hashtag",
+          HashtagProtocol.address,
+          constants.One,
+          accounts.HashtagPublisher.address,
+          accounts.Tagger.address,
+          targetNftChainId,
+          { value: taggingFee },
+        ),
       ).to.be.revertedWith("Invalid character found: Hashtag may only contain characters A-Z, a-z, 0-9 and #");
     });
 
     it("Reverts when target NFT is HASHTAG token.", async function () {
-      const {
-        contractERC721Registry,
-        contractHashtagProtocol,
-        hashtagId,
-        accountHashtagPublisher,
-        accountTagger,
-        taggingFee
-      } = await setup();
       const targetNftChainId = constants.One;
 
       await expect(
-        contractERC721Registry.tag(
-            "#kittypower",
-            contractHashtagProtocol.address,
-            constants.One,
-            accountHashtagPublisher.address,
-            accountTagger.address,
-            targetNftChainId,
-            { value: taggingFee },
-          ),
+        ERC721HashtagRegistry.tag(
+          "#kittypower",
+          HashtagProtocol.address,
+          constants.One,
+          accounts.HashtagPublisher.address,
+          accounts.Tagger.address,
+          targetNftChainId,
+          { value: taggingFee },
+        ),
       ).to.be.revertedWith("Invalid tag - you are attempting to tag another hashtag");
     });
 
     it("Reverts when missing tagging fee during mint and tag.", async function () {
       const targetNftChainId = constants.One;
-      const {
-        contractERC721Registry,
-        contractERC721Mock,
-        hashtagId,
-        accountHashtagPublisher,
-        accountTagger,
-      } = await setup();
 
       await expect(
-        contractERC721Registry.mintAndTag(
+        ERC721HashtagRegistry.mintAndTag(
           "#hello",
-          contractERC721Mock.address,
-          hashtagId,
-          accountHashtagPublisher.address,
-          accountTagger.address,
+          ERC721Mock.address,
+          constants.One,
+          accounts.HashtagPublisher.address,
+          accounts.Tagger.address,
           targetNftChainId,
         ),
       ).to.be.revertedWith("Mint and tag: You must send the tag fee");
     });
 
     it("Reverts when missing tagging fee during tagging", async function () {
-      const {
-        contractERC721Registry,
-        contractERC721Mock,
-        hashtagId,
-        accountHashtagPublisher,
-        accountTagger,
-      } = await setup();
       const targetNftChainId = constants.One;
 
       await expect(
-        contractERC721Registry.tag(
+        ERC721HashtagRegistry.tag(
           "#kittypower",
-          contractERC721Mock.address,
+          ERC721Mock.address,
           constants.One,
-          accountHashtagPublisher.address,
-          accountTagger.address,
+          accounts.HashtagPublisher.address,
+          accounts.Tagger.address,
           targetNftChainId,
         ),
       ).to.be.revertedWith("Tag: You must send the fee");
@@ -592,15 +490,14 @@ describe("ERC721HashtagRegistry Tests", function () {
 
     it("Reverts when non-whitelisted publisher attempts mint and tag", async function () {
       const targetNftChainId = constants.One;
-      const { contractERC721Registry, contractERC721Mock, hashtagId, accountRandomOne, accountTagger, taggingFee } = await setup();
 
       await expect(
-        contractERC721Registry.mintAndTag(
+        ERC721HashtagRegistry.mintAndTag(
           "#hullo",
-          contractERC721Mock.address,
-          hashtagId,
-          accountRandomOne.address, // Non publisher account.
-          accountTagger.address,
+          ERC721Mock.address,
+          constants.One,
+          accounts.RandomOne.address, // Non publisher account.
+          accounts.Tagger.address,
           targetNftChainId,
           { value: taggingFee },
         ),
@@ -609,15 +506,14 @@ describe("ERC721HashtagRegistry Tests", function () {
 
     it("Reverts when non-whitelisted publisher attempts tagging", async function () {
       const targetNftChainId = constants.One;
-      const { contractERC721Registry, contractERC721Mock, hashtagId, accountRandomOne, accountTagger, taggingFee } = await setup();
 
       await expect(
-        contractERC721Registry.tag(
+        ERC721HashtagRegistry.tag(
           "#kittypower",
-          contractERC721Mock.address,
+          ERC721Mock.address,
           constants.One,
-          accountRandomOne.address,
-          accountTagger.address,
+          accounts.RandomOne.address,
+          accounts.Tagger.address,
           targetNftChainId,
           { value: taggingFee },
         ),
@@ -626,22 +522,14 @@ describe("ERC721HashtagRegistry Tests", function () {
 
     it("Reverts when target chain id is not permitted when mint and tagging", async function () {
       const nonPermittedNftChainId = 5;
-      const {
-        contractERC721Registry,
-        contractERC721Mock,
-        accountHashtagPublisher,
-        hashtagId,
-        accountTagger,
-        taggingFee
-      } = await setup();
 
       await expect(
-        contractERC721Registry.mintAndTag(
+        ERC721HashtagRegistry.mintAndTag(
           "#hullo",
-          contractERC721Mock.address,
-          hashtagId,
-          accountHashtagPublisher.address,
-          accountTagger.address,
+          ERC721Mock.address,
+          constants.One,
+          accounts.HashtagPublisher.address,
+          accounts.Tagger.address,
           nonPermittedNftChainId,
           { value: taggingFee },
         ),
@@ -650,22 +538,14 @@ describe("ERC721HashtagRegistry Tests", function () {
 
     it("Reverts when target chain id is not permitted during tagging", async function () {
       const nonPermittedNftChainId = 5;
-      const {
-        contractERC721Registry,
-        contractERC721Mock,
-        accountHashtagPublisher,
-        hashtagId,
-        accountTagger,
-        taggingFee
-      } = await setup();
 
       await expect(
-        contractERC721Registry.tag(
+        ERC721HashtagRegistry.tag(
           "#kittypower",
-          contractERC721Mock.address,
+          ERC721Mock.address,
           constants.One,
-          accountHashtagPublisher.address,
-          accountTagger.address,
+          accounts.HashtagPublisher.address,
+          accounts.Tagger.address,
           nonPermittedNftChainId,
           { value: taggingFee },
         ),
@@ -674,26 +554,17 @@ describe("ERC721HashtagRegistry Tests", function () {
 
     it("Reverts when previously permitted target chain id is no longer permitted", async function () {
       const revertedNftChainId = 1;
-      const {
-        contractERC721Registry,
-        contractERC721Mock,
-        accountHashtagPublisher,
-        accountHashtagAdmin,
-        hashtagId,
-        accountTagger,
-        taggingFee
-      } = await setup();
 
-      await contractERC721Registry.connect(accountHashtagAdmin).setPermittedNftChainId(revertedNftChainId, false);
-      expect((await contractERC721Registry.getPermittedNftChainId(revertedNftChainId)) == false);
+      await ERC721HashtagRegistry.connect(accounts.HashtagAdmin).setPermittedNftChainId(revertedNftChainId, false);
+      expect((await ERC721HashtagRegistry.getPermittedNftChainId(revertedNftChainId)) == false);
 
       await expect(
-        contractERC721Registry.tag(
+        ERC721HashtagRegistry.tag(
           "#kittypower",
-          contractERC721Mock.address,
+          ERC721Mock.address,
           constants.One,
-          accountHashtagPublisher.address,
-          accountTagger.address,
+          accounts.HashtagPublisher.address,
+          accounts.Tagger.address,
           revertedNftChainId,
           { value: taggingFee },
         ),
@@ -702,102 +573,75 @@ describe("ERC721HashtagRegistry Tests", function () {
   });
 
   describe("Drawing down", async function () {
-    it("Can draw down on behalf of the platform", async function () {
-      // Account A can draw down accumulated funds of 
-      // Account B to wallet of Account B.
-      const {
-        contractERC721Registry,
-        accountHashtagPlatform,
-        accountRandomOne,
-        taggingFee,
-        platformPercentage
-      } = await setup("drawdown");
+    beforeEach(async function () {
+      await ERC721HashtagRegistry.connect(accounts.Tagger).tag(
+        "#macbook",
+        ERC721Mock.address, // Target nft contract
+        constants.One, // Target nft id
+        accounts.HashtagPublisher.address,
+        accounts.Tagger.address,
+        constants.One, // Target chain id.
+        { value: taggingFee },
+      );
+    });
 
-      const platformBalanceBefore = await accountHashtagPlatform.getBalance();
+    it("Can draw down on behalf of the platform", async function () {
+      // Account A can draw down accumulated funds of
+      // Account B to wallet of Account B.
+
+      const platformBalanceBefore = await accounts.HashtagPlatform.getBalance();
 
       // accountRandomOne is triggering the drawdown of ETH accrued in
-      // accountHashtagPlatform.
-      await contractERC721Registry.connect(accountRandomOne).drawDown(accountHashtagPlatform.address);
-      const platformBalanceAfter = await accountHashtagPlatform.getBalance();
+      // accounts.HashtagPlatform.
+      await ERC721HashtagRegistry.connect(accounts.RandomOne).drawDown(accounts.HashtagPlatform.address);
+      const platformBalanceAfter = await accounts.HashtagPlatform.getBalance();
 
       // In this case we are expecting the value drawn down to be the
       // platform percentage cut of one tagging event.
-      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(
-        taggingFee*(platformPercentage/100)
-      );
+      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(taggingFee * (platformPercentage / 100));
     });
-  
+
     it("Can draw down as the platform", async function () {
-      const {
-        contractERC721Registry,
-        accountHashtagPlatform,
-        accountRandomOne,
-        taggingFee,
-        platformPercentage
-      } = await setup("drawdown");
-
-      const platformBalanceBefore = await accountHashtagPlatform.getBalance();
-
-      const txn = await contractERC721Registry.connect(accountRandomOne).drawDown(accountHashtagPlatform.address);
-      const receipt = await txn.wait();
-      const platformBalanceAfter = await accountHashtagPlatform.getBalance();
-
-      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(
-        (taggingFee*(platformPercentage/100))
-      );
+      const platformBalanceBefore = await accounts.HashtagPlatform.getBalance();
+      await ERC721HashtagRegistry.connect(accounts.RandomOne).drawDown(accounts.HashtagPlatform.address);
+      const platformBalanceAfter = await accounts.HashtagPlatform.getBalance();
+      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(taggingFee * (platformPercentage / 100));
     });
 
     it("Does nothing after a double draw down", async function () {
-      const {
-        contractERC721Registry,
-        accountHashtagPlatform,
-        accountRandomOne,
-        taggingFee,
-        platformPercentage
-      } = await setup("drawdown");
+      const platformBalanceBefore = await accounts.HashtagPlatform.getBalance();
+      await ERC721HashtagRegistry.connect(accounts.RandomOne).drawDown(accounts.HashtagPlatform.address);
+      const platformBalanceAfter = await accounts.HashtagPlatform.getBalance();
 
-      const platformBalanceBefore = await accountHashtagPlatform.getBalance();
-      await contractERC721Registry.connect(accountRandomOne).drawDown(accountHashtagPlatform.address);
-      const platformBalanceAfter = await accountHashtagPlatform.getBalance();
-  
-      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(
-        taggingFee*(platformPercentage/100)
-      );
-  
-      const balanceBeforeSecondDraw = await accountHashtagPlatform.getBalance();
-      await contractERC721Registry.connect(accountRandomOne).drawDown(accountHashtagPlatform.address);
-      const balanceAfterSecondDraw = await accountHashtagPlatform.getBalance();
-  
-      expect(balanceAfterSecondDraw.sub(balanceBeforeSecondDraw)).to.be.equal(
-        "0"
-      );
+      expect(platformBalanceAfter.sub(platformBalanceBefore)).to.be.equal(taggingFee * (platformPercentage / 100));
+
+      const balanceBeforeSecondDraw = await accounts.HashtagPlatform.getBalance();
+      await ERC721HashtagRegistry.connect(accounts.RandomOne).drawDown(accounts.HashtagPlatform.address);
+      const balanceAfterSecondDraw = await accounts.HashtagPlatform.getBalance();
+
+      expect(balanceAfterSecondDraw.sub(balanceBeforeSecondDraw)).to.be.equal("0");
     });
   });
 
   describe("Updating percentages", async function () {
     it("Reverts if not admin", async function () {
-      const { contractERC721Registry, accountTagger } = await setup();
-      await expect(
-        contractERC721Registry.connect(accountTagger).updatePercentages(10, 10)
-      ).to.be.revertedWith("Caller must be admin");
-    });
-  
-    it("Reverts if greater than 100", async function () {
-      const { contractERC721Registry, accountHashtagAdmin } = await setup();
-      await expect(
-        contractERC721Registry.connect(accountHashtagAdmin).updatePercentages(90, 11)
-      ).to.be.revertedWith(
-        "ERC721HashtagRegistry.updatePercentages: percentages must not be over 100"
+      await expect(ERC721HashtagRegistry.connect(accounts.Tagger).updatePercentages(10, 10)).to.be.revertedWith(
+        "Caller must be admin",
       );
     });
-  
+
+    it("Reverts if greater than 100", async function () {
+      await expect(ERC721HashtagRegistry.connect(accounts.HashtagAdmin).updatePercentages(90, 11)).to.be.revertedWith(
+        "ERC721HashtagRegistry.updatePercentages: percentages must not be over 100",
+      );
+    });
+
     it("With correct credentials can update percentages", async function () {
-      const { contractERC721Registry, accountHashtagAdmin } = await setup();
-      await contractERC721Registry.connect(accountHashtagAdmin).updatePercentages(30, 20);
-  
-      expect(await contractERC721Registry.platformPercentage()).to.be.equal(30);
-      expect(await contractERC721Registry.publisherPercentage()).to.be.equal(20);
-      expect(await contractERC721Registry.remainingPercentage()).to.be.equal(50);
+      await ERC721HashtagRegistry.connect(accounts.HashtagAdmin).updatePercentages(30, 20);
+
+      expect(await ERC721HashtagRegistry.platformPercentage()).to.be.equal(30);
+      expect(await ERC721HashtagRegistry.publisherPercentage()).to.be.equal(20);
+      expect(await ERC721HashtagRegistry.remainingPercentage()).to.be.equal(50);
     });
   });
 });
