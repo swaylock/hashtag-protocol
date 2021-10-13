@@ -2,19 +2,11 @@ const { ethers } = require("hardhat");
 
 module.exports = async ({ deployments }) => {
   const { deploy } = deployments;
-  const accountHashtagAdmin = await ethers.getNamedSigner(
-    "accountHashtagAdmin"
-  );
+  const accountHashtagAdmin = await ethers.getNamedSigner("accountHashtagAdmin");
 
-  const hashtagAccessControls = await ethers.getContract(
-    "HashtagAccessControls",
-    accountHashtagAdmin
-  );
+  const hashtagAccessControls = await ethers.getContract("HashtagAccessControls", accountHashtagAdmin);
 
-  const hashtagProtocol = await ethers.getContract(
-    "HashtagProtocol",
-    accountHashtagAdmin
-  );
+  const hashtagProtocol = await ethers.getContract("HashtagProtocol", accountHashtagAdmin);
 
   await deploy("ERC721HashtagRegistry", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
