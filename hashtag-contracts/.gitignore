@@ -3,6 +3,7 @@
 build/
 coverageEnv/
 coverage/
+.openzeppelin
 
 # General file ignores
 allFiredEvents
