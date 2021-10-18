@@ -16,7 +16,7 @@ const { node_url, accounts } = require("./utils/network");
  */
 module.exports = {
   solidity: {
-    compilers: [ 
+    compilers: [
       {
         version: "0.6.12",
         settings: {
@@ -34,7 +34,7 @@ module.exports = {
             runs: 200,
           },
         },
-      }
+      },
     ],
   },
   gasReporter: {
@@ -67,6 +67,7 @@ module.exports = {
     },
     localhost: {
       url: node_url("localhost"), //default port: 31337
+      chainId: 31337,
       accounts: accounts(),
     },
     ganache: {
@@ -75,6 +76,7 @@ module.exports = {
     },
     mumbai: {
       url: node_url("mumbai"), // see .env.default
+      chainId: 80001,
       accounts: accounts("mumbai"),
       gasPrice: 2000000000,
     },
