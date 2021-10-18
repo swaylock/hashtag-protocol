@@ -57,7 +57,7 @@ export const SNAPSHOT = gql(`
         creators(first: 10, orderBy: tagCount, orderDirection: desc) {
             id
             mintCount
-            tagCount 
+            tagCount
             tagFees
         }
     }
@@ -133,7 +133,7 @@ export const TAGS_BY_DIGITAL_ASSET = gql(`
     publisher
     hashtagId
     hashtagDisplayHashtag
-    
+
   }
 }`);
 
@@ -304,7 +304,7 @@ query tagsByPublisher($publisher: String!, $first: Int!, $skip: Int!) {
 export const TAGGER_BY_ACC = gql(`
 query taggerByAcc($id: String!) {
     taggerByAcc: tagger(id: $id){
-        id  
+        id
         tagCount
         feesPaid
     }
@@ -314,7 +314,7 @@ query taggerByAcc($id: String!) {
 export const PUBLISHER_BY_ACC = gql(`
 query publisherByAcc($id: String!) {
     publisherByAcc: publisher(id: $id){
-      id  
+      id
       mintCount
       tagCount
       tagFees
@@ -370,7 +370,7 @@ query pagedTags($first: Int!, $skip: Int!) {
             timestamp
             publisher
         }
-   }     
+   }
 `);
 
 export const ALL_PUBLISHERS = gql`
@@ -448,6 +448,22 @@ query pagedTaggers($first: Int!, $skip: Int!) {
 export const FIRST_THOUSAND_HASHTAGS = gql(`
   query {
     hashtags(first: 1000, orderBy: timestamp, orderDirection: desc) {
+      id
+      name
+      displayHashtag
+      hashtagWithoutHash
+      owner
+      creator
+      publisher
+      timestamp
+      tagCount
+    }
+  }
+`);
+
+export const HASHTAGS_SEARCH = gql(`
+  query hashtagsSearch($name: String!) {
+    hashtagsSearch: hashtags(first: 10, where: { hashtagWithoutHash_contains: $name }, orderBy: hashtagWithoutHash, orderDirection: desc) {
       id
       name
       displayHashtag
