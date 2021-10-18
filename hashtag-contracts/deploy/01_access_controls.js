@@ -1,5 +1,4 @@
 const { ethers } = require("hardhat");
-const DEFAULT_ADMIN_ROLE = ethers.constants.HashZero;
 
 module.exports = async ({ deployments }) => {
   const { deploy } = deployments;
@@ -10,9 +9,16 @@ module.exports = async ({ deployments }) => {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: accountHashtagAdmin.address,
     proxy: {
+      owner: accountHashtagAdmin.address,
       proxyContract: "UUPSProxy",
       execute: {
-        methodName: "initialize",
+        init: {
+          methodName: "initialize", // Function to call when deployed first time.
+        },
+        onUpgrade: {
+          methodName: "postUpgrade", // method to be executed when the proxy is upgraded (not first deployment)
+          args: ["hello"],
+        },
       },
     },
     log: true,
