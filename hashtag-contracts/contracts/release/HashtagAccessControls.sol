@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "hardhat/console.sol";
 
 /**
  * @title Hashtag Protocol Access Controls contract
@@ -19,6 +20,11 @@ contract HashtagAccessControls is Initializable, AccessControlUpgradeable, UUPSU
         // Give default admin role to the deployer.
         // setupRole is should only be called within initialize().
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    }
+
+    // Ensure that only address with admin role can upgrade.
+    function postUpgrade(string calldata message) external view onlyRole(DEFAULT_ADMIN_ROLE) {
+        console.log("HashtagAccessControls upgraded", message);
     }
 
     // Ensure that only address with admin role can upgrade.

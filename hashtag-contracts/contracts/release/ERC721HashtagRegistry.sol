@@ -121,9 +121,11 @@ contract ERC721HashtagRegistry is
     }
 
     /**
-     * @notice Tags an ERC721 NFT asset by storing a reference between the asset and a hashtag
+     * @notice Tags an ERC721 NFT asset by storing a reference between the asset
+       and a hashtag. If hashtag string does not exist, function will attempt to
+       mint a new one.
      * @dev Only a whitelisted publisher can execute this with the required fee unless the caller / sender has admin privileges.
-     * @param _hashtag hashtag used for tagging
+     * @param _hashtag hashtag string used for tagging
      * @param _nftContract address of nft contract
      * @param _nftId ID of the nft to link from the above nft contract
      * @param _tagger the ethereum account that made the original tagging request

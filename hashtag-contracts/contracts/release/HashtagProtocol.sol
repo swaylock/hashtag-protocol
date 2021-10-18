@@ -38,11 +38,11 @@ contract HashtagProtocol is ERC721PausableUpgradeable, ERC721BurnableUpgradeable
 
     event RenewalPeriodUpdated(uint256 originalRenewalPeriod, uint256 updatedRenewalPeriod);
 
-    // Constants
-    string private constant NAME = "HTP: HASHTAG Registry";
-    string private constant VERSION = "0.2.0";
-
     // Storage
+
+    // Constants
+    string public constant NAME = "HTP: HASHTAG Registry";
+    string public constant VERSION = "0.2.0";
 
     // baseURI for looking up tokenURI for a token
     string public baseURI;
@@ -297,7 +297,7 @@ contract HashtagProtocol is ERC721PausableUpgradeable, ERC721BurnableUpgradeable
         return tokenIdToHashtag[_tokenId].creator;
     }
 
-    function version() public pure returns (string memory) {
+    function version() external pure returns (string memory) {
         return VERSION;
     }
 
