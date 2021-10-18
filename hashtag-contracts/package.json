@@ -13,6 +13,7 @@
     "node:ganache": "$PWD/scripts/node-ganache.sh",
     "test:hardhat": "hardhat test --network localhost",
     "test:ganache": "hardhat test --network ganache",
+    "deploy:hardhatOZ": "hardhat run --network localhost scripts/deploy.js",
     "deploy:hardhat": "hardhat deploy --network localhost --tags dev,Ethernal",
     "deploy:ganache": "hardhat deploy --network ganache --tags dev",
     "deploy:ethernal": "hardhat deploy --network localhost --tags Ethernal",
