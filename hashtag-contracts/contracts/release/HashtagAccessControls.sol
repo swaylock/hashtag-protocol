@@ -12,8 +12,19 @@ import "hardhat/console.sol";
  * @author Hashtag Protocol
  */
 contract HashtagAccessControls is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
+    /// Public constants
+    string public constant NAME = "HTP: HASHTAG Protocol Access";
+    string public constant VERSION = "0.2.1";
     bytes32 public constant PUBLISHER_ROLE = keccak256("PUBLISHER");
     bytes32 public constant SMART_CONTRACT_ROLE = keccak256("SMART_CONTRACT");
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() initializer {
+        // Security measure to initialize implementation contract.
+        __AccessControl_init();
+        // Fake address.
+        _setupRole(DEFAULT_ADMIN_ROLE, 0xC5225963871dD6bF421c8AabF1fC74251B0ed15A);
+    }
 
     function initialize() public initializer {
         __AccessControl_init();
@@ -22,7 +33,6 @@ contract HashtagAccessControls is Initializable, AccessControlUpgradeable, UUPSU
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     }
 
-    // Ensure that only address with admin role can upgrade.
     function postUpgrade(string calldata message) external view onlyRole(DEFAULT_ADMIN_ROLE) {
         console.log("HashtagAccessControls upgraded", message);
     }
@@ -55,5 +65,13 @@ contract HashtagAccessControls is Initializable, AccessControlUpgradeable, UUPSU
      */
     function isPublisher(address _addr) public view returns (bool) {
         return hasRole(PUBLISHER_ROLE, _addr);
+    }
+
+    function version() external pure returns (string memory) {
+        return VERSION;
+    }
+
+    function upgraded() external pure returns (string memory) {
+        return "you know it";
     }
 }

@@ -10,35 +10,25 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "./HashtagProtocol.sol";
-import "../utils/StringHelpers.sol";
 
 /**
  * @title ERC721HashtagRegistry
  * @notice Contract that allows any ERC721 asset to be tagged by a hashtag within the Hashtag protocol
  * @author Hashtag Protocol
  */
-contract ERC721HashtagRegistry is
-    Initializable,
-    ContextUpgradeable,
-    ReentrancyGuardUpgradeable,
-    UUPSUpgradeable,
-    StringHelpers
-{
+contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyGuardUpgradeable, UUPSUpgradeable {
     using SafeMathUpgradeable for uint256;
+
+    /// Storage
 
     HashtagAccessControls public accessControls;
     HashtagProtocol public hashtagProtocol;
 
-    uint256 public constant modulo = 100;
     uint256 public platformPercentage;
     uint256 public publisherPercentage;
     uint256 public remainingPercentage;
     uint256 public totalTags;
     uint256 public tagFee;
-
-    // ERC721 interface identifier for checking ERC721 contract is valid
-    bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
-    bytes4 private constant _INTERFACE_ID_ERC721_CryptoKitties = 0x9a20483d;
 
     mapping(address => uint256) public accrued;
     mapping(address => uint256) public paid;
@@ -46,7 +36,14 @@ contract ERC721HashtagRegistry is
     // tag id (will come from the totalTags pointer) -> tag
     mapping(uint256 => Tag) public tagIdToTag;
 
-    // Stores important information about a tagging event
+    /// Public constants
+
+    string public constant NAME = "HTP: ERC721 Registry";
+    string public constant VERSION = "0.2.0";
+    uint256 public constant modulo = 100;
+
+    /// Structs
+
     struct Tag {
         uint256 hashtagId;
         address nftContract;
@@ -57,7 +54,8 @@ contract ERC721HashtagRegistry is
         uint256 nftChainId;
     }
 
-    // Used to log that an NFT has been tagged
+    /// Events
+
     event HashtagRegistered(
         address indexed tagger,
         address indexed nftContract,
@@ -80,6 +78,9 @@ contract ERC721HashtagRegistry is
         _;
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() initializer {}
+
     // Replaces contructor function for UUPS Proxy contracts. Called upon first deployment.
     function initialize(HashtagAccessControls _accessControls, HashtagProtocol _hashtagProtocol) public initializer {
         accessControls = _accessControls;
@@ -93,6 +94,8 @@ contract ERC721HashtagRegistry is
 
     // Ensure that only address with admin role can upgrade.
     function _authorizeUpgrade(address) internal override onlyAdmin {}
+
+    /// External write
 
     /**
      * @notice Combines the action of creating a new hashtag and then tagging an NFT asset with this new tag.
@@ -170,6 +173,49 @@ contract ERC721HashtagRegistry is
     }
 
     /**
+     * @notice Sets the fee required to tag an NFT asset
+     * @param _fee Value of the fee in WEI
+     */
+    function setTagFee(uint256 _fee) external onlyAdmin {
+        tagFee = _fee;
+    }
+
+    /**
+     * @notice Admin functionality for updating the access controls
+     * @param _accessControls Address of the access controls contract
+     */
+    function updateAccessControls(HashtagAccessControls _accessControls) external onlyAdmin {
+        require(address(_accessControls) != address(0), "ERC721HashtagRegistry.updateAccessControls: Cannot be zero");
+        accessControls = _accessControls;
+    }
+
+    /**
+     * @notice Admin functionality for updating the percentages
+     * @param _platformPercentage percentage for platform
+     * @param _publisherPercentage percentage for publisher
+     */
+    function updatePercentages(uint256 _platformPercentage, uint256 _publisherPercentage) external onlyAdmin {
+        require(
+            _platformPercentage.add(_publisherPercentage) <= 100,
+            "ERC721HashtagRegistry.updatePercentages: percentages must not be over 100"
+        );
+        platformPercentage = _platformPercentage;
+        publisherPercentage = _publisherPercentage;
+        remainingPercentage = modulo.sub(platformPercentage).sub(publisherPercentage);
+    }
+
+    /**
+     * @notice Admin functionality for enabling/disabling target chains.
+     * @param _nftChainId EVM compatible chain id.
+     * @param _setting Boolean, set true for enabled, false for disabled.
+     */
+    function setPermittedNftChainId(uint256 _nftChainId, bool _setting) external onlyAdmin {
+        permittedNftChainIds[_nftChainId] = _setting;
+    }
+
+    /// External read
+
+    /**
      * @notice Used to check how much ETH has been accrued by an address factoring in amount paid out
      * @param _account Address of the account being queried
      * @return _due Amount of WEI in ETH due to account
@@ -214,47 +260,6 @@ contract ERC721HashtagRegistry is
     }
 
     /**
-     * @notice Sets the fee required to tag an NFT asset
-     * @param _fee Value of the fee in WEI
-     */
-    function setTagFee(uint256 _fee) external onlyAdmin {
-        tagFee = _fee;
-    }
-
-    /**
-     * @notice Admin functionality for updating the access controls
-     * @param _accessControls Address of the access controls contract
-     */
-    function updateAccessControls(HashtagAccessControls _accessControls) external onlyAdmin {
-        require(address(_accessControls) != address(0), "ERC721HashtagRegistry.updateAccessControls: Cannot be zero");
-        accessControls = _accessControls;
-    }
-
-    /**
-     * @notice Admin functionality for updating the percentages
-     * @param _platformPercentage percentage for platform
-     * @param _publisherPercentage percentage for publisher
-     */
-    function updatePercentages(uint256 _platformPercentage, uint256 _publisherPercentage) external onlyAdmin {
-        require(
-            _platformPercentage.add(_publisherPercentage) <= 100,
-            "ERC721HashtagRegistry.updatePercentages: percentages must not be over 100"
-        );
-        platformPercentage = _platformPercentage;
-        publisherPercentage = _publisherPercentage;
-        remainingPercentage = modulo.sub(platformPercentage).sub(publisherPercentage);
-    }
-
-    /**
-     * @notice Admin functionality for enabling/disabling target chains.
-     * @param _nftChainId EVM compatible chain id.
-     * @param _setting Boolean, set true for enabled, false for disabled.
-     */
-    function setPermittedNftChainId(uint256 _nftChainId, bool _setting) external onlyAdmin {
-        permittedNftChainIds[_nftChainId] = _setting;
-    }
-
-    /**
      * @notice Check if a target chain is permitted for tagging.
      * @param _nftChainId EVM compatible chain id.
      * @return true for enabled, false for disabled.
@@ -262,6 +267,12 @@ contract ERC721HashtagRegistry is
     function getPermittedNftChainId(uint256 _nftChainId) external view returns (bool) {
         return permittedNftChainIds[_nftChainId];
     }
+
+    function version() external pure returns (string memory) {
+        return VERSION;
+    }
+
+    /// Internal write
 
     function _tag(
         uint256 _hashtagId,
@@ -313,6 +324,8 @@ contract ERC721HashtagRegistry is
         // Log that an NFT has been tagged
         emit HashtagRegistered(_tagger, _nftContract, _publisher, _hashtagId, _nftId, tagId, tagFee, _nftChainId);
     }
+
+    /// Internal read
 
     function _assertNftExists(address _nftContract, uint256 _nftId) private view {
         try IERC721Upgradeable(_nftContract).ownerOf(_nftId) returns (address owner) {

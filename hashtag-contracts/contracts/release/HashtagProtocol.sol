@@ -20,29 +20,7 @@ contract HashtagProtocol is ERC721PausableUpgradeable, ERC721BurnableUpgradeable
     using StringsUpgradeable for uint256;
     using SafeMathUpgradeable for uint256;
 
-    event MintHashtag(uint256 indexed tokenId, string displayHashtag, address indexed publisher, address creator);
-
-    event HashtagReset(uint256 indexed tokenId, address indexed owner);
-
-    event HashtagRenewed(uint256 indexed tokenId, address indexed caller);
-
-    event OwnershipTermLengthUpdated(uint256 originalOwnershipLength, uint256 updatedOwnershipLength);
-
-    event HashtagMaxStringLengthUpdated(uint256 originalHashtagMaxStringLength, uint256 UpdatedHashtagMaxStringLength);
-
-    event PlatformSet(address previousPlatformAddress, address newPlatformAddress);
-
-    event AccessControlsUpdated(HashtagAccessControls previousAccessControls, HashtagAccessControls newAccessControls);
-
-    event NewBaseURI(string baseURI);
-
-    event RenewalPeriodUpdated(uint256 originalRenewalPeriod, uint256 updatedRenewalPeriod);
-
-    // Storage
-
-    // Constants
-    string public constant NAME = "HTP: HASHTAG Registry";
-    string public constant VERSION = "0.2.0";
+    /// Variable storage
 
     // baseURI for looking up tokenURI for a token
     string public baseURI;
@@ -74,6 +52,11 @@ contract HashtagProtocol is ERC721PausableUpgradeable, ERC721BurnableUpgradeable
     /// @notice Last time a token was interacted with
     mapping(uint256 => uint256) public tokenIdToLastTransferTime;
 
+    /// Public constants
+
+    string public constant NAME = "HTP: HASHTAG Token";
+    string public constant VERSION = "0.2.0";
+
     /// Modifiers
 
     modifier onlyAdmin() {
@@ -83,14 +66,40 @@ contract HashtagProtocol is ERC721PausableUpgradeable, ERC721BurnableUpgradeable
 
     /// Structs
 
-    /// @notice Definition of a Hashtag which bundles associated metadata
     struct Hashtag {
         address originalPublisher;
         address creator;
         string displayVersion;
     }
 
+    /// Events
+
+    event MintHashtag(uint256 indexed tokenId, string displayHashtag, address indexed publisher, address creator);
+
+    event HashtagReset(uint256 indexed tokenId, address indexed owner);
+
+    event HashtagRenewed(uint256 indexed tokenId, address indexed caller);
+
+    event OwnershipTermLengthUpdated(uint256 originalOwnershipLength, uint256 updatedOwnershipLength);
+
+    event HashtagMaxStringLengthUpdated(uint256 originalHashtagMaxStringLength, uint256 UpdatedHashtagMaxStringLength);
+
+    event PlatformSet(address previousPlatformAddress, address newPlatformAddress);
+
+    event AccessControlsUpdated(HashtagAccessControls previousAccessControls, HashtagAccessControls newAccessControls);
+
+    event NewBaseURI(string baseURI);
+
+    event RenewalPeriodUpdated(uint256 originalRenewalPeriod, uint256 updatedRenewalPeriod);
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() initializer {}
+
     function initialize(HashtagAccessControls _accessControls, address payable _platform) public initializer {
+        __ERC721_init("Hashtag Protocol", "HASHTAG");
+        __ERC721Pausable_init();
+        __ERC721Burnable_init();
+
         // Initialize access controls.
         accessControls = _accessControls;
         // Set platform address.
@@ -99,10 +108,6 @@ contract HashtagProtocol is ERC721PausableUpgradeable, ERC721BurnableUpgradeable
         baseURI = "https://api.hashtag-protocol.io/";
         hashtagMinStringLength = 3;
         hashtagMaxStringLength = 32;
-
-        __ERC721_init("Hashtag Protocol", "HASHTAG");
-        __ERC721Pausable_init();
-        __ERC721Burnable_init();
     }
 
     function _authorizeUpgrade(address) internal override onlyAdmin {}
