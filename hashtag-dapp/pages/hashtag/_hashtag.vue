@@ -1,7 +1,6 @@
 <template>
   <div class="body" v-if="!loading">
     <SocialHead :title="displayHashtag + ' | Hashtag Protocol'" :description="randomSharingMessage" :image="imageUrl" />
-    <Header />
     <section class="main" v-if="hashtagsByName && hashtagsByName[0]">
       <div class="container">
         <div class="columns">
@@ -235,15 +234,12 @@
         </div>
       </div>
     </section>
-    <Footer></Footer>
   </div>
 </template>
 
 <script>
 import EthAccount from "~/components/EthAccount";
-import Footer from "hashtag-components/src/components/Footer.vue";
 import HashtagTokenId from "~/components/HashtagTokenId";
-import Header from "~/components/Header";
 import NftLink from "~/components/NftLink";
 import Pagination from "~/components/Pagination";
 import SocialHead from "~/components/SocialHead";
@@ -262,9 +258,7 @@ export default {
     TimestampFrom,
     EthAccount,
     NftLink,
-    Footer,
     HashtagTokenId,
-    Header,
     Pagination,
     SocialHead,
   },

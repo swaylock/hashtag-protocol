@@ -1,87 +1,81 @@
 <template>
-  <div class="body">
-    <Header></Header>
-    <section class="main">
-      <div class="container">
-        <h1 class="title is-1">Search</h1>
-        <h2 class="subtitle">
-          Showing Results For: {{ this.$route.params.value }}
-          <span class="is-pulled-right is-size-6 has-text-weight-bold">
-            <nuxt-link :to="{ name: 'index' }">Dashboard</nuxt-link>&nbsp;
-            <b-icon icon="arrow-up" type="is-dark" size="is-small"></b-icon>
-          </span>
-          <article class="tile is-child">
-            <TaggingWidget />
-          </article>
-        </h2>
-      </div>
-      <div class="container pt-3">
-        <div class="columns is-multiline">
-          <div v-for="tag in nftInfo" v-bind:key="tag.id" class="column is-one-quarter">
-            <div class="card" @click="onNftSelected(tag)">
-              <div class="card-image">
-                <figure class="image is-square">
-                  <video
-                    class="has-ratio"
-                    v-if="tag.metadataImageURI.includes('mp4')"
-                    autoplay=""
-                    controls=""
-                    controlslist="nodownload"
-                    loop=""
-                    playsinline=""
-                    poster=""
-                    preload="metadata"
-                    muted=""
-                  >
-                    <source :src="tag.metadataImageURI" @error="setPendingImage" type="video/mp4" />
-                  </video>
-                  <img v-else :src="tag.metadataImageURI" @error="setPendingImage" :alt="tag.nftName" />
-                </figure>
-              </div>
-              <div class="card-content">
-                <h2 class="title is-5">
-                  <div class="text-overflow">{{ tag.nftName }}</div>
-                </h2>
-                <div class="b-table">
-                  <div class="table-wrapper">
-                    <table class="table">
-                      <tbody>
-                        <tr draggable="false" class="">
-                          <td class="has-text-weight-bold">Chain</td>
-                          <td>
-                            {{ tag.chainName }}
-                          </td>
-                        </tr>
-                        <tr draggable="false" class="">
-                          <td class="has-text-weight-bold">Contract Address</td>
-                          <td>
-                            <eth-account :value="tag.contractAddress" route="tagger-address"></eth-account>
-                          </td>
-                        </tr>
-                        <tr draggable="false" class="">
-                          <td class="has-text-weight-bold">Asset Id</td>
-                          <td>
-                            <div v-if="tag.nftId.length < 20">{{ tag.nftId }}</div>
-                            <div v-else>{{ tag.nftId.substring(0, 16) + "..." }}</div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+  <section class="main">
+    <div class="container">
+      <h1 class="title is-1">Search</h1>
+      <h2 class="subtitle">
+        Showing Results For: {{ this.$route.params.value }}
+        <span class="is-pulled-right is-size-6 has-text-weight-bold">
+          <nuxt-link :to="{ name: 'index' }">Dashboard</nuxt-link>&nbsp;
+          <b-icon icon="arrow-up" type="is-dark" size="is-small"></b-icon>
+        </span>
+        <article class="tile is-child">
+          <TaggingWidget />
+        </article>
+      </h2>
+    </div>
+    <div class="container pt-3">
+      <div class="columns is-multiline">
+        <div v-for="tag in nftInfo" v-bind:key="tag.id" class="column is-one-quarter">
+          <div class="card" @click="onNftSelected(tag)">
+            <div class="card-image">
+              <figure class="image is-square">
+                <video
+                  class="has-ratio"
+                  v-if="tag.metadataImageURI.includes('mp4')"
+                  autoplay=""
+                  controls=""
+                  controlslist="nodownload"
+                  loop=""
+                  playsinline=""
+                  poster=""
+                  preload="metadata"
+                  muted=""
+                >
+                  <source :src="tag.metadataImageURI" @error="setPendingImage" type="video/mp4" />
+                </video>
+                <img v-else :src="tag.metadataImageURI" @error="setPendingImage" :alt="tag.nftName" />
+              </figure>
+            </div>
+            <div class="card-content">
+              <h2 class="title is-5">
+                <div class="text-overflow">{{ tag.nftName }}</div>
+              </h2>
+              <div class="b-table">
+                <div class="table-wrapper">
+                  <table class="table">
+                    <tbody>
+                      <tr draggable="false" class="">
+                        <td class="has-text-weight-bold">Chain</td>
+                        <td>
+                          {{ tag.chainName }}
+                        </td>
+                      </tr>
+                      <tr draggable="false" class="">
+                        <td class="has-text-weight-bold">Contract Address</td>
+                        <td>
+                          <eth-account :value="tag.contractAddress" route="tagger-address"></eth-account>
+                        </td>
+                      </tr>
+                      <tr draggable="false" class="">
+                        <td class="has-text-weight-bold">Asset Id</td>
+                        <td>
+                          <div v-if="tag.nftId.length < 20">{{ tag.nftId }}</div>
+                          <div v-else>{{ tag.nftId.substring(0, 16) + "..." }}</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
-    <Footer></Footer>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script>
-import Footer from "hashtag-components/src/components/Footer.vue";
-import Header from "~/components/Header";
 import TaggingWidget from "~/components/TaggingWidget";
 import TxnModal from "~/components/TxnModal";
 import axios from "axios";
@@ -92,8 +86,6 @@ export default {
   name: "Nfts",
   props: ["value"],
   components: {
-    Footer,
-    Header,
     TaggingWidget,
   },
   mounted() {

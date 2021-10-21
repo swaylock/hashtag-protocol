@@ -1,73 +1,46 @@
 <template>
-  <div class="body">
-    <Header />
-    <section class="main">
-      <div class="container">
-        <h1 class="title is-1">Owners</h1>
-        <h2 class="subtitle">
-          Hashtag Protocol Token Owners
-          <span class="is-pulled-right is-size-6 has-text-weight-bold">
-            <nuxt-link :to="{ name: 'index' }">Dashboard</nuxt-link>&nbsp;
-            <b-icon icon="arrow-up" type="is-dark" size="is-small"></b-icon>
-          </span>
-        </h2>
-        <div class="columns is-tablet is-centered">
-          <div class="column is-12">
-            <article class="is-white coming-soon">
-              <h2 class="title is-5">Top owners</h2>
-              <div class="coming-soon-img">
-                <img src="~/assets/coming-soon-banner.png" />
-              </div>
-              <pseudo-owners />
-            </article>
+  <section class="main">
+    <div class="container">
+      <h1 class="title is-1">Owners</h1>
+      <h2 class="subtitle">
+        Hashtag Protocol Token Owners
+        <span class="is-pulled-right is-size-6 has-text-weight-bold">
+          <nuxt-link :to="{ name: 'index' }">Dashboard</nuxt-link>&nbsp;
+          <b-icon icon="arrow-up" type="is-dark" size="is-small"></b-icon>
+        </span>
+      </h2>
+      <div class="columns is-tablet is-centered">
+        <div class="column is-12">
+          <article class="is-white coming-soon">
+            <h2 class="title is-5">Top owners</h2>
+            <div class="coming-soon-img">
+              <img src="~/assets/coming-soon-banner.png" />
+            </div>
+            <pseudo-owners />
+          </article>
+        </div>
+      </div>
+    </div>
+    <b-modal :active.sync="isOverviewModalActive" :width="640" scroll="keep">
+      <div class="card">
+        <div class="card-content">
+          <div class="content">
+            <markdown-doc doc-type="help" filename="owners-list-overview"></markdown-doc>
+            <b-collapse :open="false" aria-id="tokenOverview" animation="slide" class="py-4">
+              <a slot="trigger" slot-scope="props" aria-controls="tokenOverview" class="has-text-weight-bold">
+                <b-icon :icon="!props.open ? 'menu-down' : 'menu-up'"></b-icon>
+                {{ !props.open ? 'What\'s an "Owner"?' : 'What\'s an "Owner"?' }}
+              </a>
+              <markdown-doc doc-type="faq" filename="050-what-is-an-owner" class="py-4"></markdown-doc>
+            </b-collapse>
           </div>
         </div>
       </div>
-      <b-modal :active.sync="isOverviewModalActive" :width="640" scroll="keep">
-        <div class="card">
-          <div class="card-content">
-            <div class="content">
-              <markdown-doc
-                doc-type="help"
-                filename="owners-list-overview"
-              ></markdown-doc>
-              <b-collapse
-                :open="false"
-                aria-id="tokenOverview"
-                animation="slide"
-                class="py-4"
-              >
-                <a
-                  slot="trigger"
-                  slot-scope="props"
-                  aria-controls="tokenOverview"
-                  class="has-text-weight-bold"
-                >
-                  <b-icon
-                    :icon="!props.open ? 'menu-down' : 'menu-up'"
-                  ></b-icon>
-                  {{
-                    !props.open ? 'What\'s an "Owner"?' : 'What\'s an "Owner"?'
-                  }}
-                </a>
-                <markdown-doc
-                  doc-type="faq"
-                  filename="050-what-is-an-owner"
-                  class="py-4"
-                ></markdown-doc>
-              </b-collapse>
-            </div>
-          </div>
-        </div>
-      </b-modal>
-    </section>
-    <Footer></Footer>
-  </div>
+    </b-modal>
+  </section>
 </template>
 
 <script>
-import Footer from "hashtag-components/src/components/Footer.vue";
-import Header from "~/components/Header";
 import MarkdownDoc from "~/components/MarkdownDoc";
 import { PAGED_OWNERS, ALL_OWNER_ADDRESSES } from "~/apollo/queries";
 import PseudoOwners from "~/components/PseudoOwners";
@@ -75,8 +48,6 @@ import PseudoOwners from "~/components/PseudoOwners";
 export default {
   name: "Owners",
   components: {
-    Footer,
-    Header,
     MarkdownDoc,
     PseudoOwners,
   },

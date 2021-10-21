@@ -1,6 +1,5 @@
 <template>
-  <div class="body">
-    <Header></Header>
+  <div>
     <section class="main">
       <div class="container">
         <h1 class="title is-1">Tagged NFTs</h1>
@@ -112,15 +111,12 @@
         </div>
       </div>
     </section>
-    <Footer></Footer>
   </div>
 </template>
 
 <script>
 import EthAccount from "~/components/EthAccount";
-import Footer from "hashtag-components/src/components/Footer.vue";
 import Hashtag from "~/components/Hashtag";
-import Header from "~/components/Header";
 import NftLink from "~/components/NftLink";
 import Pagination from "~/components/Pagination";
 import TimestampFrom from "~/components/TimestampFrom";
@@ -133,9 +129,7 @@ export default {
   name: "Nfts",
   components: {
     EthAccount,
-    Footer,
     Hashtag,
-    Header,
     NftLink,
     Pagination,
     TimestampFrom,
