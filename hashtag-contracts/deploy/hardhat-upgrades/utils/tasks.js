@@ -1,4 +1,4 @@
-const { network, upgrades } = require("hardhat");
+const { network, upgrades, ethers } = require("hardhat");
 const merge = require("lodash.merge");
 
 // Deploys HashtagAccessControls.sol, HashtagProtocol.sol & ERC721HashtagRegistry.sol
@@ -28,11 +28,11 @@ const deployHTPTask = {
       },
     );
     // add a publisher to the protocol
-    await hashtagAccessControls.grantRole(web3.utils.sha3("PUBLISHER"), accountHashtagPublisher.address);
+    await hashtagAccessControls.grantRole(ethers.utils.id("PUBLISHER"), accountHashtagPublisher.address);
     // Save deployment data to .deployer/[chainid].json
     await ctx.saveContractConfig("HashtagAccessControls", hashtagAccessControls, hashtagAccessControlsImpl);
     // Verify deployed contracts on block explorer.
-    await ctx.verify("HashtagAccessControls", hashtagAccessControls.address, []);
+    await ctx.verify("HashtagAccessControls", hashtagAccessControlsImpl, []);
 
     // Deploy HashtagProtocol
     hashtagProtocol = await upgrades.deployProxy(
@@ -43,7 +43,7 @@ const deployHTPTask = {
     await hashtagProtocol.deployTransaction.wait();
     hashtagProtocolImpl = await upgrades.erc1967.getImplementationAddress(hashtagProtocol.address);
     await ctx.saveContractConfig("HashtagProtocol", hashtagProtocol, hashtagProtocolImpl);
-    await ctx.verify("HashtagProtocol", hashtagProtocol.address, []);
+    await ctx.verify("HashtagProtocol", hashtagProtocolImpl, []);
 
     // Deploy ERC721HashtagRegistry
     erc721HashtagRegistry = await upgrades.deployProxy(
@@ -54,7 +54,7 @@ const deployHTPTask = {
     await erc721HashtagRegistry.deployTransaction.wait();
     erc721HashtagRegistryImpl = await upgrades.erc1967.getImplementationAddress(erc721HashtagRegistry.address);
     await ctx.saveContractConfig("ERC721HashtagRegistry", erc721HashtagRegistry, erc721HashtagRegistryImpl);
-    await ctx.verify("ERC721HashtagRegistry", erc721HashtagRegistry.address, []);
+    await ctx.verify("ERC721HashtagRegistry", erc721HashtagRegistryImpl, []);
   },
   ensureDependencies: () => {},
 };
@@ -86,7 +86,7 @@ const upgradeHashtagAccessControlsTask = {
     const hashtagAccessControlsImpl = await upgrades.erc1967.getImplementationAddress(hashtagAccessControls.address);
     await ctx.saveContractConfig("HashtagAccessControls", hashtagAccessControls, hashtagAccessControlsImpl);
     // Verify deployed contracts on block explorer.
-    await ctx.verify("HashtagAccessControls", hashtagAccessControls.address, []);
+    await ctx.verify("HashtagAccessControls", hashtagAccessControlsImpl, []);
   },
 };
 
@@ -115,7 +115,7 @@ const upgradeHashtagProtocolTask = {
     const hashtagProtocolImpl = await upgrades.erc1967.getImplementationAddress(hashtagProtocol.address);
     await ctx.saveContractConfig("HashtagProtocol", hashtagProtocol, hashtagProtocolImpl);
     // Verify deployed contracts on block explorer.
-    await ctx.verify("HashtagProtocol", hashtagProtocol.address, []);
+    await ctx.verify("HashtagProtocol", hashtagProtocolImpl, []);
   },
 };
 
@@ -148,9 +148,17 @@ const upgradeERC721TaggingRegistryTask = {
     const erc721HashtagRegistryImpl = await upgrades.erc1967.getImplementationAddress(erc721HashtagRegistry.address);
     await ctx.saveContractConfig("ERC721HashtagRegistry", erc721HashtagRegistry, erc721HashtagRegistryImpl);
     // Verify deployed contracts on block explorer.
-    await ctx.verify("ERC721HashtagRegistry", erc721HashtagRegistry.address, []);
+    await ctx.verify("ERC721HashtagRegistry", erc721HashtagRegistryImpl, []);
   },
 };
+
+// eslint-disable-next-line no-unused-vars
+function sleep(ms) {
+  return new Promise((resolve) => {
+    console.log("pausing ", ms / 1000);
+    setTimeout(resolve, ms);
+  });
+}
 
 module.exports = [
   deployHTPTask,

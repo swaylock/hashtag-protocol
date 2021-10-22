@@ -43,6 +43,7 @@ class Deployer {
     this.artifacts = artifacts;
     this.accounts = accounts;
     this.network = network.config;
+    this.networkName = network.name;
 
     this.log = log;
     debug.enable("HTP:deployer");
@@ -95,7 +96,6 @@ class Deployer {
         address: value.address,
         implementation: value.implementation,
         deploymentBlock: value.transaction && ethers.BigNumber.from(value.transaction.blockNumber).toHexString(),
-        forwarder: value.forwarder,
       };
     }
 
@@ -114,7 +114,7 @@ class Deployer {
     return JSON.parse(file.length ? file : "{}");
   }
 
-  async saveContractConfig(name, contract, implAddress, forwarder) {
+  async saveContractConfig(name, contract, implAddress) {
     const config = this.getDeployConfig();
 
     const _config = merge(config, {
@@ -123,22 +123,6 @@ class Deployer {
           address: contract.address,
           implementation: implAddress,
           transaction: contract.deployTransaction && (await contract.deployTransaction.wait()),
-          forwarder: forwarder && forwarder.address,
-        },
-      },
-    });
-
-    this._saveConfig(_config);
-  }
-
-  async saveForwarderConfig(name, contract) {
-    const config = this.getDeployConfig();
-
-    const _config = merge(config, {
-      contracts: {
-        [name]: {
-          ...((config.contracts || {})[name] || {}),
-          forwarder: contract.address,
         },
       },
     });
@@ -152,7 +136,13 @@ class Deployer {
   }
 
   async verify(name, address, args) {
-    this.log("Verifying contract", { name, chainId: this.network.chainId, address, args });
+    this.log("Verifying contract", {
+      name,
+      networkName: this.networkName,
+      chainId: this.network.chainId,
+      address,
+      args,
+    });
     if (this.network.chainId == 31337) {
       try {
         await ethernal.push({
@@ -165,6 +155,7 @@ class Deployer {
     } else {
       try {
         await run("verify:verify", {
+          network: this.networkName,
           address,
           constructorArguments: args,
         });
