@@ -1,6 +1,5 @@
 <template>
-  <div class="body">
-    <Header />
+  <div>
     <section class="main" v-if="isLoaded">
       <div class="container">
         <h1 class="title is-1">{{ nftInfo.nftName }}</h1>
@@ -183,15 +182,12 @@
       </div>
     </section>
     <section v-else>Loading...</section>
-    <Footer></Footer>
   </div>
 </template>
 
 <script>
 import EthAccount from "~/components/EthAccount";
-import Footer from "hashtag-components/src/components/Footer.vue";
 import Hashtag from "~/components/Hashtag";
-import Header from "~/components/Header";
 import TimestampFrom from "~/components/TimestampFrom";
 import { TAGS_BY_DIGITAL_ASSET, FIRST_THOUSAND_HASHTAGS } from "~/apollo/queries";
 
@@ -202,9 +198,7 @@ export default {
   name: "NftDetail",
   components: {
     EthAccount,
-    Footer,
     Hashtag,
-    Header,
     TimestampFrom,
   },
   data() {

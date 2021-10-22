@@ -1,11 +1,8 @@
 <template>
-  <div class="body">
-    <Header />
+  <div>
     <section class="main" v-if="ownerByAcc">
       <div class="container">
-        <h1 class="title is-1">
-          Owner: <eth-account :value="owner"></eth-account>
-        </h1>
+        <h1 class="title is-1">Owner: <eth-account :value="owner"></eth-account></h1>
         <h2 class="subtitle">
           Hashtag Protocol Token Owner
           <span class="is-pulled-right is-size-6 has-text-weight-bold">
@@ -66,18 +63,13 @@
                         <tr draggable="false" class="">
                           <td class="has-text-weight-bold">Tagging revenue</td>
                           <td>
-                            <eth-amount
-                              :value="ownerByAcc.tagFees"
-                            ></eth-amount>
+                            <eth-amount :value="ownerByAcc.tagFees"></eth-amount>
                           </td>
                         </tr>
                         <tr draggable="false" class="">
                           <td class="has-text-weight-bold">Total revenue</td>
                           <td>
-                            <eth-amount-sum
-                              :value1="ownerByAcc.tagFees"
-                              :value2="0"
-                            ></eth-amount-sum>
+                            <eth-amount-sum :value1="ownerByAcc.tagFees" :value2="0"></eth-amount-sum>
                           </td>
                         </tr>
                       </tbody>
@@ -91,22 +83,12 @@
         <div class="columns is-tablet is-centered">
           <div class="column is-12">
             <article class="is-white box">
-              <b-tooltip
-                label="Help"
-                position="is-bottom"
-                class="is-pulled-right"
-                type="is-dark"
-              >
-                <button
-                  class="button is-white"
-                  @click="isActivityModalActive = true"
-                >
+              <b-tooltip label="Help" position="is-bottom" class="is-pulled-right" type="is-dark">
+                <button class="button is-white" @click="isActivityModalActive = true">
                   <b-icon icon="help-circle-outline" type="is-dark"> </b-icon>
                 </button>
               </b-tooltip>
-              <h2 class="title is-4 is-spaced">
-                Activity for <eth-account :value="owner"></eth-account>
-              </h2>
+              <h2 class="title is-4 is-spaced">Activity for <eth-account :value="owner"></eth-account></h2>
               <b-tabs v-model="activeTab" :animated="false">
                 <b-tab-item label="Hashtags">
                   <div class="b-table">
@@ -129,33 +111,18 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr
-                            draggable="false"
-                            class=""
-                            v-for="hashtag in hashtagsByOwner"
-                            v-bind:key="hashtag.id"
-                          >
+                          <tr draggable="false" class="" v-for="hashtag in hashtagsByOwner" v-bind:key="hashtag.id">
                             <td data-label="Hashtag" class="">
-                              <hashtag
-                                :value="hashtag.displayHashtag"
-                              ></hashtag>
+                              <hashtag :value="hashtag.displayHashtag"></hashtag>
                             </td>
                             <td data-label="Created" class="">
-                              <timestamp-from
-                                :value="hashtag.timestamp"
-                              ></timestamp-from>
+                              <timestamp-from :value="hashtag.timestamp"></timestamp-from>
                             </td>
                             <td data-label="Creator" class="">
-                              <eth-account
-                                :value="hashtag.owner"
-                                route="owner-address"
-                              ></eth-account>
+                              <eth-account :value="hashtag.owner" route="owner-address"></eth-account>
                             </td>
                             <td data-label="Publisher" class="">
-                              <eth-account
-                                :value="hashtag.publisher"
-                                route="publisher-address"
-                              ></eth-account>
+                              <eth-account :value="hashtag.publisher" route="publisher-address"></eth-account>
                             </td>
                           </tr>
                         </tbody>
@@ -207,11 +174,7 @@
                                   },
                                 }"
                               >
-                                <img
-                                  :src="tag.nftImage"
-                                  :alt="tag.nftName"
-                                  class="nft-thumb"
-                                />
+                                <img :src="tag.nftImage" :alt="tag.nftName" class="nft-thumb" />
                               </nuxt-link>
                             </td>
                             <td data-label="Asset Name" class="">
@@ -226,20 +189,13 @@
                               {{ tag.nftContractName }}
                             </td>
                             <td data-label="Hashtag" class="">
-                              <hashtag
-                                :value="tag.hashtagDisplayHashtag"
-                              ></hashtag>
+                              <hashtag :value="tag.hashtagDisplayHashtag"></hashtag>
                             </td>
                             <td data-label="Tagged" class="">
-                              <timestamp-from
-                                :value="tag.timestamp"
-                              ></timestamp-from>
+                              <timestamp-from :value="tag.timestamp"></timestamp-from>
                             </td>
                             <td data-label="Tagger" class="">
-                              <eth-account
-                                :value="tag.tagger"
-                                route="tagger-address"
-                              ></eth-account>
+                              <eth-account :value="tag.tagger" route="tagger-address"></eth-account>
                             </td>
                           </tr>
                         </tbody>
@@ -261,35 +217,13 @@
         <div class="card">
           <div class="card-content">
             <div class="content">
-              <markdown-doc
-                doc-type="help"
-                filename="owner-detail-owner-info"
-              ></markdown-doc>
-              <b-collapse
-                :open="false"
-                position="is-top"
-                aria-id="contentIdForA11y1"
-                animation="slide"
-                class="py-4"
-              >
-                <a
-                  slot="trigger"
-                  slot-scope="props"
-                  aria-controls="MarketOverview"
-                  class="has-text-weight-bold"
-                >
-                  <b-icon
-                    :icon="!props.open ? 'menu-down' : 'menu-up'"
-                  ></b-icon>
-                  {{
-                    !props.open ? 'What\'s an "Owner"?' : 'What\'s an "Owner"?'
-                  }}
+              <markdown-doc doc-type="help" filename="owner-detail-owner-info"></markdown-doc>
+              <b-collapse :open="false" position="is-top" aria-id="contentIdForA11y1" animation="slide" class="py-4">
+                <a slot="trigger" slot-scope="props" aria-controls="MarketOverview" class="has-text-weight-bold">
+                  <b-icon :icon="!props.open ? 'menu-down' : 'menu-up'"></b-icon>
+                  {{ !props.open ? 'What\'s an "Owner"?' : 'What\'s an "Owner"?' }}
                 </a>
-                <markdown-doc
-                  doc-type="faq"
-                  filename="050-what-is-an-owner"
-                  class="py-4"
-                ></markdown-doc>
+                <markdown-doc doc-type="faq" filename="050-what-is-an-owner" class="py-4"></markdown-doc>
               </b-collapse>
             </div>
           </div>
@@ -299,37 +233,13 @@
         <div class="card">
           <div class="card-content">
             <div class="content">
-              <markdown-doc
-                doc-type="help"
-                filename="owner-detail-market-summary"
-              ></markdown-doc>
-              <b-collapse
-                :open="false"
-                position="is-top"
-                aria-id="contentIdForA11y1"
-                animation="slide"
-                class="py-4"
-              >
-                <a
-                  slot="trigger"
-                  slot-scope="props"
-                  aria-controls="MarketOverview"
-                  class="has-text-weight-bold"
-                >
-                  <b-icon
-                    :icon="!props.open ? 'menu-down' : 'menu-up'"
-                  ></b-icon>
-                  {{
-                    !props.open
-                      ? 'What is the "Hashtag Market"?'
-                      : 'What is the "Hashtag Market"?'
-                  }}
+              <markdown-doc doc-type="help" filename="owner-detail-market-summary"></markdown-doc>
+              <b-collapse :open="false" position="is-top" aria-id="contentIdForA11y1" animation="slide" class="py-4">
+                <a slot="trigger" slot-scope="props" aria-controls="MarketOverview" class="has-text-weight-bold">
+                  <b-icon :icon="!props.open ? 'menu-down' : 'menu-up'"></b-icon>
+                  {{ !props.open ? 'What is the "Hashtag Market"?' : 'What is the "Hashtag Market"?' }}
                 </a>
-                <markdown-doc
-                  doc-type="faq"
-                  filename="070-what-is-the-hashtag-market"
-                  class="py-4"
-                ></markdown-doc>
+                <markdown-doc doc-type="faq" filename="070-what-is-the-hashtag-market" class="py-4"></markdown-doc>
               </b-collapse>
             </div>
           </div>
@@ -339,23 +249,17 @@
         <div class="card">
           <div class="card-content">
             <div class="content">
-              <markdown-doc
-                doc-type="help"
-                filename="owner-detail-recent-activity"
-              ></markdown-doc>
+              <markdown-doc doc-type="help" filename="owner-detail-recent-activity"></markdown-doc>
             </div>
           </div>
         </div>
       </b-modal>
     </section>
-    <Footer></Footer>
   </div>
 </template>
 
 <script>
 import EthAccount from "~/components/EthAccount";
-import Footer from "hashtag-components/src/components/Footer.vue";
-import Header from "~/components/Header";
 import HelpModal from "~/components/HelpModal";
 import {
   PAGED_HASHTAGS_BY_OWNER,
@@ -380,9 +284,7 @@ export default {
     EthAmountSum,
     EthAmount,
     EthAccount,
-    Footer,
     Hashtag,
-    Header,
     HelpModal,
     MarkdownDoc,
     NftLink,

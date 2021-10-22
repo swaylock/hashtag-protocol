@@ -1,6 +1,5 @@
 <template>
-  <div class="body auction">
-    <Header />
+  <div class="auction">
     <section class="main" v-if="creatorByAcc">
       <div class="container">
         <h1 class="title is-1">Creator: <eth-account :value="creator"></eth-account></h1>
@@ -214,14 +213,11 @@
         </div>
       </div>
     </section>
-    <Footer></Footer>
   </div>
 </template>
 
 <script>
 import EthAccount from "~/components/EthAccount";
-import Footer from "hashtag-components/src/components/Footer.vue";
-import Header from "~/components/Header";
 import {
   PAGED_HASHTAGS_BY_CREATOR,
   CREATOR_BY_ACC,
@@ -245,9 +241,7 @@ export default {
     EthAmountSum,
     EthAmount,
     EthAccount,
-    Footer,
     Hashtag,
-    Header,
     NftLink,
     Pagination,
     TimestampFrom,
