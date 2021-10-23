@@ -23,23 +23,11 @@
                     "deploymentBlock": "0x08",
                     "implementation": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
                     "forwarder": "0x0000000000000000000000000000000000000000"
-                },
-                "Mars": {
-                    "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-                    "legacyAddresses": [],
-                    "deploymentBlock": "0x03",
-                    "implementation": "0x0000000000000000000000000000000000000000"
                 }
             }
         },
         "80001": {
             "contracts": {
-                "Mars": {
-                    "address": "0x38963FA720aA3168eE4c8f0cA74e5D1f7611342f",
-                    "legacyAddresses": [],
-                    "deploymentBlock": "0x0138dff7",
-                    "implementation": "0x2F6a3f4289c2415358a5748567404240264D5fc6"
-                },
                 "HashtagAccessControls": {
                     "address": "0x6EE65971E81b4c11A0b0c30172EdBCda4c2E3210",
                     "legacyAddresses": [],
