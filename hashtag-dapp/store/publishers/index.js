@@ -7,7 +7,7 @@ const state = () => ({
       website: "https://knownorigin.io",
     },
     {
-      address: "0xf6423a8769292bbeef9335c5a26254c759e3bfbe",
+      address: "0xE9FBC1a1925F6f117211C59b89A55b576182e1e9",
       name: "Hashtag Protocol",
       registration: "https://#",
       website: "https://hashtag-protocol.org",
