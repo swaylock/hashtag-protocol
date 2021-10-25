@@ -37,8 +37,6 @@ export default {
         });
         this.$store.dispatch("wallet/captureOpenModalCloseFn", mintModal.close);
       }
-      // Updates the transaction fees grid.
-      await this.$store.dispatch("transactionFees/updateFees");
     },
 
     /**

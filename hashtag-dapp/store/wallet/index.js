@@ -246,13 +246,18 @@ const actions = {
     // to confirm or reject the transaction. When confirmed
     // we will have a txn object.
     const txn = await hashtagProtocolContract.mint(payload, publisher, state.address);
+    await txn.wait();
 
-    // We have a txn object. Start a blocknative SDK listener for blockchain events.
-    const { emitter } = blocknative.transaction(txn.hash);
-
-    emitter.on("all", (transaction) => {
-      dispatch("updateTransactionState", transaction);
+    dispatch("updateTransactionState", {
+      eventCode: "txConfirmed",
     });
+    // We have a txn object. Start a blocknative SDK listener for blockchain events.
+    // const { emitter } = blocknative.transaction(txn.hash);
+
+    // emitter.on("all", (transaction) => {
+    //   console.log("transsss", transaction);
+    //   dispatch("updateTransactionState", transaction);
+    // });
   },
 
   /**
@@ -286,13 +291,18 @@ const actions = {
         value: ethers.BigNumber.from(fees.tagging),
       },
     );
+    await txn.wait();
+
+    dispatch("updateTransactionState", {
+      eventCode: "txConfirmed",
+    });
 
     // We have a txn object. Start a blocknative SDK listener for blockchain events.
-    const { emitter } = blocknative.transaction(txn.hash);
+    // const { emitter } = blocknative.transaction(txn.hash);
 
-    emitter.on("all", (transaction) => {
-      dispatch("updateTransactionState", transaction);
-    });
+    // emitter.on("all", (transaction) => {
+    //   dispatch("updateTransactionState", transaction);
+    // });
   },
 
   async mintAndTag({ state, dispatch }, payload) {
@@ -320,13 +330,18 @@ const actions = {
         value: ethers.BigNumber.from(fees.tagging),
       },
     );
+    await txn.wait();
+
+    dispatch("updateTransactionState", {
+      eventCode: "txConfirmed",
+    });
 
     // We have a txn object. Start a blocknative SDK listener for blockchain events.
-    const { emitter } = blocknative.transaction(txn.hash);
+    // const { emitter } = blocknative.transaction(txn.hash);
 
-    emitter.on("all", (transaction) => {
-      dispatch("updateTransactionState", transaction);
-    });
+    // emitter.on("all", (transaction) => {
+    //   dispatch("updateTransactionState", transaction);
+    // });
   },
 
   /**

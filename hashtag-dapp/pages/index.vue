@@ -274,9 +274,7 @@
 <script>
 import EthAccount from "~/components/EthAccount";
 import EthAmount from "~/components/EthAmount";
-// import Footer from "hashtag-components/src/components/Footer.vue";
 import Hashtag from "~/components/Hashtag";
-// import Header from "~/components/Header";
 import MarkdownModal from "~/components/MarkdownModal";
 import RecentlyTagged from "~/components/RecentlyTagged";
 import PseudoOwners from "~/components/PseudoOwners";
