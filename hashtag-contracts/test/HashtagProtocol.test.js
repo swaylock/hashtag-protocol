@@ -1,286 +1,286 @@
-const { ethers, deployments } = require("hardhat");
-const { expect } = require("chai");
-
+const { ethers, upgrades } = require("hardhat");
+const { expect, assert } = require("chai");
 const { BigNumber, constants } = ethers;
 
-// we create a setup function that can be called by every test and setup variable for easy to read tests
-async function setup(type) {
-  // it first ensure the deployment is executed and reset (use of evm_snapshot for fast test)
-  await deployments.fixture(["HashtagProtocol", "HashtagAccessControls"]);
-
-  // See namedAccounts section of hardhat.config.js
-  const namedAccounts = await ethers.getNamedSigners();
-  const unnamedAccounts = await ethers.getUnnamedSigners();
-  const accounts = {
-    accountHashtagAdmin: namedAccounts["accountHashtagAdmin"],
-    accountHashtagPublisher: namedAccounts["accountHashtagPublisher"],
-    accountHashtagPlatform: namedAccounts["accountHashtagPlatform"],
-    accountBuyer: unnamedAccounts[0],
-    accountRandomOne: unnamedAccounts[1],
-    accountRandomTwo: unnamedAccounts[2],
-    accountCreator: unnamedAccounts[3],
-  };
-
-  // Get an instantiated contracts in the form of a ethers.js Contract instances:
-  const contracts = {
-    contractAccessControls: await ethers.getContract("HashtagAccessControls"),
-    contractHashtagProtocol: await ethers.getContract("HashtagProtocol"),
-  };
-
-  // Create a few pre-loaded Hashtags for renew/reset tests,
-  // but only when we need them.
-  let lastTransferTime;
-  if (type == "renew") {
-    const tokenId = constants.One;
-    await contracts.contractHashtagProtocol
-      .connect(accounts.accountRandomTwo)
-      .mint("#BlockRocket", accounts.accountHashtagPublisher.address, accounts.accountCreator.address);
-
-    // This sets the last transfer time for all tests to now
-    // accountHashtagPlatform is owner of new hashtags.
-    await contracts.contractHashtagProtocol.connect(accounts.accountHashtagPlatform).renewHashtag(tokenId);
-    lastTransferTime = await contracts.contractHashtagProtocol.tokenIdToLastTransferTime(tokenId);
-  }
-
-  return {
-    ...contracts,
-    ...accounts,
-    lastTransferTime,
-  };
-}
+let accounts, factories, HashtagAccessControls, HashtagProtocol;
 
 describe("HashtagProtocol Tests", function () {
+  // we create a setup function that can be called by every test and setup variable for easy to read tests
+  beforeEach("Setup test", async function () {
+    // See namedAccounts section of hardhat.config.js
+    const namedAccounts = await ethers.getNamedSigners();
+    const unnamedAccounts = await ethers.getUnnamedSigners();
+    accounts = {
+      HashtagAdmin: namedAccounts["accountHashtagAdmin"],
+      HashtagPublisher: namedAccounts["accountHashtagPublisher"],
+      HashtagPlatform: namedAccounts["accountHashtagPlatform"],
+      Buyer: unnamedAccounts[0],
+      RandomOne: unnamedAccounts[1],
+      RandomTwo: unnamedAccounts[2],
+      Creator: unnamedAccounts[3],
+    };
+
+    factories = {
+      HashtagAccessControls: await ethers.getContractFactory("HashtagAccessControls"),
+      HashtagProtocol: await ethers.getContractFactory("HashtagProtocol"),
+      ERC721HashtagRegistry: await ethers.getContractFactory("ERC721HashtagRegistry"),
+    };
+
+    // Deploy the initial proxy contract.
+    HashtagAccessControls = await upgrades.deployProxy(factories.HashtagAccessControls, { kind: "uups" });
+    assert((await HashtagAccessControls.isAdmin(accounts.HashtagAdmin.address)) === true);
+
+    await HashtagAccessControls.grantRole(
+      await HashtagAccessControls.SMART_CONTRACT_ROLE(),
+      accounts.HashtagAdmin.address,
+      { from: accounts.HashtagAdmin.address },
+    );
+
+    // add a publisher to the protocol
+    await HashtagAccessControls.grantRole(web3.utils.sha3("PUBLISHER"), accounts.HashtagPublisher.address);
+
+    // Deploy the initial proxy contract.
+    HashtagProtocol = await upgrades.deployProxy(
+      factories.HashtagProtocol,
+      [HashtagAccessControls.address, accounts.HashtagPlatform.address],
+      { kind: "uups" },
+    );
+  });
+
   describe("Validate setup", async function () {
     it("should have name and symbol", async function () {
-      const { contractHashtagProtocol, accountHashtagPlatform } = await setup();
-      expect(await contractHashtagProtocol.name()).to.be.equal("Hashtag Protocol");
-      expect(await contractHashtagProtocol.symbol()).to.be.equal("HASHTAG");
-      expect(await contractHashtagProtocol.platform()).to.be.equal(accountHashtagPlatform.address);
+      expect(await HashtagProtocol.name()).to.be.equal("Hashtag Protocol");
+      expect(await HashtagProtocol.symbol()).to.be.equal("HASHTAG");
+      expect(await HashtagProtocol.platform()).to.be.equal(accounts.HashtagPlatform.address);
     });
     it("should have default configs", async function () {
-      const { contractHashtagProtocol } = await setup();
-      expect(await contractHashtagProtocol.ownershipTermLength()).to.be.equal("63072000");
+      expect(await HashtagProtocol.ownershipTermLength()).to.be.equal("63072000");
     });
   });
 
   describe("Minting hashtags", async function () {
     describe("Validation", function () {
-      const accountRandomTwoHashtag = "asupersupersupersupersuperlonghashtag";
+      const RandomTwoHashtag = "asupersupersupersupersuperlonghashtag";
 
       it("should revert if exists (case-insensitive)", async function () {
-        const { contractHashtagProtocol, accountHashtagPublisher, accountCreator } = await setup();
-        await contractHashtagProtocol
-          .connect(accountHashtagPublisher)
-          .mint("#blockrocket", accountHashtagPublisher.address, accountCreator.address);
+        await HashtagProtocol.connect(accounts.HashtagPublisher).mint(
+          "#blockrocket",
+          accounts.HashtagPublisher.address,
+          accounts.Creator.address,
+        );
 
         await expect(
-          contractHashtagProtocol
-            .connect(accountHashtagPublisher)
-            .mint("#BlockRocket", accountHashtagPublisher.address, accountCreator.address),
-        ).to.be.revertedWith("Hashtag validation: Hashtag already owned.");
+          HashtagProtocol.connect(accounts.HashtagPublisher).mint(
+            "#BlockRocket",
+            accounts.HashtagPublisher.address,
+            accounts.Creator.address,
+          ),
+        ).to.be.revertedWith("ERC721: token already minted");
       });
 
       it("should revert if hashtag does not meet min length requirements", async function () {
-        const { contractHashtagProtocol, accountHashtagPublisher, accountCreator } = await setup();
-        const hashtagMinStringLength = await contractHashtagProtocol.hashtagMinStringLength();
+        const hashtagMinStringLength = await HashtagProtocol.hashtagMinStringLength();
 
-        const shortHashtag = "#" + accountRandomTwoHashtag.substring(0, hashtagMinStringLength - 2);
+        const shortHashtag = "#" + RandomTwoHashtag.substring(0, hashtagMinStringLength - 2);
         await expect(
-          contractHashtagProtocol
-            .connect(accountHashtagPublisher)
-            .mint(shortHashtag, accountHashtagPublisher.address, accountCreator.address),
+          HashtagProtocol.connect(accounts.HashtagPublisher).mint(
+            shortHashtag,
+            accounts.HashtagPublisher.address,
+            accounts.Creator.address,
+          ),
         ).to.be.revertedWith(`Invalid format: Hashtag must not exceed length requirements`);
       });
 
       it("should revert if hashtag does not meet max length requirements", async function () {
-        const { contractHashtagProtocol, accountHashtagPublisher, accountCreator } = await setup();
-        const hashtagMaxStringLength = await contractHashtagProtocol.hashtagMaxStringLength();
-        const longHashtag = "#" + accountRandomTwoHashtag.substring(0, hashtagMaxStringLength);
+        const hashtagMaxStringLength = await HashtagProtocol.hashtagMaxStringLength();
+        const longHashtag = "#" + RandomTwoHashtag.substring(0, hashtagMaxStringLength);
         await expect(
-          contractHashtagProtocol
-            .connect(accountHashtagPublisher)
-            .mint(longHashtag, accountHashtagPublisher.address, accountCreator.address),
+          HashtagProtocol.connect(accounts.HashtagPublisher).mint(
+            longHashtag,
+            accounts.HashtagPublisher.address,
+            accounts.Creator.address,
+          ),
         ).to.be.revertedWith(`Invalid format: Hashtag must not exceed length requirements`);
       });
 
       it("should revert if hashtag has an invalid character", async function () {
-        const { contractHashtagProtocol, accountHashtagPublisher, accountCreator } = await setup();
         const invalidHashtag = "#x_art";
         await expect(
-          contractHashtagProtocol
-            .connect(accountHashtagPublisher)
-            .mint(invalidHashtag, accountHashtagPublisher.address, accountCreator.address),
+          HashtagProtocol.connect(accounts.HashtagPublisher).mint(
+            invalidHashtag,
+            accounts.HashtagPublisher.address,
+            accounts.Creator.address,
+          ),
         ).to.be.revertedWith("Invalid character found: Hashtag may only contain characters A-Z, a-z, 0-9 and #");
       });
 
       it("should revert if does not start with #", async function () {
-        const { contractHashtagProtocol, accountHashtagPublisher, accountCreator } = await setup();
         const invalidHashtag = "ART";
         await expect(
-          contractHashtagProtocol
-            .connect(accountHashtagPublisher)
-            .mint(invalidHashtag, accountHashtagPublisher.address, accountCreator.address),
+          HashtagProtocol.connect(accounts.HashtagPublisher).mint(
+            invalidHashtag,
+            accounts.HashtagPublisher.address,
+            accounts.Creator.address,
+          ),
         ).to.be.revertedWith("Must start with #");
       });
 
       it("should revert if hashtag after first char", async function () {
-        const { contractHashtagProtocol, accountHashtagPublisher, accountCreator } = await setup();
         const invalidHashtag = "#Hash#";
         await expect(
-          contractHashtagProtocol
-            .connect(accountHashtagPublisher)
-            .mint(invalidHashtag, accountHashtagPublisher.address, accountCreator.address),
+          HashtagProtocol.connect(accounts.HashtagPublisher).mint(
+            invalidHashtag,
+            accounts.HashtagPublisher.address,
+            accounts.Creator.address,
+          ),
         ).to.be.revertedWith("Invalid character found: Hashtag may only contain characters A-Z, a-z, 0-9 and #");
       });
 
       it("should revert if the hashtag does not have a single alpha char", async function () {
-        const { contractHashtagProtocol, accountHashtagPublisher, accountCreator } = await setup();
         const invalidHashtag = "#420";
         await expect(
-          contractHashtagProtocol
-            .connect(accountHashtagPublisher)
-            .mint(invalidHashtag, accountHashtagPublisher.address, accountCreator.address),
+          HashtagProtocol.connect(accounts.HashtagPublisher).mint(
+            invalidHashtag,
+            accounts.HashtagPublisher.address,
+            accounts.Creator.address,
+          ),
         ).to.be.revertedWith("Invalid format: Hashtag must contain at least 1 alphabetic character.");
       });
 
       it("should allow a mix of upper and lowercase characters", async function () {
-        const { contractHashtagProtocol, accountHashtagPublisher, accountCreator } = await setup();
-        await contractHashtagProtocol
-          .connect(accountHashtagPublisher)
-          .mint("#Awesome123", accountHashtagPublisher.address, accountCreator.address);
+        await HashtagProtocol.connect(accounts.HashtagPublisher).mint(
+          "#Awesome123",
+          accounts.HashtagPublisher.address,
+          accounts.Creator.address,
+        );
       });
     });
 
     it("should mint", async function () {
-      const { contractHashtagProtocol, accountHashtagPublisher, accountRandomTwo, accountCreator } = await setup();
-
-      expect(await contractHashtagProtocol.tokenPointer()).to.be.equal("0");
+      expect(await HashtagProtocol.tokenPointer()).to.be.equal("0");
 
       const hashtag = "#BlockRocket";
       const lowerHashtag = "#blockrocket";
 
-      await contractHashtagProtocol
-        .connect(accountRandomTwo)
-        .mint(hashtag, accountHashtagPublisher.address, accountCreator.address);
+      await HashtagProtocol.connect(accounts.RandomTwo).mint(
+        hashtag,
+        accounts.HashtagPublisher.address,
+        accounts.Creator.address,
+      );
 
-      expect(await contractHashtagProtocol.tokenPointer()).to.be.equal("1");
-      expect(await contractHashtagProtocol.hashtagToTokenId(lowerHashtag)).to.be.equal("1");
-      expect(await contractHashtagProtocol.exists(BigNumber.from("1"))).to.be.true;
+      expect(await HashtagProtocol.tokenPointer()).to.be.equal("1");
+      expect(await HashtagProtocol.hashtagToTokenId(lowerHashtag)).to.be.equal("1");
+      expect(await HashtagProtocol.exists(BigNumber.from("1"))).to.be.true;
 
-      const hashtagData = await contractHashtagProtocol.tokenIdToHashtag("1");
+      const hashtagData = await HashtagProtocol.tokenIdToHashtag("1");
       expect(hashtagData.displayVersion.toLowerCase()).to.be.equal(lowerHashtag);
       expect(hashtagData.displayVersion).to.be.equal(hashtag);
-      expect(hashtagData.originalPublisher).to.be.equal(accountHashtagPublisher.address);
-      expect(hashtagData.creator).to.be.equal(accountCreator.address);
+      expect(hashtagData.originalPublisher).to.be.equal(accounts.HashtagPublisher.address);
+      expect(hashtagData.creator).to.be.equal(accounts.Creator.address);
     });
 
     it("should mint from owner without fee", async function () {
-      const {
-        contractHashtagProtocol,
-        accountHashtagPlatform,
-        accountHashtagPublisher,
-        accountCreator,
-      } = await setup();
-      await contractHashtagProtocol.connect(accountHashtagPlatform);
+      await HashtagProtocol.connect(accounts.HashtagPlatform);
 
-      expect(await contractHashtagProtocol.tokenPointer()).to.be.equal("0");
+      expect(await HashtagProtocol.tokenPointer()).to.be.equal("0");
 
-      await contractHashtagProtocol.mint("#blockrocket", accountHashtagPublisher.address, accountCreator.address);
+      await HashtagProtocol.mint("#blockrocket", accounts.HashtagPublisher.address, accounts.Creator.address);
 
-      expect(await contractHashtagProtocol.tokenPointer()).to.be.equal("1");
-      expect(await contractHashtagProtocol.hashtagToTokenId("#blockrocket")).to.be.equal("1");
-      const hashtagData = await contractHashtagProtocol.tokenIdToHashtag("1");
+      expect(await HashtagProtocol.tokenPointer()).to.be.equal("1");
+      expect(await HashtagProtocol.hashtagToTokenId("#blockrocket")).to.be.equal("1");
+      const hashtagData = await HashtagProtocol.tokenIdToHashtag("1");
 
       expect(hashtagData.displayVersion.toLowerCase()).to.be.equal("#blockrocket");
-      expect(hashtagData.originalPublisher).to.be.equal(accountHashtagPublisher.address);
+      expect(hashtagData.originalPublisher).to.be.equal(accounts.HashtagPublisher.address);
     });
 
     it("should revert if the publisher is not whitelisted", async function () {
-      const { contractHashtagProtocol, accountHashtagPlatform, accountRandomTwo, accountCreator } = await setup();
       await expect(
-        contractHashtagProtocol
-          .connect(accountHashtagPlatform)
-          .mint("#blockrocket", accountRandomTwo.address, accountCreator.address),
+        HashtagProtocol.connect(accounts.HashtagPlatform).mint(
+          "#blockrocket",
+          accounts.RandomTwo.address,
+          accounts.Creator.address,
+        ),
       ).to.be.revertedWith("Mint: The publisher must be whitelisted");
     });
   });
 
   describe("Platform", async function () {
     it("should be able to set platform as owner", async function () {
-      const { contractHashtagProtocol, accountHashtagPlatform, accountHashtagAdmin, accountRandomOne } = await setup();
-      expect(await contractHashtagProtocol.platform()).to.be.equal(accountHashtagPlatform.address);
+      expect(await HashtagProtocol.platform()).to.be.equal(accounts.HashtagPlatform.address);
 
-      await contractHashtagProtocol.connect(accountHashtagAdmin).setPlatform(accountRandomOne.address);
+      await HashtagProtocol.connect(accounts.HashtagAdmin).setPlatform(accounts.RandomOne.address);
 
-      expect(await contractHashtagProtocol.platform()).to.be.equal(accountRandomOne.address);
+      expect(await HashtagProtocol.platform()).to.be.equal(accounts.RandomOne.address);
     });
 
     it("should revert if not owner", async function () {
-      const { contractHashtagProtocol, accountBuyer, accountRandomOne } = await setup();
-      await expect(
-        contractHashtagProtocol.connect(accountBuyer).setPlatform(accountRandomOne.address),
-      ).to.be.revertedWith("Caller must be admin");
+      await expect(HashtagProtocol.connect(accounts.Buyer).setPlatform(accounts.RandomOne.address)).to.be.revertedWith(
+        "Caller must have administrator access",
+      );
     });
 
     it("should update access controls", async function () {
-      const { contractHashtagProtocol, accountHashtagAdmin, accountRandomTwo } = await setup();
-      await contractHashtagProtocol.connect(accountHashtagAdmin).updateAccessControls(accountRandomTwo.address);
-      expect(await contractHashtagProtocol.accessControls()).to.be.equal(accountRandomTwo.address);
+      await HashtagProtocol.connect(accounts.HashtagAdmin).updateAccessControls(accounts.RandomTwo.address);
+      expect(await HashtagProtocol.accessControls()).to.be.equal(accounts.RandomTwo.address);
 
-      await expect(contractHashtagProtocol.connect(accountRandomTwo).updateAccessControls(accountRandomTwo.address)).to
-        .be.reverted;
+      await expect(HashtagProtocol.connect(accounts.RandomTwo).updateAccessControls(accounts.RandomTwo.address)).to.be
+        .reverted;
     });
 
     it("should revert when updating access controls to zero address", async function () {
-      const { contractHashtagProtocol, accountHashtagAdmin } = await setup();
       await expect(
-        contractHashtagProtocol.connect(accountHashtagAdmin).updateAccessControls(constants.AddressZero),
+        HashtagProtocol.connect(accounts.HashtagAdmin).updateAccessControls(constants.AddressZero),
       ).to.be.revertedWith("HashtagProtocol.updateAccessControls: Cannot be zero");
     });
   });
 
   describe("Metadata", async function () {
     it("should return tokenUri", async function () {
-      const {
-        contractHashtagProtocol,
-        accountHashtagPublisher,
-        accountHashtagAdmin,
-        accountRandomTwo,
-        accountCreator,
-      } = await setup();
       const tokenId = constants.One;
-      await contractHashtagProtocol
-        .connect(accountRandomTwo)
-        .mint("#BlockRocket", accountHashtagPublisher.address, accountCreator.address);
+      await HashtagProtocol.connect(accounts.RandomTwo).mint(
+        "#BlockRocket",
+        accounts.HashtagPublisher.address,
+        accounts.Creator.address,
+      );
 
-      expect(await contractHashtagProtocol.tokenURI(tokenId)).to.be.equal("https://api.hashtag-protocol.io/1");
+      expect(await HashtagProtocol.tokenURI(tokenId)).to.be.equal("https://api.hashtag-protocol.io/1");
 
-      await contractHashtagProtocol.connect(accountHashtagAdmin).setBaseURI("hashtag.io/");
+      await HashtagProtocol.connect(accounts.HashtagAdmin).setBaseURI("hashtag.io/");
 
-      expect(await contractHashtagProtocol.tokenURI(tokenId)).to.be.equal(`hashtag.io/${tokenId}`);
+      expect(await HashtagProtocol.tokenURI(tokenId)).to.be.equal(`hashtag.io/${tokenId}`);
     });
   });
 
   describe("renewing a hashtag", async function () {
+    let lastTransferTime;
     const tokenId = constants.One;
+    beforeEach(async function () {
+      await HashtagProtocol.connect(accounts.RandomTwo).mint(
+        "#BlockRocket",
+        accounts.HashtagPublisher.address,
+        accounts.Creator.address,
+      );
+
+      // This sets the last transfer time for all tests to now
+      // accounts.HashtagPlatform is owner of new hashtags.
+      await HashtagProtocol.connect(accounts.HashtagPlatform).renewHashtag(tokenId);
+      lastTransferTime = await HashtagProtocol.tokenIdToLastTransferTime(tokenId);
+    });
 
     it("will fail if not the owner", async function () {
-      const { contractHashtagProtocol, accountRandomTwo } = await setup("renew");
-
-      await expect(contractHashtagProtocol.connect(accountRandomTwo).renewHashtag(tokenId)).to.be.revertedWith(
+      await expect(HashtagProtocol.connect(accounts.RandomTwo).renewHashtag(tokenId)).to.be.revertedWith(
         "renewHashtag: Invalid sender",
       );
     });
 
     it("will fail if token does not exist", async function () {
-      const { contractHashtagProtocol, accountRandomTwo } = await setup("renew");
-      await expect(contractHashtagProtocol.connect(accountRandomTwo).renewHashtag(constants.Two)).to.be.revertedWith(
-        "ERC721_ZERO_OWNER",
+      await expect(HashtagProtocol.connect(accounts.RandomTwo).renewHashtag(constants.Two)).to.be.revertedWith(
+        "ERC721: owner query for nonexistent token",
       );
     });
 
     it("can be reset before renewal period has passed", async function () {
-      const { contractHashtagProtocol, accountHashtagPlatform, lastTransferTime } = await setup("renew");
       const lastRenewTime = Number(lastTransferTime.toString());
 
       let blockNum = await ethers.provider.getBlockNumber();
@@ -292,7 +292,7 @@ describe("HashtagProtocol Tests", function () {
 
       // Advance current time by 30 days less than ownershipTermLength (2 years).
       const thirtyDays = 30 * 24 * 60 * 60;
-      let advanceTime = lastTransferTime.add((await contractHashtagProtocol.ownershipTermLength()) - thirtyDays);
+      let advanceTime = lastTransferTime.add((await HashtagProtocol.ownershipTermLength()) - thirtyDays);
 
       advanceTime = Number(advanceTime.toString());
 
@@ -300,16 +300,16 @@ describe("HashtagProtocol Tests", function () {
       await ethers.provider.send("evm_mine");
 
       // Renew the hashtag again.
-      await expect(contractHashtagProtocol.connect(accountHashtagPlatform).renewHashtag(tokenId))
-        .to.emit(contractHashtagProtocol, "HashtagRenewed")
-        .withArgs(tokenId, accountHashtagPlatform.address);
+      await expect(HashtagProtocol.connect(accounts.HashtagPlatform).renewHashtag(tokenId))
+        .to.emit(HashtagProtocol, "HashtagRenewed")
+        .withArgs(tokenId, accounts.HashtagPlatform.address);
 
       // check timestamp has increased
       blockNum = await ethers.provider.getBlockNumber();
       block = await ethers.provider.getBlock(blockNum);
       timestamp = block.timestamp;
 
-      let newRenewTime = await contractHashtagProtocol.tokenIdToLastTransferTime(tokenId);
+      let newRenewTime = await HashtagProtocol.tokenIdToLastTransferTime(tokenId);
 
       newRenewTime = Number(newRenewTime.toString());
       expect(newRenewTime).to.be.equal(timestamp);
@@ -318,19 +318,18 @@ describe("HashtagProtocol Tests", function () {
     });
 
     it("once reset, last transfer time reset", async function () {
-      const { contractHashtagProtocol, accountHashtagPlatform, lastTransferTime } = await setup("renew");
       // increase by 2 years and 30 days
       const thirtyDays = 30 * 24 * 60 * 60;
-      let advanceTime = lastTransferTime.add((await contractHashtagProtocol.ownershipTermLength()) + thirtyDays);
+      let advanceTime = lastTransferTime.add((await HashtagProtocol.ownershipTermLength()) + thirtyDays);
       advanceTime = Number(advanceTime.toString());
       // Advance current block time by ownership length (2 years) + 1 day.
       await ethers.provider.send("evm_increaseTime", [advanceTime]);
       await ethers.provider.send("evm_mine");
       // Renew the HASHTAG token.
-      await expect(contractHashtagProtocol.connect(accountHashtagPlatform).renewHashtag(tokenId))
-        .to.emit(contractHashtagProtocol, "HashtagRenewed")
-        .withArgs(tokenId, accountHashtagPlatform.address);
-      let newRenewTime = await contractHashtagProtocol.tokenIdToLastTransferTime(tokenId);
+      await expect(HashtagProtocol.connect(accounts.HashtagPlatform).renewHashtag(tokenId))
+        .to.emit(HashtagProtocol, "HashtagRenewed")
+        .withArgs(tokenId, accounts.HashtagPlatform.address);
+      let newRenewTime = await HashtagProtocol.tokenIdToLastTransferTime(tokenId);
       newRenewTime = Number(newRenewTime.toString());
       const lastRenewTime = Number(lastTransferTime.toString());
       // There seems to be a 1 microsecond variance depending on whether test is
@@ -338,137 +337,137 @@ describe("HashtagProtocol Tests", function () {
       expect(newRenewTime).to.be.equal(lastRenewTime + advanceTime + 1 || lastRenewTime + advanceTime);
     });
   });
-
+  //
   describe("Admin functions", async function () {
     it("should be able to set hashtag length as admin", async function () {
-      const { contractHashtagProtocol, contractAccessControls, accountHashtagAdmin } = await setup();
-      expect(await contractAccessControls.isAdmin(accountHashtagAdmin.address)).to.be.equal(true);
+      expect(await HashtagAccessControls.isAdmin(accounts.HashtagAdmin.address)).to.be.equal(true);
 
-      const currentMaxLength = await contractHashtagProtocol.hashtagMaxStringLength();
+      const currentMaxLength = await HashtagProtocol.hashtagMaxStringLength();
       expect(currentMaxLength).to.be.equal(32);
 
-      await contractHashtagProtocol.connect(accountHashtagAdmin).setHashtagMaxStringLength(64);
+      await HashtagProtocol.connect(accounts.HashtagAdmin).setHashtagMaxStringLength(64);
 
-      const newMaxLength = await contractHashtagProtocol.hashtagMaxStringLength();
+      const newMaxLength = await HashtagProtocol.hashtagMaxStringLength();
       expect(newMaxLength).to.be.equal(64);
     });
 
     it("should revert if setting hashtag length if not admin", async function () {
-      const { contractHashtagProtocol, accountBuyer } = await setup();
-      await expect(contractHashtagProtocol.connect(accountBuyer).setHashtagMaxStringLength(55)).to.be.revertedWith(
-        "Caller must be admin",
+      await expect(HashtagProtocol.connect(accounts.Buyer).setHashtagMaxStringLength(55)).to.be.revertedWith(
+        "Caller must have administrator access",
       );
     });
   });
 
   describe("Recycling a hashtag", async function () {
+    let lastTransferTime;
     const tokenId = constants.One;
+    beforeEach(async function () {
+      await HashtagProtocol.connect(accounts.RandomTwo).mint(
+        "#BlockRocket",
+        accounts.HashtagPublisher.address,
+        accounts.Creator.address,
+      );
+
+      // This sets the last transfer time for all tests to now
+      // accounts.HashtagPlatform is owner of new hashtags.
+      await HashtagProtocol.connect(accounts.HashtagPlatform).renewHashtag(tokenId);
+      lastTransferTime = await HashtagProtocol.tokenIdToLastTransferTime(tokenId);
+    });
 
     it("will fail if token does not exist", async function () {
-      const { contractHashtagProtocol, accountRandomTwo } = await setup("renew");
-      await expect(contractHashtagProtocol.connect(accountRandomTwo).recycleHashtag(constants.Two)).to.be.revertedWith(
+      await expect(HashtagProtocol.connect(accounts.RandomTwo).recycleHashtag(constants.Two)).to.be.revertedWith(
         "recycleHashtag: Invalid token ID",
       );
     });
 
     it("will fail if already owned by the platform", async function () {
-      const { contractHashtagProtocol, accountHashtagPlatform } = await setup("renew");
-      await expect(contractHashtagProtocol.connect(accountHashtagPlatform).recycleHashtag(tokenId)).to.be.revertedWith(
+      await expect(HashtagProtocol.connect(accounts.HashtagPlatform).recycleHashtag(tokenId)).to.be.revertedWith(
         "recycleHashtag: Already owned by the platform",
       );
     });
 
     it("will fail if token not not eligible yet", async function () {
-      const { contractHashtagProtocol, accountHashtagPlatform, accountRandomTwo } = await setup("renew");
-      // Transfer the token to a accountRandomTwo owner.
-      await contractHashtagProtocol
-        .connect(accountHashtagPlatform)
-        .transferFrom(accountHashtagPlatform.address, accountRandomTwo.address, tokenId);
+      // Transfer the token to a accounts.RandomTwo owner.
+      await HashtagProtocol.connect(accounts.HashtagPlatform).transferFrom(
+        accounts.HashtagPlatform.address,
+        accounts.RandomTwo.address,
+        tokenId,
+      );
 
       // Advance current blocktime by 30 days less than ownershipTermLength (2 years).
       const thirtyDays = 30 * 24 * 60 * 60;
-      let advanceTime = (await contractHashtagProtocol.ownershipTermLength()) - thirtyDays;
+      let advanceTime = (await HashtagProtocol.ownershipTermLength()) - thirtyDays;
       await ethers.provider.send("evm_increaseTime", [advanceTime]);
       await ethers.provider.send("evm_mine");
 
-      // Attempt to recycle by accountRandomTwo address, should fail.
-      await expect(contractHashtagProtocol.connect(accountRandomTwo).recycleHashtag(tokenId)).to.be.revertedWith(
+      // Attempt to recycle by accounts.RandomTwo address, should fail.
+      await expect(HashtagProtocol.connect(accounts.RandomTwo).recycleHashtag(tokenId)).to.be.revertedWith(
         "recycleHashtag: Token not eligible for recycling yet",
       );
     });
 
     it("will succeed once renewal period has passed", async function () {
-      const {
-        contractHashtagProtocol,
-        accountHashtagPlatform,
-        accountRandomTwo,
-        accountRandomOne,
-        lastTransferTime,
-      } = await setup("renew");
-
-      // Transfer HASHTAG to accountRandomTwo address, simulating ownership.
-      await contractHashtagProtocol
-        .connect(accountHashtagPlatform)
-        .transferFrom(accountHashtagPlatform.address, accountRandomTwo.address, tokenId);
+      // Transfer HASHTAG to accounts.RandomTwo address, simulating ownership.
+      await HashtagProtocol.connect(accounts.HashtagPlatform).transferFrom(
+        accounts.HashtagPlatform.address,
+        accounts.RandomTwo.address,
+        tokenId,
+      );
 
       // Advance current time by 30 days more than ownershipTermLength (2 years).
       const thirtyDays = 30 * 24 * 60 * 60;
-      let advanceTime = lastTransferTime.add((await contractHashtagProtocol.ownershipTermLength()) + thirtyDays);
+      let advanceTime = lastTransferTime.add((await HashtagProtocol.ownershipTermLength()) + thirtyDays);
       advanceTime = Number(advanceTime.toString());
       await ethers.provider.send("evm_increaseTime", [advanceTime]);
       await ethers.provider.send("evm_mine");
 
-      // Now attempt to recycle hashtag as accountRandomOne accountRandomTwo address.
+      // Now attempt to recycle hashtag as accountRandomOne address.
       // This is to simulate owner missing their window to recycle
       // and accountRandomOne perspective owner wanting to recycle the token.
-      await expect(contractHashtagProtocol.connect(accountRandomOne).recycleHashtag(tokenId))
-        .to.emit(contractHashtagProtocol, "HashtagReset")
-        .withArgs(tokenId, accountRandomOne.address);
+      await expect(HashtagProtocol.connect(accounts.RandomOne).recycleHashtag(tokenId))
+        .to.emit(HashtagProtocol, "HashtagReset")
+        .withArgs(tokenId, accounts.RandomOne.address);
 
       // check timestamp has increased
-      const newTransferTime = await contractHashtagProtocol.tokenIdToLastTransferTime(tokenId);
+      const newTransferTime = await HashtagProtocol.tokenIdToLastTransferTime(tokenId);
 
       expect(Number(BigNumber.from(newTransferTime))).to.be.greaterThan(Number(lastTransferTime.toString()));
       // platform now once again owns the token
-      expect(await contractHashtagProtocol.ownerOf(tokenId)).to.be.equal(accountHashtagPlatform.address);
+      expect(await HashtagProtocol.ownerOf(tokenId)).to.be.equal(accounts.HashtagPlatform.address);
     });
 
-    it("when being recycled by the platform, the platforms balance does not increase and the owners balance decreases", async function () {
-      const { contractHashtagProtocol, accountHashtagPlatform, accountRandomTwo, lastTransferTime } = await setup(
-        "renew",
+    it("when being recycled by the platform, the platforms balance increases and the owners balance decreases", async function () {
+      expect((await HashtagProtocol.balanceOf(accounts.HashtagPlatform.address)).toString()).to.be.equal("1");
+
+      // Transfer HASHTAG to accounts.RandomTwo address.
+      await HashtagProtocol.connect(accounts.HashtagPlatform).transferFrom(
+        accounts.HashtagPlatform.address,
+        accounts.RandomTwo.address,
+        tokenId,
       );
 
-      expect((await contractHashtagProtocol.balanceOf(accountHashtagPlatform.address)).toString()).to.be.equal("0");
-
-      // Transfer HASHTAG to accountRandomTwo address.
-      await contractHashtagProtocol
-        .connect(accountHashtagPlatform)
-        .transferFrom(accountHashtagPlatform.address, accountRandomTwo.address, tokenId);
-
-      // balances changed - platform stays at zero
-      expect((await contractHashtagProtocol.balanceOf(accountHashtagPlatform.address)).toString()).to.be.equal("0");
-
-      expect((await contractHashtagProtocol.balanceOf(accountRandomTwo.address)).toString()).to.be.equal("1");
+      expect((await HashtagProtocol.balanceOf(accounts.HashtagPlatform.address)).toString()).to.be.equal("0");
+      expect((await HashtagProtocol.balanceOf(accounts.RandomTwo.address)).toString()).to.be.equal("1");
 
       // Advance current time by 30 days more than ownershipTermLength (2 years).
       const thirtyDays = 30 * 24 * 60 * 60;
-      let advanceTime = lastTransferTime.add((await contractHashtagProtocol.ownershipTermLength()) + thirtyDays);
+      let advanceTime = lastTransferTime.add((await HashtagProtocol.ownershipTermLength()) + thirtyDays);
       advanceTime = Number(advanceTime.toString());
       await ethers.provider.send("evm_increaseTime", [advanceTime]);
       await ethers.provider.send("evm_mine");
 
       // Recycle the hashtag as current owner.
-      await expect(contractHashtagProtocol.connect(accountRandomTwo).recycleHashtag(tokenId))
-        .to.emit(contractHashtagProtocol, "HashtagReset")
-        .withArgs(tokenId, accountRandomTwo.address);
+      await expect(HashtagProtocol.connect(accounts.RandomTwo).recycleHashtag(tokenId))
+        .to.emit(HashtagProtocol, "HashtagReset")
+        .withArgs(tokenId, accounts.RandomTwo.address);
 
       // Check that transfer time has increased
-      const newTransferTime = await contractHashtagProtocol.tokenIdToLastTransferTime(tokenId);
+      const newTransferTime = await HashtagProtocol.tokenIdToLastTransferTime(tokenId);
       expect(Number(BigNumber.from(newTransferTime))).to.be.greaterThan(Number(lastTransferTime.toString()));
 
       // both balances back to zero
-      expect((await contractHashtagProtocol.balanceOf(accountHashtagPlatform.address)).toString()).to.be.equal("0");
-      expect((await contractHashtagProtocol.balanceOf(accountRandomTwo.address)).toString()).to.be.equal("0");
+      expect((await HashtagProtocol.balanceOf(accounts.HashtagPlatform.address)).toString()).to.be.equal("1");
+      expect((await HashtagProtocol.balanceOf(accounts.RandomTwo.address)).toString()).to.be.equal("0");
     });
   });
 });

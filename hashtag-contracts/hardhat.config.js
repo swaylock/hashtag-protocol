@@ -1,32 +1,49 @@
 require("dotenv").config();
 
-require("@nomiclabs/hardhat-waffle");
-require("hardhat-deploy");
-
-//require("@eth-optimism/hardhat-ovm");
 require("@nomiclabs/hardhat-ethers");
+require("hardhat-deploy");
+require("@openzeppelin/hardhat-upgrades");
 
-// Used for running ERC721.test.js, using truffle.
+require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-truffle5");
+
+require("hardhat-abi-exporter");
 require("hardhat-ethernal");
+require("@nomiclabs/hardhat-etherscan");
 
 const { node_url, accounts } = require("./utils/network");
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
+
 module.exports = {
   solidity: {
-    version: "0.6.12",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
+    compilers: [
+      {
+        version: "0.6.12",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
-    },
+      {
+        version: "0.8.2",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+    ],
   },
   gasReporter: {
     currency: "USD",
     enabled: false,
+  },
+  abiExporter: {
+    path: "./abi",
+    clear: true,
+    spacing: 0,
   },
   // For named accounts see https://github.com/wighawag/hardhat-deploy#1-namedaccounts-ability-to-name-addresses
   namedAccounts: {
@@ -50,18 +67,19 @@ module.exports = {
     hardhat: {
       gas: "auto",
       gasPrice: "auto",
+      saveDeployments: false,
       accounts: accounts(),
     },
     localhost: {
       url: node_url("localhost"), //default port: 31337
-      accounts: accounts(),
-    },
-    ganache: {
-      url: node_url("localhost"), // default port: 5777
+      chainId: 31337,
+      saveDeployments: false,
       accounts: accounts(),
     },
     mumbai: {
       url: node_url("mumbai"), // see .env.default
+      chainId: 80001,
+      saveDeployments: false,
       accounts: accounts("mumbai"),
       gasPrice: 2000000000,
     },
