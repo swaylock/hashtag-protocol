@@ -113,10 +113,6 @@ export default {
     },
   },
   methods: {
-    // Updates the transaction fees grid.
-    async updateFees() {
-      await this.$store.dispatch("transactionFees/updateFees");
-    },
     async connectWallet() {
       await this.$store.dispatch("wallet/connectWallet");
     },
@@ -240,7 +236,6 @@ export default {
     },
   },
   async mounted() {
-    this.updateFees();
     this.$store.dispatch("wallet/updateTransactionState", {
       eventCode: "mintPreconfirmed",
     });

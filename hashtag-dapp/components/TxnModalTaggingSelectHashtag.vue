@@ -74,8 +74,6 @@ export default {
         );
         await this.$store.dispatch("protocolAction/updateNewHashtag", hashtag);
       }
-      // Updates the transaction fees grid.
-      await this.$store.dispatch("transactionFees/updateFees");
     },
   },
 };

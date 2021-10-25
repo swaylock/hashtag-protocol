@@ -215,29 +215,18 @@
         this ain't your regular, every day hashtag.
       </p>
     </div>
-    <h3 class="is-size-4">Transaction costs</h3>
     <p>
-      It costs money to use a decentralized, global computer (Ethereum). Here’s
-      some estimates of how much this transaction will cost right now:
-    </p>
-    <TransactionFees />
-    <p>
-      By clicking “confirm” you'll be prompted to sign a transaction in your
-      crypto wallet. Signing the transaction will begin the minting process.
-      You'll also be joining our humble movement to wrestle power from the
-      social media giants.
+      By clicking “confirm” you'll be prompted to sign a transaction in your crypto wallet. Signing the transaction will
+      begin the minting process. You'll also be joining our humble movement to wrestle power from the social media
+      giants.
     </p>
   </div>
 </template>
 <script>
-import TransactionFees from "~/components/Transact/TransactionFees";
 import { mapGetters } from "vuex";
 
 export default {
   name: "ExplainProtocol",
-  components: {
-    TransactionFees,
-  },
   computed: {
     ...mapGetters("protocolAction", [
       "protocolAction",

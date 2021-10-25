@@ -72,10 +72,6 @@ export default {
     },
   },
   methods: {
-    // Update the transaction fees grid.
-    async updateFees() {
-      await this.$store.dispatch("transactionFees/updateFees");
-    },
     async connectWallet() {
       await this.$store.dispatch("wallet/connectWallet");
     },
@@ -147,9 +143,6 @@ export default {
       this.$parent.close();
       await this.$store.dispatch("protocolAction/updateTargetHashtag", {});
     },
-  },
-  async mounted() {
-    this.updateFees();
   },
 };
 </script>
