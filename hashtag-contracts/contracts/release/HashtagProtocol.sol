@@ -93,7 +93,7 @@ contract HashtagProtocol is ERC721PausableUpgradeable, ERC721BurnableUpgradeable
     event RenewalPeriodUpdated(uint256 originalRenewalPeriod, uint256 updatedRenewalPeriod);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    //constructor() initializer {}
 
     function initialize(HashtagAccessControls _accessControls, address payable _platform) public initializer {
         __ERC721_init("Hashtag Protocol", "HASHTAG");

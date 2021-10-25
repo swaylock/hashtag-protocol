@@ -79,7 +79,7 @@ contract ERC721HashtagRegistry is Initializable, ContextUpgradeable, ReentrancyG
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    //constructor() initializer {}
 
     // Replaces contructor function for UUPS Proxy contracts. Called upon first deployment.
     function initialize(HashtagAccessControls _accessControls, HashtagProtocol _hashtagProtocol) public initializer {

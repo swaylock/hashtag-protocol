@@ -19,12 +19,12 @@ contract HashtagAccessControls is Initializable, AccessControlUpgradeable, UUPSU
     bytes32 public constant SMART_CONTRACT_ROLE = keccak256("SMART_CONTRACT");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {
-        // Security measure to initialize implementation contract.
-        __AccessControl_init();
-        // Fake address.
-        _setupRole(DEFAULT_ADMIN_ROLE, 0xC5225963871dD6bF421c8AabF1fC74251B0ed15A);
-    }
+    //constructor() initializer {
+    //    // Security measure to initialize implementation contract.
+    //    __AccessControl_init();
+    //    // Fake address.
+    //    _setupRole(DEFAULT_ADMIN_ROLE, 0xC5225963871dD6bF421c8AabF1fC74251B0ed15A);
+    //}
 
     function initialize() public initializer {
         __AccessControl_init();
