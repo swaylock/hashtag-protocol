@@ -61,9 +61,8 @@ variables](https://cli.vuejs.org/guide/mode-and-env.html#modes-and-environment-v
 The following details how to set up a complete development stack to experiment
 with the protocol and the dApp front-end.
 
-This includes a local Hardhat blockchain (evm compatible) emitting to be picked
-up by a local subgraph node, the exact setup that support the current
-demonstration application.
+This includes a local Hardhat blockchain (evm compatible) with emissions
+picked up and indexed by a local subgraph node.
 
 ::: tip
 Two useful resources for smart contract development on Hardhat are [Open
@@ -82,153 +81,18 @@ new terminal tab.
 1. Navigate to /hashtag-contracts and run:
 
     ``` bash
-    # Yarn
+    # install our package dependencies
     yarn install
-    ```
 
-    Confirm hardhat is installed by running the following:
-
-    ``` bash
+    # confirm hardhat is running.
     npx hardhat
+
+    # Start the local blockchain.
+    yarn node:hardhat
+
+    # Compile and deploy
+    hh run --network localhost deploy/hardhat-upgrades/scripts/deploy_all.js
     ```
-
-    Note: you can find additional resources for setting up and using hardhat [here](https://hardhat.org/getting-started/#installation).
-
-2. In the same tab, start a local blockchain hardhat
-
-    ``` zsh
-    npx hardhat node
-    ```
-
-    Hardhat Network will print out its address, <http://127.0.0.1:8545>, along
-    with a list of available accounts and their private keys.
-    
-    The output will look something like this:
-
-    ``` bash
-    Accounts
-    ========
-    Account #0: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 (10000 ETH)
-    Private Key: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
-    Account #1: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 (10000 ETH)
-    Private Key: 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
-
-    Account #2: 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc (10000 ETH)
-    Private Key: 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
-    ```
-
-    We will use the first three addresses in the next steps as follows:
-
-    - Account #0 for the "Admin" address
-    - Account #1 for the "Publisher" address
-    - Account #2 for the "Platform" address.
-
-3. Open `hashtag-contracts/scripts/2_setup_admin_and_publisher.js` and replace
-   Admin address and Publisher address with Account #0 and Account #1.
-
-4. Open `hashtag-contracts/scripts/3_deploy_hashtag_protocol.js` and replace
-   Platform address with Account #3.
- 
-5. Import and label these three addresses into your local wallet such as
-   Metamask using the private keys exported next to the address. We will use
-   these addresses when UI/UX testing the dApp.
-
-6. Open another tab (tab #2). While still in the hashtag-contracts directory,
-   clean and compile the solidity contracts.
-
-    ``` bash
-    cd hashtag-contracts
-    npx hardhat clean
-    npx hardhat compile
-    ```
-
-7. Open a new tab and run all sorted scripts on below to deploy contracts just
-   compiled to the local hardhat testnet.
-
-    ``` bash
-    npx hardhat --network localhost run scripts/1_deploy_access_controls.js
-    npx hardhat --network localhost run scripts/2_setup_admin_and_publisher.js
-    npx hardhat --network localhost run scripts/3_deploy_hashtag_protocol.js
-    npx hardhat --network localhost run scripts/4_deploy_hashtag_registry.js
-    ```
-
-    Note that after you run `1_deploy_access_controls.js` you will be shown the access
-    controls contract address as follows:
-
-    ``` bash
-    Deploying access controls with the account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-    Access controls deployed at:  0x5FbDB2315678afecb367f032d93F642f64180aa3
-    Finished!
-    ```
-
-    You will need to copy this and paste into the command line prompt in the
-    next three scripts, as follows:
-
-    ``` bash
-    npx hardhat run scripts/2_setup_admin_and_publisher.js
-    Setting up access controls with the account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-    Access Controls Address? [paste access controls address here]
-
-    Access Controls Address:  0x5FbDB2315678afecb367f032d93F642f64180aa3
-    ```
-
-    Remember to save 3 deployed contract addresses output in the hardhat node tab
-    (step 2). It should look something like this: 
-
-    ``` bash
-    eth_sendTransaction
-      Contract deployment: HashtagAccessControls
-      Contract address:    0x5fbdb2315678afecb367f032d93f642f64180aa3 <--
-      Transaction:         0xdd4444f80fa6aae2da7562a2eab9d162833a24d9eeff64d6729a01766fec6d5a
-      From:                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
-      Value:               0 ETH
-      Gas used:            600091 of 600091
-      Block #1:            0x5da063e16bea8d328db2975fd863d628093affac8113d5f7861feac1bb1c8d72
-
-    eth_chainId
-    eth_getTransactionByHash
-    web3_clientVersion (2)
-    eth_accounts
-    eth_chainId
-    eth_accounts
-    eth_chainId
-    eth_estimateGas
-    eth_gasPrice
-    eth_sendTransaction
-      Contract deployment: HashtagProtocol
-      Contract address:    0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9 <--
-      Transaction:         0xf653634e580966ec27957477ef02b88c2c0ba4c95fff16f4c150c0fdcabf9233
-      From:                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
-      Value:               0 ETH
-      Gas used:            2711291 of 2711291
-      Block #4:            0xe8107a7ee41be74608496bba652d54539b244b07eaec86ffb6f1f37fdfc28c6e
-
-    eth_chainId
-    eth_getTransactionByHash
-    eth_blockNumber
-    eth_chainId (2)
-    eth_getTransactionReceipt
-    web3_clientVersion (2)
-    eth_accounts
-    eth_chainId
-    net_version
-    eth_accounts
-    eth_chainId
-    eth_estimateGas
-    eth_gasPrice
-    eth_sendTransaction
-      Contract deployment: ERC721HashtagRegistry
-      Contract address:    0xdc64a140aa3e981100a9beca4e685f962f0cf6c9 <--
-      Transaction:         0xe384590761af3d89bdab0a3fcffd71e337b066b9f14e997d5e178bf7a0df0c7c
-      From:                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
-      Value:               0 ETH
-      Gas used:            1676246 of 1676246
-      Block #5:            0x7bfcc967cbb603f808dcfe0d15307062889d81683d232c4fc5dd7366d0264f1e
-
-    ```
-
-    We will use these in the next steps.
 
 ### Compile and deploy to local subgraph
 
