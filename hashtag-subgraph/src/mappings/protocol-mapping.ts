@@ -1,6 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { MintHashtag, HashtagProtocol } from "../generated/HashtagProtocol/HashtagProtocol";
-
 import { Hashtag } from "../generated/schema";
 import {
   toLowerCase,
