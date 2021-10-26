@@ -90,29 +90,14 @@ new terminal tab.
     # Start the local blockchain.
     yarn node:hardhat
 
-    # Compile and deploy
-    hh run --network localhost deploy/hardhat-upgrades/scripts/deploy_all.js
+    # Compile and deploy to your local blockchain.
+    yarn deploy:hardhat
     ```
 
 ### Compile and deploy to local subgraph
 
 1. Start Docker desktop on your machine. If you don't have it, install it now.
-
-2. Add the three contract addresses (HashtagProtocol, ERC721HashtagRegistry,
-   HashtagAccessControls) to the appropriate section of the
-   `/hashtag-subgraph/subgraph.yaml` configuration file.
-
-3. If you've made any changes to your contracts, will need to copy the deployed contract
-    ABIs to the Subgraph abis folder. For example:
-
-    ``` bash
-    # From the project root.
-    cp hashtag-contracts/deployments/localhost/HashtagAccessControls.json hashtag-subgraph/abis/HashtagAccessControls.json
-    cp hashtag-contracts/deployments/localhost/HashtagProtocol.json hashtag-subgraph/abis/HashtagProtocol.json
-    cp hashtag-contracts/deployments/localhost/ERC721HashtagRegistry.json hashtag-subgraph/abis/ERC721HashtagRegistry.json
-    ```
-
-4. Once Docker is running, open another tab and start up the subgraph node as follows:
+2. Once Docker is running, open another tab and start up the subgraph node:
 
     ``` bash
     # navigate into the hashtag-subgraph graph-node directory.
@@ -124,18 +109,19 @@ new terminal tab.
 
     It should take a minute or two for the node to fire up.
 
-5. Once the node is running, open another tab and perform the following from the
+3. Once the node is running, open another tab and perform the following from the
    `/hashtag-subgraph` directory.
 
     ``` bash
-    # If you have made any edits to the subgraph code (eg. schema.graphql,
-    # or mapping files), recompile the subgraph code:
-    yarn codegen
+    # Build the local subgraph.yaml
+    yarn precodegen:local
+    # Perform codegen
+    yarn codegen:local
 
-    # Next redeploy the code to the locally running graph node.
-    yarn remove-local
-    yarn create-local
-    yarn build && yarn deploy-local
+    # Deploy the code to the locally running graph node.
+    yarn remove:local
+    yarn create:local
+    yarn build && yarn deploy:local
 
     # If everything went well you should see the following:
     Build completed: QmQxCQMzRMesnRhY2cFvPoUuekUpHVYevmKC4EVgvUvukE
