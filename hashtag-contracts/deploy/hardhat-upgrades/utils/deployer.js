@@ -135,32 +135,34 @@ class Deployer {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   }
 
-  async verify(name, address, args) {
+  async verify(name, proxy, implementation, args) {
     this.log("Verifying contract", {
       name,
       networkName: this.networkName,
       chainId: this.network.chainId,
-      address,
+      proxy,
       args,
     });
+    // If we are on hardhat local chain.
     if (this.network.chainId == 31337) {
       try {
+        // Verify on ethernal.
         await ethernal.push({
           name: name,
-          address: address,
+          address: proxy,
         });
       } catch (err) {
-        this.log("Verification failed", { name, chainId: this.network.chainId, address, args, err });
+        this.log("Verification failed", { name, chainId: this.network.chainId, proxy, args, err });
       }
     } else {
       try {
         await run("verify:verify", {
           network: this.networkName,
-          address,
+          implementation,
           constructorArguments: args,
         });
       } catch (err) {
-        this.log("Verification failed", { name, chainId: this.network.chainId, address, args, err });
+        this.log("Verification failed", { name, chainId: this.network.chainId, implementation, args, err });
       }
     }
   }

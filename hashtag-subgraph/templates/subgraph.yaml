@@ -4,9 +4,9 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: HashtagProtocol
-    network: mainnet
+    network: {{network}}
     source:
-      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
+      address: "{{contracts.HashtagProtocol.address}}"
       abi: HashtagProtocol
       startBlock: 0
     mapping:
@@ -17,16 +17,16 @@ dataSources:
         - MintHashtag
       abis:
         - name: HashtagProtocol
-          file: ../hashtag-contracts/deployments/localhost/HashtagProtocol.json
+          file: ../hashtag-contracts/abi/contracts/release/HashtagProtocol.sol/HashtagProtocol.json
       eventHandlers:
         - event: MintHashtag(indexed uint256,string,indexed address,address)
           handler: handleMintHashtag
       file: ./src/mappings/protocol-mapping.ts
   - kind: ethereum/contract
     name: ERC721HashtagRegistry
-    network: mainnet
+    network: {{network}}
     source:
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
+      address: "{{contracts.ERC721HashtagRegistry.address}}"
       abi: ERC721HashtagRegistry
       startBlock: 0
     mapping:
@@ -37,18 +37,18 @@ dataSources:
         - HashtagRegistered
       abis:
         - name: ERC721HashtagRegistry
-          file: ../hashtag-contracts/deployments/localhost/ERC721HashtagRegistry.json
+          file: ../hashtag-contracts/abi/contracts/release/ERC721HashtagRegistry.sol/ERC721HashtagRegistry.json
         - name: HashtagProtocol
-          file: ../hashtag-contracts/deployments/localhost/HashtagProtocol.json
+          file: ../hashtag-contracts/abi/contracts/release/HashtagProtocol.sol/HashtagProtocol.json
       eventHandlers:
         - event: HashtagRegistered(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleHashtagRegistered
       file: ./src/mappings/erc721-hashtag-registry.ts
   - kind: ethereum/contract
     name: HashtagAccessControls
-    network: mainnet
+    network: {{network}}
     source:
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      address: "{{contracts.HashtagAccessControls.address}}"
       abi: HashtagAccessControls
       startBlock: 0
     mapping:
@@ -59,7 +59,7 @@ dataSources:
         - RoleGranted
       abis:
         - name: HashtagAccessControls
-          file: ../hashtag-contracts/deployments/localhost/HashtagAccessControls.json
+          file: ../hashtag-contracts/abi/contracts/release/HashtagAccessControls.sol/HashtagAccessControls.json
       eventHandlers:
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
