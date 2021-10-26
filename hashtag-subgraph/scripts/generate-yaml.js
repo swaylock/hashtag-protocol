@@ -1,3 +1,9 @@
+/**
+ * Generate subgraph.yaml file automatically.
+ *
+ * Usage: ./generate-yaml.js --deployment [target]
+ * Where [target] is the destination the subgraph.
+ */
 const contractConfig = require("../../hashtag-contracts/htp-config.json");
 const fs = require("fs-extra");
 const Handlebars = require("handlebars");

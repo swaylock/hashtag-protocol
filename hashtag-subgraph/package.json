@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "license": "UNLICENSED",
   "scripts": {
-    "precodegen:local": "node scripts/generate-schema.js --deployment localhost",
-    "precodegen:mumbai": "node scripts/generate-schema.js --deployment mumbai",
+    "precodegen:local": "node scripts/generate-yaml.js --deployment localhost",
+    "precodegen:mumbai": "node scripts/generate-yaml.js --deployment mumbai",
     "codegen:local": "rimraf src/generated && yarn graph codegen --output-dir src/generated",
     "build": "graph build",
     "create:local": "graph create --node http://localhost:8020/ hashtag-protocol/hashtag-local",
