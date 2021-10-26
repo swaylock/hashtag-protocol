@@ -4,19 +4,19 @@
  * Usage: ./generate-yaml.js --deployment [target]
  * Where [target] is the destination the subgraph.
  */
-const contractConfig = require("../../hashtag-contracts/htp-config.json");
+const artifactsPath = "./../hashtag-contracts/.deployer";
 const fs = require("fs-extra");
 const Handlebars = require("handlebars");
 
 const args = process.argv.slice(2);
-const deployment = args[1];
+const target = args[1];
 
-if (!deployment) {
+if (!target) {
   console.error(`missing --deployment [target] argument`);
   return;
 }
 
-const deployments = {
+const deploymentTargets = {
   mainnet: {
     chainId: 1,
     network: "mainnet",
@@ -31,14 +31,30 @@ const deployments = {
   },
 };
 
-const chainId = deployments[deployment].chainId;
-const contractsInfo = {
-  contracts: contractConfig.networks[chainId].contracts,
-  network: deployments[deployment].network,
-};
+if (!deploymentTargets[target]) {
+  console.log(`deployment target ${target} not known`);
+  return;
+}
 
+const chainId = deploymentTargets[target].chainId;
+const artifactPath = `${artifactsPath}/${chainId}.json`;
+let deploymentArtifact;
+try {
+  deploymentArtifact = JSON.parse(fs.readFileSync(artifactPath).toString());
+} catch (err) {
+  if (err.code === "ENOENT") {
+    console.log("File not found!");
+  } else {
+    throw err;
+  }
+}
+
+const contractsInfo = {
+  contracts: deploymentArtifact.contracts,
+  network: deploymentTargets[target].network,
+};
 const template = Handlebars.compile(fs.readFileSync("./templates/subgraph.yaml").toString());
 const result = template(contractsInfo);
 fs.writeFileSync("./subgraph.yaml", result);
 
-console.log(deployment + " configuration file written to /hashtag-subgraph/subgraph.yaml");
+console.log(target + " configuration file written to /hashtag-subgraph/subgraph.yaml");

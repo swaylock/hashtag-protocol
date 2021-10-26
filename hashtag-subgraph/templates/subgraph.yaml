@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "{{contracts.HashtagProtocol.address}}"
       abi: HashtagProtocol
-      startBlock: 0
+      startBlock: {{contracts.HashtagProtocol.transaction.blockNumber}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -28,7 +28,7 @@ dataSources:
     source:
       address: "{{contracts.ERC721HashtagRegistry.address}}"
       abi: ERC721HashtagRegistry
-      startBlock: 0
+      startBlock: {{contracts.ERC721HashtagRegistry.transaction.blockNumber}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -50,7 +50,7 @@ dataSources:
     source:
       address: "{{contracts.HashtagAccessControls.address}}"
       abi: HashtagAccessControls
-      startBlock: 0
+      startBlock: {{contracts.HashtagAccessControls.transaction.blockNumber}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
