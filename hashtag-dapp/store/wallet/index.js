@@ -3,8 +3,8 @@ import { ethers } from "ethers";
 import Onboard from "bnc-onboard";
 import BlocknativeSdk from "bnc-sdk";
 import { ToastProgrammatic as Toast } from "buefy";
-import HashtagProtocolTruffleConf from "~/abis/HashtagProtocol";
-import ERC721HashtagRegistry from "~/abis/ERC721HashtagRegistry";
+import HashtagProtocolAbi from "../../../hashtag-contracts/abi/contracts/release/HashtagProtocol.sol/HashtagProtocol.json";
+import ERC721HashtagRegistryAbi from "../../../hashtag-contracts/abi/contracts/release/ERC721HashtagRegistry.sol/ERC721HashtagRegistry.json";
 import utils from "~/common/utils";
 import eventMap from "~/data/blocknativeEventMap";
 import onBoardChainMap from "~/data/onBoardChainMap";
@@ -110,19 +110,15 @@ const actions = {
     const signer = provider.getSigner();
     const chain = state.networkId;
 
-    const hashtagProtocolContractAddress = utils.getContractAddressFromTruffleConf(HashtagProtocolTruffleConf, chain);
+    const hashtagProtocolAddress = utils.getContractAddress("HashtagProtocol", chain);
 
-    const hashtagProtocolContract = new ethers.Contract(
-      hashtagProtocolContractAddress,
-      HashtagProtocolTruffleConf.abi,
-      signer,
-    );
+    const hashtagProtocolContract = new ethers.Contract(hashtagProtocolAddress, HashtagProtocolAbi, signer);
 
-    const erc721HashtagRegistryAddress = utils.getContractAddressFromTruffleConf(ERC721HashtagRegistry, chain);
+    const erc721HashtagRegistryAddress = utils.getContractAddress("ERC721HashtagRegistry", chain);
 
     const erc721HashtagRegistryContract = new ethers.Contract(
       erc721HashtagRegistryAddress,
-      ERC721HashtagRegistry.abi,
+      ERC721HashtagRegistryAbi,
       signer,
     );
 

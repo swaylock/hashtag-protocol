@@ -1,19 +1,16 @@
-/**
- *
- * @param {string} truffleConf
- * @param {int} chainId
- * @returns
- */
-function getContractAddressFromTruffleConf(truffleConf, chainId) {
-  if (!truffleConf || !chainId) return "";
-  const { networks } = truffleConf;
-  if (networks[chainId.toString()]) {
-    const address = networks[chainId.toString()].address;
+import contractConfig from "./../../hashtag-contracts/htp-config.json";
+
+function getContractAddress(contractName, chainId) {
+  if (!contractName || !chainId) return "";
+  const chainIdString = chainId.toString();
+  const { networks } = contractConfig;
+  if (networks[chainIdString]) {
+    const address = networks[chainIdString].contracts[contractName].address;
     return address ? address : "";
   }
   return "";
 }
 
 export default {
-  getContractAddressFromTruffleConf,
+  getContractAddress,
 };

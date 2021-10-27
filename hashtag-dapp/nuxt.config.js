@@ -1,6 +1,4 @@
 import onBoardChainMap from "./data/onBoardChainMap.json";
-import HashtagProtocolTruffleConf from "./abis/HashtagProtocol";
-import ERC721HashtagRegistry from "./abis/ERC721HashtagRegistry";
 import utils from "./common/utils";
 
 export default {
@@ -61,12 +59,9 @@ export default {
   },
 
   publicRuntimeConfig: {
-    hashtagProtocolContractAddress: utils.getContractAddressFromTruffleConf(
-      HashtagProtocolTruffleConf,
-      process.env.VUE_APP_ONBOARD_NETWORK_ID,
-    ),
-    erc721HashtagRegistryAddress: utils.getContractAddressFromTruffleConf(
-      ERC721HashtagRegistry,
+    hashtagProtocolContractAddress: utils.getContractAddress("HashtagProtocol", process.env.VUE_APP_ONBOARD_NETWORK_ID),
+    erc721HashtagRegistryAddress: utils.getContractAddress(
+      "ERC721HashtagRegistry",
       process.env.VUE_APP_ONBOARD_NETWORK_ID,
     ),
     hashtagSubgraph:
