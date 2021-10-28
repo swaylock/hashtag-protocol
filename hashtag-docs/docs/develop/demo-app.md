@@ -15,29 +15,14 @@ repository](https://github.com/hashtag-protocol/hashtag-protocol) navigate into
 ``` sh
 cd hashtag-dapp
 yarn install --lock-file
-```
 
-### Environment variables configuration
-
-Our dApp is set up to use .env variables for it's configuration. See
-[.env.example](https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-dapp/.env.example)
-more information about what the environment variables are used for.
-
-While still within `/hashtag-dapp/`, make a file called `.env`
-
-``` sh
+# create a local .env file
 touch .env
 
 # copy .env.example into .env
 cp .env.example .env
-```
 
-### Development server
-
-Startup the local development server
-
-``` sh
-yan install
+# start the local development server
 yarn dev
 ```
 
