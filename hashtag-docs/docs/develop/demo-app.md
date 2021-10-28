@@ -23,20 +23,13 @@ Our dApp is set up to use .env variables for it's configuration. See
 [.env.example](https://github.com/hashtag-protocol/hashtag-protocol/blob/stage/hashtag-dapp/.env.example)
 more information about what the environment variables are used for.
 
-While still within `/hashtag-dapp/`, make a file called `.env.local`
+While still within `/hashtag-dapp/`, make a file called `.env`
 
 ``` sh
-touch .env.local
-```
+touch .env
 
-Copy and save the following into that `.env.local`
-
-``` ini
-VUE_APP_HASHTAG_SUBGRAPH_URL=https://api.thegraph.com/subgraphs/name/blockrockettech/hashtag
-VUE_APP_TOP_NFTS_SUBGRAPH_URL=https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens
-VUE_APP_PUBLISHER_ADDRESS=0xd677aed0965ac9b54e709f01a99ceca205aebc4b
-VUE_APP_BLOCKNATIVE_API_KEY=371f97ec-05be-429d-b0a6-de74aa69c61c
-VUE_APP_ONBOARD_NETWORK_ID=4
+# copy .env.example into .env
+cp .env.example .env
 ```
 
 ### Development server
@@ -44,7 +37,8 @@ VUE_APP_ONBOARD_NETWORK_ID=4
 Startup the local development server
 
 ``` sh
-yarn serve
+yan install
+yarn dev
 ```
 
 ::: tip When developing the application locally, you may either use our remote
@@ -133,82 +127,9 @@ new terminal tab.
     Subscriptions (WS): http://localhost:8001/subgraphs/name/hashtag-protocol/hashtag-local
     ```
 
-6. Copy the queries endpoint
-   `http://localhost:8000/subgraphs/name/hashtag-protocol/hashtag-local` and
-   paste it into the `/hashtag-dapp/.env.local` local environment variables
-   file. In fact, your .env.local file should look something like this:
-
-    ``` bash
-    VUE_APP_HASHTAG_SUBGRAPH_URL=<http://localhost:8000/subgraphs/name/hashtag-protocol/hashtag-local>
-    VUE_APP_TOP_NFTS_SUBGRAPH_URL=<https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens>
-    VUE_APP_BLOCKNATIVE_API_KEY=371f97ec-05be-429d-b0a6-de74aa69c61c
-    VUE_APP_ONBOARD_NETWORK_ID=5777
-    VUE_APP_PUBLISHER_ADDRESS=0xfc5b19737950da71573EC38e7B4579608cdE4E65
-    VUE_APP_ONBOARD_LOCALSTORAGE_WALLET_KEY=HashtagSelectedWallet
-    ```
-
 ## Fire up the dApp
 
-1. If you have recompiled the smart contracts, copy the build
-   artifacts into the /hashtag-dapp/src/truffleconf folder. These will get
-   picked up when we start the dapp.
-   
-   ``` bash
-   # From the project root directory
-   cp hashtag-contracts/artifacts/contracts/HashtagProtocol.sol/HashtagProtocol.json hashtag-dapp/truffleconf/HashtagProtocol.json
-   cp hashtag-contracts/artifacts/contracts/ERC721HashtagRegistry.sol/ERC721HashtagRegistry.json hashtag-dapp/truffleconf/ERC721HashtagRegistry.json
-   
-   ```
-
-2. Additionally, if you copied recompiled artifacts in the previous step, you
-   must add network contract addresses to the artifacts to the end of both
-   `hashtag-dapp/src/truffleconf/HashtagProtocol.json` and
-   `hashtag-dapp/src/truffleconf/ERC721HashtagRegistry.json`. Replace the addresses
-    for network id 31337 with the respective HashtagProtocol and
-   ERC721HashtagRegistry contract addresses emitted when you deployed to the
-   Hardhat local blockchain:
-
-    ``` json
-    // HashtagProtocol.json, at end of file
-    ...
-    "linkReferences": {},
-    "deployedLinkReferences": {},
-    "networks": {
-      "1": {
-        "address": "0x3a7a449308052d74256Bb6867979AbA51b2cD887"
-      },
-      "4": {
-        "address": "0xA948549116e716CC0Da11AFdbCabf01ff04Fc35e"
-      },
-      "5777": {
-        "address": "0x38238AC79c0DA146cadd64acb5597517961817a7"
-      },
-      "31337": {
-        "address": "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9"
-      }
-    }
-
-    // ERC721HashtagRegistry.json, at end of file
-    ...
-    "linkReferences": {},
-    "deployedLinkReferences": {},
-    "networks": {
-      "1": {
-        "address": "0x4f1f007F2db30fb61fDad2598417B8019f311A37"
-      },
-      "4": {
-        "address": "0x2a23A463C7d676f3C94402eA0B0450E36BF14305"
-      },
-      "5777": {
-        "address": "0x5c467525c449C54cE1880CA368814c2dbff87836"
-      },
-      "31337": {
-        "address": "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9"
-      }
-    }
-    ```
-
-3. Open another tab and try starting the dapp.
+Open another tab and try starting the dapp.
 
     ``` bash
     cd hashtag-protocol/hashtag-dapp
