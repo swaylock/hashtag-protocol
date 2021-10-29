@@ -94,45 +94,20 @@ export default {
       const hashtag = this.targetHashtag;
       /* eslint-disable-next-line no-console */
       console.log("tagContent", hashtag);
-      if (hashtag.id) {
-        // Tag with existing HASHTAG.
-        try {
-          await this.$store.dispatch("wallet/tag", {
-            hashtagId: hashtag.id,
-            nftContract: this.targetNft.contractAddress,
-            nftId: this.targetNft.tokenId,
-            nftChain: this.targetNft.chain,
+      // Tag with existing HASHTAG.
+      try {
+        await this.$store.dispatch("wallet/tag", {
+          hashtag: hashtag.displayHashtag,
+          nftContract: this.targetNft.contractAddress,
+          nftId: this.targetNft.tokenId,
+          nftChain: this.targetNft.chain,
+        });
+      } catch (e) {
+        if (e.code == 4001) {
+          // user rejected txn in metamask.
+          await this.$store.dispatch("wallet/updateTransactionState", {
+            eventCode: "rejected",
           });
-        } catch (e) {
-          if (e.code == 4001) {
-            // user rejected txn in metamask.
-            await this.$store.dispatch("wallet/updateTransactionState", {
-              eventCode: "rejected",
-            });
-          }
-        }
-      } else {
-        /* eslint-disable-next-line no-console */
-        console.log("mint and tag");
-        /* eslint-disable-next-line no-console */
-        console.log("nft", this.targetNft);
-        /* eslint-disable-next-line no-console */
-        console.log("hashtag", hashtag.displayHashtag);
-        // Mint new HASHTAG and tag with that.
-        try {
-          await this.$store.dispatch("wallet/mintAndTag", {
-            hashtag: hashtag.displayHashtag,
-            nftContract: this.targetNft.contractAddress,
-            nftId: this.targetNft.tokenId,
-            nftChain: this.targetNft.chain,
-          });
-        } catch (e) {
-          if (e.code == 4001) {
-            // user rejected txn in metamask.
-            await this.$store.dispatch("wallet/updateTransactionState", {
-              eventCode: "rejected",
-            });
-          }
         }
       }
     },
