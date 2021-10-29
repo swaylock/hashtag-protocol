@@ -83,7 +83,6 @@
                           icon="pound"
                           placeholder="Seach for hashtag"
                           @typing="getFilteredTags"
-                          @add="tagAssetValidation"
                           :before-adding="validateTag"
                         >
                           <template slot-scope="props">
@@ -322,25 +321,6 @@ export default {
     },
     validateTag(hashtag) {
       return this.hashtagValidationService.validateTag(hashtag);
-    },
-    tagAssetValidation(hashtag) {
-      const tagContentValid = this.validateTag(hashtag);
-
-      if (tagContentValid) {
-        let hashtagValue = hashtag && hashtag.name ? hashtag.name : hashtag;
-        if (hashtagValue.charAt(0) !== "#") {
-          hashtagValue = `#${hashtagValue}`;
-        }
-
-        const hashtags = this.hashtagInputTags || [];
-        const findExistingHashtagResult = hashtags.filter(
-          (option) => option.name.toLowerCase() === hashtagValue.toLowerCase(),
-        );
-
-        const isNewHashtag = findExistingHashtagResult.length !== 1;
-
-        this.mintAndTag = isNewHashtag;
-      }
     },
   },
   created() {
