@@ -76,6 +76,10 @@ export default {
      * Run the hashtag entered through validation.
      */
     validateTag(hashtag) {
+      if (this.widget == "tagging") {
+        return this.hashtagValidationService.validateTag(hashtag);
+      }
+
       return this.hashtagValidationService.validateTag(hashtag, this.hashtags);
     },
     /**
