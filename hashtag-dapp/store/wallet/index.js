@@ -273,11 +273,11 @@ const actions = {
     const { web3Objects, fees } = state;
     const { contracts, publisher } = web3Objects;
     const { erc721HashtagRegistryContract } = contracts;
-    const { hashtagId, nftContract, nftId, nftChain } = payload;
+    const { hashtag, nftContract, nftId, nftChain } = payload;
 
     // function tag(uint256 _hashtagId, address _nftContract, uint256 _nftId, address _publisher, address _tagger) payable public {
     const txn = await erc721HashtagRegistryContract.tag(
-      hashtagId,
+      hashtag,
       nftContract,
       nftId,
       publisher,
