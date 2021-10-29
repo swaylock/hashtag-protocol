@@ -121,7 +121,7 @@ contract HashtagProtocol is ERC721PausableUpgradeable, ERC721BurnableUpgradeable
     /**
      * @notice Mints a new HASHTAG token
      * @dev Hashtag string must pass validation and publisher must be whitelisted
-     * @param _hashtag Hashtag string to mint
+     * @param _hashtag Hashtag string to mint - must include hashtag (#) at beginning of string
      * @param _publisher Address to be logged as publisher
      * @param _creator Address to be logged as creator
      */
