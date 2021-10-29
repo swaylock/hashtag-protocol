@@ -45,9 +45,6 @@ export default {
     ...mapGetters("wallet", ["address", "transactionState"]),
   },
   methods: {
-    async connectWallet() {
-      await this.$store.dispatch("wallet/connectWallet");
-    },
     /**
      * Function to handle when user selects hashtag in HashtagSearch widget.
      */
