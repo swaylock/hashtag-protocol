@@ -204,6 +204,12 @@ export default {
   data() {
     return {
       isLoaded: false,
+      tagsByHashtag: null,
+      hashtagsByName: null,
+      hashtag: [],
+      hashtags: null,
+      hashtagInputTags: [],
+      nftInfo: null,
     };
   },
   mounted() {
@@ -215,13 +221,6 @@ export default {
       type: params.type,
       contract: params.contract,
       id: params.id,
-      tagsByHashtag: null,
-      hashtagsByName: null,
-      hashtag: [],
-      hashtags: null,
-      hashtagInputTags: [],
-      mintAndTag: false,
-      nftInfo: null,
     };
   },
   computed: {
