@@ -245,32 +245,19 @@ export default {
   },
   methods: {
     async tagNft() {
-      if (this.mintAndTag) {
-        await this.$store.dispatch("wallet/mintAndTag", {
-          hashtag: `#${this.hashtag[0]}`,
-          nftContract: this.nftInfo.nftContract,
-          nftId: this.nftInfo.nftId,
-          nftChain: this.nftInfo.chain,
-        });
-      } else {
-        const hashtag = this.hashtag[0];
-        let hashtagValue = hashtag && hashtag.name ? hashtag.name : hashtag;
+      const hashtag = this.hashtag[0];
+      let hashtagValue = hashtag && hashtag.name ? hashtag.name : hashtag;
 
-        if (hashtagValue.charAt(0) !== "#") {
-          hashtagValue = `#${hashtagValue}`;
-        }
-        const hashtags = this.hashtagInputTags || [];
-        const findExistingHashtagResult = hashtags.filter(
-          (option) => option.name.toLowerCase() === hashtagValue.toLowerCase(),
-        );
-
-        await this.$store.dispatch("wallet/tag", {
-          hashtagId: findExistingHashtagResult[0].id,
-          nftContract: this.nftInfo.nftContract,
-          nftId: this.nftInfo.nftId,
-          nftChain: this.nftInfo.chain,
-        });
+      if (hashtagValue.charAt(0) !== "#") {
+        hashtagValue = `#${hashtagValue}`;
       }
+
+      await this.$store.dispatch("wallet/tag", {
+        hashtag: hashtagValue,
+        nftContract: this.nftInfo.nftContract,
+        nftId: this.nftInfo.nftId,
+        nftChain: this.nftInfo.chain,
+      });
 
       // Reset the tagging input
       this.hashtag = [];
