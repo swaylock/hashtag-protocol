@@ -33,7 +33,13 @@
                 >
                   <source :src="tag.metadataImageURI" @error="setPendingImage" type="video/mp4" />
                 </video>
-                <img v-else :src="tag.metadataImageURI" @error="setPendingImage" :alt="tag.nftName" />
+                <img
+                  class="auto-size-image"
+                  v-else
+                  :src="tag.metadataImageURI"
+                  @error="setPendingImage"
+                  :alt="tag.nftName"
+                />
               </figure>
             </div>
             <div class="card-content">
@@ -173,4 +179,10 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.auto-size-image {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+</style>
