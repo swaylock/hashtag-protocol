@@ -37,7 +37,7 @@
               </tr>
               <tr draggable="false" class="">
                 <td class="has-text-weight-bold">Asset Id</td>
-                <td>
+                <td style="word-break: break-word;">
                   {{ nft.tokenId }}
                 </td>
               </tr>

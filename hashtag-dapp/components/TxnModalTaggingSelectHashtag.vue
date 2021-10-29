@@ -45,22 +45,16 @@ export default {
     ...mapGetters("wallet", ["address", "transactionState"]),
   },
   methods: {
-    async connectWallet() {
-      await this.$store.dispatch("wallet/connectWallet");
-    },
     /**
      * Function to handle when user selects hashtag in HashtagSearch widget.
      */
     async selectHashtag(hashtag) {
       /* eslint-disable-next-line no-console */
       console.log("tagging selectHashtag", hashtag);
+
       await this.$store.dispatch("protocolAction/updateTargetHashtag", hashtag);
-      if (hashtag.id) {
-        await this.$store.dispatch("protocolAction/updateProtocolAction", "tagContent");
-      } else {
-        await this.$store.dispatch("protocolAction/updateProtocolAction", "mintAndTagContent");
-        await this.$store.dispatch("protocolAction/updateNewHashtag", hashtag);
-      }
+      await this.$store.dispatch("protocolAction/updateProtocolAction", "tagContent");
+      await this.$store.dispatch("protocolAction/updateNewHashtag", hashtag);
     },
   },
 };
