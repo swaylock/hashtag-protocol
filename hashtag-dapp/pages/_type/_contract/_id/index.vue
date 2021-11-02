@@ -51,8 +51,19 @@
                           </tr>
                           <tr draggable="false" class="">
                             <td class="has-text-weight-bold">Asset Id</td>
-                            <td style="word-break: break-word;">
-                              {{ nftInfo.nftId }}
+                            <td style="word-break: break-word">
+                              <NftId
+                                :name="nftInfo.nftName"
+                                :chain="nftInfo.chain"
+                                :contract="nftInfo.nftContract"
+                                :value="nftInfo.nftId"
+                              ></NftId>
+                              <a
+                                target="_blank"
+                                :href="`https://opensea.io/assets/${nftInfo.nftContract}/${nftInfo.nftId}`"
+                              >
+                                View on OpenSea
+                              </a>
                             </td>
                           </tr>
                         </tbody>
@@ -184,6 +195,7 @@
 import EthAccount from "~/components/EthAccount";
 import Hashtag from "~/components/Hashtag";
 import TimestampFrom from "~/components/TimestampFrom";
+import NftId from "~/components/NftId";
 import { TAGS_BY_DIGITAL_ASSET, FIRST_THOUSAND_HASHTAGS } from "~/apollo/queries";
 
 import HashtagValidationService from "~/services/HashtagValidationService";
@@ -195,6 +207,7 @@ export default {
     EthAccount,
     Hashtag,
     TimestampFrom,
+    NftId,
   },
   data() {
     return {
