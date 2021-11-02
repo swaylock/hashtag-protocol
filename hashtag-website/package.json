@@ -12,7 +12,6 @@
     "babel-runtime": "^6.26.0",
     "buefy": "^0.8.15",
     "hashtag-components": "^0.1.0",
-    "stylelint-config-prettier": "^8.0.2",
     "vee-validate": "^3.3.11",
     "vue": "^2.6.11",
     "vue-gtm": "3.0.0-vue2",
@@ -22,15 +21,11 @@
     "vue-screen": "^1.4.3"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.13",
-    "@vue/cli-plugin-eslint": "~4.5.13",
     "@vue/cli-service": "~4.5.13",
-    "babel-eslint": "^10.0.3",
     "eslint": "^7.27.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-vue": "^7.10.0",
-    "html-webpack-plugin": "^5.3.1",
     "husky": "^4.2.3",
     "lint-staged": "^10.0.9",
     "prettier": "^2.0.2",
