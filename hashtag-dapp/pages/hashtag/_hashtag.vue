@@ -1,5 +1,5 @@
 <template>
-  <div class="body">
+  <div class="body" v-if="!loading">
     <SocialHead
       :title="hashtagsByName[0].displayHashtag + ' | Hashtag Protocol'"
       :description="randomSharingMessage"
@@ -333,6 +333,14 @@ export default {
       imageUrl: imageUrl,
     };
   },
+  data: function () {
+    return {
+      loading: 0,
+      hashtagsByName: null,
+      tagsByHashtag: null,
+      nftInfo: null,
+    };
+  },
   head() {
     return {
       title: `${this.hashtagsByName[0].displayHashtag} | Hashtag Protocol`,
@@ -346,6 +354,7 @@ export default {
     };
   },
   apollo: {
+    $loadingKey: "loading",
     tagsByHashtag: {
       query: PAGED_TAGS_BY_HASHTAG,
       variables() {
