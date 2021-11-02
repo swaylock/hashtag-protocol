@@ -1,12 +1,16 @@
 <template>
-  <time>{{
-    new Date(parseInt(value) * 1000) | moment(format || "MMM Do YYYY")
-  }}</time>
+  <time>{{ formatDate(parseInt(value) * 1000) }} </time>
 </template>
 
 <script>
 export default {
   name: "TimestampFormatted",
-  props: ["value", "format"],
+  props: ["value"],
+  methods: {
+    formatDate(date) {
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      return new Date(date).toLocaleDateString("en-us", options);
+    },
+  },
 };
 </script>
