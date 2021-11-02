@@ -40,7 +40,7 @@ Vue.mixin({
      *
      */
     devBaseUrls() {
-      var baseUrl = new URL(window.location.origin);
+      baseUrl = new URL(window.location.origin);
       var parts = baseUrl.hostname.split(".");
 
       if (parts.includes("platformsh") && parts.includes("www")) {
