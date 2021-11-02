@@ -1,26 +1,32 @@
 {
   "1": {
     "name": "Mainnet",
-    "url": "https://etherscan.io"
+    "url": "https://etherscan.io",
+    "explorerName": "Etherscan"
   },
   "4": {
     "name": "Rinkeby",
-    "url": "https://rinkeby.etherscan.io"
+    "url": "https://rinkeby.etherscan.io",
+    "explorerName": "Etherscan"
   },
   "5777": {
     "name": "Ganache Localdev",
-    "url": "https://rinkeby.etherscan.io"
+    "url": "https://rinkeby.etherscan.io",
+    "explorerName": "Etherscan"
   },
   "137": {
     "name": "Polygon Mainnet",
-    "url": "https://polygonscan.com"
+    "url": "https://polygonscan.com",
+    "explorerName": "Polygonscan"
   },
   "80001": {
     "name": "Polygon Mumbai",
-    "url": "https://mumbai.polygonscan.com"
+    "url": "https://mumbai.polygonscan.com",
+    "explorerName": "Polygonscan"
   },
   "31337": {
     "name": "Hardhat Localdev",
-    "url": "https://rinkeby.etherscan.io"
+    "url": "https://rinkeby.etherscan.io",
+    "explorerName": "Etherscan"
   }
 }
