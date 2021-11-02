@@ -1,4 +1,4 @@
 // prettier.config.js
-module.exports = {
-  printWidth: 80,
-};
+// module.exports = {
+//   printWidth: 80,
+// };

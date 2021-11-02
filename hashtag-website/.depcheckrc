@@ -1,0 +1,2 @@
+ignores: ["babel-runtime", "bulma"]
+skip-missing: true

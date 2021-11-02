@@ -201,48 +201,270 @@
                     </prism>
                   </b-tab-item>
                   <b-tab-item label="Display" class="nftDisplay">
-                    <b-table :data="tags || []" focusable>
-                      <template slot-scope="props">
-                        <b-table-column field="nftId" centered>
-                          <router-link
-                            :to="{
-                              name: 'nft-detail',
-                              params: {
-                                type: 'nft',
-                                contract: props.row.nftContract,
-                                id: props.row.nftId,
-                              },
-                            }"
-                          >
-                            <img
-                              :src="props.row.nftImage"
-                              :alt="props.row.nftName"
-                              class="nft-thumb"
-                            />
-                          </router-link>
-                        </b-table-column>
-                        <b-table-column field="nftName" label="Asset Name">
-                          <nft-link
-                            type="nft"
-                            :name="props.row.nftName"
-                            :contract="props.row.nftContract"
-                            :id="props.row.nftId"
-                          ></nft-link>
-                        </b-table-column>
-                        <b-table-column
-                          field="projectName"
-                          label="Project"
-                          :visible="$screen.widescreen"
-                        >
-                          {{ props.row.nftContractName }}
-                        </b-table-column>
-                        <b-table-column field="hashtagName" label="Hashtag">
-                          <hashtag
-                            :value="props.row.hashtagDisplayHashtag"
-                          ></hashtag>
-                        </b-table-column>
-                      </template>
-                    </b-table>
+                    <div data-v-11db82f8="" class="b-table">
+                      <!---->
+                      <!---->
+                      <!---->
+                      <!----><!----><!---->
+                      <div class="table-wrapper has-mobile-cards">
+                        <table tabindex="0" class="table is-hoverable">
+                          <thead>
+                            <tr>
+                              <!----><!---->
+                              <th draggable="false" class="">
+                                <div class="th-wrap is-centered">
+                                  <span class="is-relative">
+                                    <span
+                                      class="icon sort-icon is-small is-invisible"
+                                      ><i class="mdi mdi-arrow-up"></i></span
+                                  ></span>
+                                </div>
+                              </th>
+                              <th draggable="false" class="">
+                                <div class="th-wrap">
+                                  <span class="is-relative">
+                                    Asset Name
+                                    <span
+                                      class="icon sort-icon is-small is-invisible"
+                                      ><i class="mdi mdi-arrow-up"></i></span
+                                  ></span>
+                                </div>
+                              </th>
+                              <th draggable="false" class="">
+                                <div class="th-wrap">
+                                  <span class="is-relative">
+                                    Chain
+                                    <span
+                                      class="icon sort-icon is-small is-invisible"
+                                      ><i class="mdi mdi-arrow-up"></i></span
+                                  ></span>
+                                </div>
+                              </th>
+                              <th draggable="false" class="">
+                                <div class="th-wrap">
+                                  <span class="is-relative">
+                                    Hashtag
+                                    <span
+                                      class="icon sort-icon is-small is-invisible"
+                                      ><i class="mdi mdi-arrow-up"></i></span
+                                  ></span>
+                                </div>
+                              </th>
+                              <!---->
+                            </tr>
+                            <!----><!---->
+                          </thead>
+                          <tbody>
+                            <tr draggable="false" class="">
+                              <!----><!---->
+                              <td class="has-text-centered">
+                                <a
+                                  href="/nft/0x2aea4add166ebf38b63d09a75de1a7b94aa24163/15"
+                                  class="keychainify-checked"
+                                  ><img
+                                    src="https://storage.googleapis.com/sentinel-nft/raw-assets/c_0x2aea4add166ebf38b63d09a75de1a7b94aa24163_t_15_raw_asset.svg+xml"
+                                    alt="Drupal Brainiac"
+                                    class="nft-thumb"
+                                /></a>
+                              </td>
+                              <td data-label="Asset Name" class="">
+                                <span
+                                  class="has-text-weight-bold"
+                                  name="Drupal Brainiac"
+                                  ><a
+                                    href="/nft/0x2aea4add166ebf38b63d09a75de1a7b94aa24163/15"
+                                    class="keychainify-checked"
+                                  >
+                                    Drupal Brainiac
+                                  </a></span
+                                >
+                              </td>
+                              <td data-label="Chain" class="">
+                                ethereum
+                              </td>
+                              <td data-label="Hashtag" class="">
+                                <span class="has-text-weight-bold"
+                                  ><a
+                                    href="/hashtag/drupal"
+                                    class="keychainify-checked"
+                                  >
+                                    #drupal
+                                  </a></span
+                                >
+                              </td>
+                              <!---->
+                            </tr>
+                            <!----><!---->
+                            <tr draggable="false" class="">
+                              <!----><!---->
+                              <td class="has-text-centered">
+                                <a href="#" class="keychainify-checked"
+                                  ><img
+                                    src="https://storage.googleapis.com/sentinel-nft/raw-assets/c_0x8853b05833029e3cf8d3cbb592f9784fa43d2a79_t_117443_raw_asset.jpeg"
+                                    alt="RARE 1972 Schwinn Apple Krate Disc Brake Bicycle"
+                                    class="nft-thumb"
+                                /></a>
+                              </td>
+                              <td data-label="Asset Name" class="">
+                                <span
+                                  class="has-text-weight-bold"
+                                  name="RARE 1972 Schwinn Apple Krate Disc Brake Bicycle"
+                                  ><a
+                                    href="/nft/0x8853b05833029e3cf8d3cbb592f9784fa43d2a79/117443"
+                                    class="keychainify-checked"
+                                  >
+                                    RARE 1972 Schwinn Apple Krate Disc Brake
+                                    Bicycle
+                                  </a></span
+                                >
+                              </td>
+                              <td data-label="Chain" class="">
+                                ethereum
+                              </td>
+                              <td data-label="Hashtag" class="">
+                                <span class="has-text-weight-bold"
+                                  ><a
+                                    href="/hashtag/schwinn"
+                                    class="keychainify-checked"
+                                  >
+                                    #schwinn
+                                  </a></span
+                                >
+                              </td>
+                              <!---->
+                            </tr>
+                            <!----><!---->
+                            <tr draggable="false" class="">
+                              <!----><!---->
+                              <td class="has-text-centered">
+                                <a
+                                  href="/nft/0xc37f78553046462969cca20e1daa372963a32f7c/1"
+                                  class="keychainify-checked"
+                                  ><img
+                                    src="https://storage.googleapis.com/sentinel-nft/raw-assets/c_0xc37f78553046462969cca20e1daa372963a32f7c_t_1_raw_asset.jpeg"
+                                    alt="Polygon Crypto Donut #1"
+                                    class="nft-thumb"
+                                /></a>
+                              </td>
+                              <td data-label="Asset Name" class="">
+                                <span
+                                  class="has-text-weight-bold"
+                                  name="Polygon Crypto Donut #1"
+                                  ><a
+                                    href="/nft/0xc37f78553046462969cca20e1daa372963a32f7c/1"
+                                    class="keychainify-checked"
+                                  >
+                                    Polygon Crypto Donut #1
+                                  </a></span
+                                >
+                              </td>
+                              <td data-label="Chain" class="">
+                                polygon
+                              </td>
+                              <td data-label="Hashtag" class="">
+                                <span class="has-text-weight-bold"
+                                  ><a
+                                    href="/hashtag/donut"
+                                    class="keychainify-checked"
+                                  >
+                                    #donut
+                                  </a></span
+                                >
+                              </td>
+                              <!---->
+                            </tr>
+                            <!----><!---->
+                            <tr draggable="false" class="">
+                              <!----><!---->
+                              <td class="has-text-centered">
+                                <a
+                                  href="/nft/0xd07dc4262bcdbf85190c01c996b4c06a461d2430/436593"
+                                  class="keychainify-checked"
+                                  ><img
+                                    src="https://storage.googleapis.com/sentinel-nft/raw-assets/c_0xd07dc4262bcdbf85190c01c996b4c06a461d2430_t_436593_raw_asset.gif"
+                                    alt="¢яуρтσвιт¢αѕѕσ Punk #3011 (pipe smoker #2)"
+                                    class="nft-thumb"
+                                /></a>
+                              </td>
+                              <td data-label="Asset Name" class="">
+                                <span
+                                  class="has-text-weight-bold"
+                                  name="¢яуρтσвιт¢αѕѕσ Punk #3011 (pipe smoker #2)"
+                                  ><a
+                                    href="/nft/0xd07dc4262bcdbf85190c01c996b4c06a461d2430/436593"
+                                    class="keychainify-checked"
+                                  >
+                                    ¢яуρтσвιт¢αѕѕσ Punk #3011 (pipe smoker #2)
+                                  </a></span
+                                >
+                              </td>
+                              <td data-label="Chain" class="">
+                                ethereum
+                              </td>
+                              <td data-label="Hashtag" class="">
+                                <span class="has-text-weight-bold"
+                                  ><a
+                                    href="/hashtag/pipe"
+                                    class="keychainify-checked"
+                                  >
+                                    #pipe
+                                  </a></span
+                                >
+                              </td>
+                              <!---->
+                            </tr>
+                            <!----><!---->
+                            <tr draggable="false" class="">
+                              <!----><!---->
+                              <td class="has-text-centered">
+                                <a
+                                  href="/nft/0xd07dc4262bcdbf85190c01c996b4c06a461d2430/436593"
+                                  class="keychainify-checked"
+                                  ><img
+                                    src="https://storage.googleapis.com/sentinel-nft/raw-assets/c_0xd07dc4262bcdbf85190c01c996b4c06a461d2430_t_436593_raw_asset.gif"
+                                    alt="¢яуρтσвιт¢αѕѕσ Punk #3011 (pipe smoker #2)"
+                                    class="nft-thumb"
+                                /></a>
+                              </td>
+                              <td data-label="Asset Name" class="">
+                                <span
+                                  class="has-text-weight-bold"
+                                  name="¢яуρтσвιт¢αѕѕσ Punk #3011 (pipe smoker #2)"
+                                  ><a
+                                    href="/nft/0xd07dc4262bcdbf85190c01c996b4c06a461d2430/436593"
+                                    class="keychainify-checked"
+                                  >
+                                    ¢яуρтσвιт¢αѕѕσ Punk #3011 (pipe smoker #2)
+                                  </a></span
+                                >
+                              </td>
+                              <td data-label="Chain" class="">
+                                ethereum
+                              </td>
+                              <td data-label="Hashtag" class="">
+                                <span class="has-text-weight-bold"
+                                  ><a
+                                    href="/hashtag/punks"
+                                    class="keychainify-checked"
+                                  >
+                                    #punks
+                                  </a></span
+                                >
+                              </td>
+                              <!---->
+                            </tr>
+                            <!----><!----><!---->
+                          </tbody>
+                          <tfoot>
+                            <tr class="table-footer">
+                              <th colspan="4"></th>
+                            </tr>
+                          </tfoot>
+                        </table>
+                        <!---->
+                      </div>
+                      <!---->
+                    </div>
                   </b-tab-item>
                 </b-tabs>
               </div>
@@ -355,23 +577,15 @@
 
 <script>
 import Footer from "hashtag-components/src/components/Footer";
-import Hashtag from "../components/Hashtag";
 import Navbar from "../components/Navbar";
-import NftLink from "../components/NftLink";
 import Newsletter from "../components/Newsletter";
-// import RevenueModel from "../components/RevenueModel";
-
-import { SNAPSHOT } from "@/queries";
 
 export default {
   name: "Developers",
   components: {
     Footer,
-    Hashtag,
     Navbar,
-    NftLink,
     Newsletter,
-    // RevenueModel,
   },
   data() {
     // prettier-ignore
@@ -401,52 +615,89 @@ query {
   "data": {
     "tags": [
       {
-        "hashtag": "#tesla",
-        "hashtagDisplayHashtag": "#Tesla",
-        "hashtagId": "4",
-        "hashtagWithoutHash": "tesla",
-        "id": "0x5cd73ce1328dc497ada2d29eb5beccefd46fb589e3e60e80e1658444732a7020",
-        "nftContract": "0xfbeef911dc5821886e1dda71586d90ed28174b7d",
-        "nftContractName": "KnownOriginDigitalAsset",
-        "nftId": "115851",
-        "nftImage": "https://ipfs.infura.io/ipfs/Qma6W5ZfbJuqqufKabZ7NvtXarX7gFBEr3tRdgNsL7ZYMf",
-        "nftName": "Tesla and his ideas",
-        "nftTokenUri": "https://ipfs.infura.io/ipfs/QmbG7sFzrGb15CHdRV5z4w7p7GV8uK2L92i37YZWf4tM7v",
-        "publisher": "0xf6423a8769292bbeef9335c5a26254c759e3bfbe",
-        "tagger": "0x477cec669b2b22e79fad05d1c034fc9d897ad4ef",
-        "timestamp": "1616644746"
-      },
-      {
-        "hashtag": "#twitter",
-        "hashtagDisplayHashtag": "#Twitter",
-        "hashtagId": "3",
-        "hashtagWithoutHash": "twitter",
-        "id": "0x7ae34eab1d9de6fb2439bc6d2dc2aa9d1750d6b2bbdbd88042cad2671834811b",
-        "nftContract": "0xfbeef911dc5821886e1dda71586d90ed28174b7d",
-        "nftContractName": "KnownOriginDigitalAsset",
-        "nftId": "268127",
-        "nftImage": "https://ipfs.infura.io/ipfs/QmdbjJAoApvhgjhzU2mg6H447SRAbKGN8Do2w1UbXL9w8X/asset.png",
-        "nftName": "Twitter vs Trump",
-        "nftTokenUri": "https://ipfs.infura.io/ipfs/QmPno2pBJomppz3W9hFnFcpecY4ZPt3HR6oPxRdzuZg8de",
-        "publisher": "0xf6423a8769292bbeef9335c5a26254c759e3bfbe",
+        "hashtag": "#drupal",
+        "hashtagDisplayHashtag": "#drupal",
+        "hashtagId": "6",
+        "hashtagWithoutHash": "drupal",
+        "id": "0x5798f3ffb5d0240ab7c7ca6f2bddab05736a36e7fccf37fd0b15b46abc03f443",
+        "nftContract": "0x2aea4add166ebf38b63d09a75de1a7b94aa24163",
+        "nftContractName": null,
+        "nftDescription": null,
+        "nftId": "15",
+        "nftImage": null,
+        "nftName": null,
+        "nftTokenUri": null,
+        "publisher": "0xe9fbc1a1925f6f117211c59b89a55b576182e1e9",
         "tagger": "0x07bd3b64f9f51fe1d5c79f81dfc0460fff305b0e",
-        "timestamp": "1616525667"
+        "timestamp": "1635784316"
       },
       {
-        "hashtag": "#tokenizeeverything",
-        "hashtagDisplayHashtag": "#TokenizeEverything",
-        "hashtagId": "1",
-        "hashtagWithoutHash": "tokenizeeverything",
-        "id": "0xfdefdc3f5ef8ca42eefd7ee23dafbdaadce412ca1e2c6c3994bbcc0b1f98cf1a",
-        "nftContract": "0xfbeef911dc5821886e1dda71586d90ed28174b7d",
-        "nftContractName": "KnownOriginDigitalAsset",
-        "nftId": "81576",
-        "nftImage": "https://ipfs.infura.io/ipfs/QmeqnEwnpcmNotkvorsW3B5qFgERwWcbzC3FwiDuc2bFyL",
-        "nftName": "The revolution shell be tokenized. Unofficial poster - GLITCHY #1",
-        "nftTokenUri": "https://ipfs.infura.io/ipfs/QmcKoLVUL1J2wvmNZToHCzeLDn8Z6rneEDDLyDVGjnkjL8",
-        "publisher": "0xf6423a8769292bbeef9335c5a26254c759e3bfbe",
-        "tagger": "0x477cec669b2b22e79fad05d1c034fc9d897ad4ef",
-        "timestamp": "1616376815"
+        "hashtag": "#schwinn",
+        "hashtagDisplayHashtag": "#schwinn",
+        "hashtagId": "5",
+        "hashtagWithoutHash": "schwinn",
+        "id": "0xaa00b8251ea7d71a02fee4d936b193fdc559d61f556348d7f4db72dd421a45f9",
+        "nftContract": "0x8853b05833029e3cf8d3cbb592f9784fa43d2a79",
+        "nftContractName": null,
+        "nftDescription": null,
+        "nftId": "117443",
+        "nftImage": null,
+        "nftName": null,
+        "nftTokenUri": null,
+        "publisher": "0xe9fbc1a1925f6f117211c59b89a55b576182e1e9",
+        "tagger": "0x07bd3b64f9f51fe1d5c79f81dfc0460fff305b0e",
+        "timestamp": "1635548066"
+      },
+      {
+        "hashtag": "#donut",
+        "hashtagDisplayHashtag": "#donut",
+        "hashtagId": "4",
+        "hashtagWithoutHash": "donut",
+        "id": "0xe73385589f895286cb81f8b36d4a79a7b69e269a698bcd59a906df9effb9e8da",
+        "nftContract": "0xc37f78553046462969cca20e1daa372963a32f7c",
+        "nftContractName": null,
+        "nftDescription": null,
+        "nftId": "1",
+        "nftImage": null,
+        "nftName": null,
+        "nftTokenUri": null,
+        "publisher": "0xe9fbc1a1925f6f117211c59b89a55b576182e1e9",
+        "tagger": "0x93a5f58566d436cae0711ed4d2815b85a26924e6",
+        "timestamp": "1635546586"
+      },
+      {
+        "hashtag": "#pipe",
+        "hashtagDisplayHashtag": "#pipe",
+        "hashtagId": "3",
+        "hashtagWithoutHash": "pipe",
+        "id": "0xbf3b00cee81f360bfc9349a55a3cf04749a6f6dae74276bb57bcf5626e35adfe",
+        "nftContract": "0xd07dc4262bcdbf85190c01c996b4c06a461d2430",
+        "nftContractName": null,
+        "nftDescription": null,
+        "nftId": "436593",
+        "nftImage": null,
+        "nftName": null,
+        "nftTokenUri": null,
+        "publisher": "0xe9fbc1a1925f6f117211c59b89a55b576182e1e9",
+        "tagger": "0x93a5f58566d436cae0711ed4d2815b85a26924e6",
+        "timestamp": "1635546442"
+      },
+      {
+        "hashtag": "#punks",
+        "hashtagDisplayHashtag": "#punks",
+        "hashtagId": "2",
+        "hashtagWithoutHash": "punks",
+        "id": "0x35fee11d2c6f25a85ca374c29aa84545ad15c7c5d69a1c2cd84b891bd1f1cce6",
+        "nftContract": "0xd07dc4262bcdbf85190c01c996b4c06a461d2430",
+        "nftContractName": null,
+        "nftDescription": null,
+        "nftId": "436593",
+        "nftImage": null,
+        "nftName": null,
+        "nftTokenUri": null,
+        "publisher": "0xe9fbc1a1925f6f117211c59b89a55b576182e1e9",
+        "tagger": "0x93a5f58566d436cae0711ed4d2815b85a26924e6",
+        "timestamp": "1635546346"
       }
     ]
   }
@@ -567,12 +818,6 @@ query {
         },
       ],
     };
-  },
-  apollo: {
-    tags: {
-      query: SNAPSHOT,
-      pollInterval: 1000, // ms
-    },
   },
 };
 </script>
