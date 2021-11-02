@@ -37,6 +37,7 @@ export default {
     "~/plugins/vue-filter",
     "~/plugins/vue-moment",
     "~/plugins/vue-screen",
+    "~/plugins/htp-metadata-api",
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)

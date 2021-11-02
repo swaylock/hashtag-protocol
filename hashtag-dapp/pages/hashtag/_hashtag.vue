@@ -59,7 +59,11 @@
             <div class="tile is-parent is-4 is-12-mobile">
               <div class="tile is-child box">
                 <h1>
-                  <img :src="image" :alt="hashtagsByName[0].displayHashtag" />
+                  <img
+                    v-if="imageUrl"
+                    :src="imageUrl"
+                    :alt="hashtagsByName[0].displayHashtag"
+                  />
                 </h1>
               </div>
             </div>
@@ -309,11 +313,13 @@ export default {
     Pagination,
     SocialHead,
   },
-  asyncData({ params }) {
+  async asyncData({ $metadataApiHelpers, params }) {
     let routeHashtag = params.hashtag;
     routeHashtag = routeHashtag.replace("#", "");
     routeHashtag = routeHashtag.toLowerCase();
-
+    let imageUrl;
+    // See /plugins/htp-metadata-api.js
+    imageUrl = await $metadataApiHelpers.getHashtagImage(routeHashtag);
     return {
       activeTab: 0,
       erc721: "http://erc721.org",
@@ -324,6 +330,7 @@ export default {
       skip: 0,
       tagsCount: 0,
       pageSize: PAGE_SIZE,
+      imageUrl: imageUrl,
     };
   },
   head() {
