@@ -31,7 +31,7 @@ export default {
     "~/plugins/vue-axios",
     "~/plugins/vue-buefy",
     "~/plugins/vue-filter",
-    "~/plugins/vue-moment",
+    "~/plugins/vue-timeago",
     "~/plugins/vue-screen",
     "~/plugins/htp-metadata-api",
     "~/plugins/fallback-image",
