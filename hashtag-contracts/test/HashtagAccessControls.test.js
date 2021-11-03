@@ -1,33 +1,34 @@
-const web3 = require('web3');
-const {expect} = require('chai');
+const { ethers, upgrades } = require("hardhat");
+const { expect } = require("chai");
 
-describe('HashtagAccessControl Tests', function () {
+let accounts, hashtagAccessControls;
 
-  let platform, platformAddress, publisher, publisherAddress;
+before("Setup test", async function () {
+  const HashtagAccessControls = await ethers.getContractFactory("HashtagAccessControls");
 
-  beforeEach(async function () {
-    const accounts = await ethers.getSigners();
+  // See namedAccounts section of hardhat.config.js
+  const namedAccounts = await ethers.getNamedSigners();
 
-    platform = accounts[0];
-    platformAddress = await accounts[0].getAddress();
-    publisher = accounts[1];
-    publisherAddress = await accounts[1].getAddress();
+  accounts = {
+    HashtagAdmin: namedAccounts["accountHashtagAdmin"],
+    HashtagPublisher: namedAccounts["accountHashtagPublisher"],
+    HashtagPlatform: namedAccounts["accountHashtagPlatform"],
+  };
 
-    const HashtagAccessControls = await ethers.getContractFactory('HashtagAccessControls');
+  hashtagAccessControls = await upgrades.deployProxy(HashtagAccessControls, { kind: "uups" });
+});
 
-    this.accessControls = await HashtagAccessControls.deploy();
-  });
-
-  describe('Validate setup', async function () {
-    it('should admin as contract creator', async function () {
-      expect(await this.accessControls.isAdmin(platformAddress)).to.be.equal(true);
+describe("HashtagAccessControl", function () {
+  describe("Validate setup/initialization", async function () {
+    it("named account accountHashtagAdmin should be admin", async function () {
+      expect(await hashtagAccessControls.isAdmin(accounts.HashtagAdmin.address)).to.be.equal(true);
     });
   });
+});
 
-  describe('Publisher', async function () {
-    it('should admin as contract creator', async function () {
-      await this.accessControls.grantRole(web3.utils.sha3('PUBLISHER'), publisherAddress);
-      expect(await this.accessControls.isPublisher(publisherAddress)).to.be.equal(true);
-    });
+describe("Publisher", async function () {
+  it("should admin as contract creator", async function () {
+    await hashtagAccessControls.grantRole(ethers.utils.id("PUBLISHER"), accounts.HashtagPublisher.address);
+    expect(await hashtagAccessControls.isPublisher(accounts.HashtagPublisher.address)).to.be.equal(true);
   });
 });

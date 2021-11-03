@@ -8,10 +8,9 @@
         </div>
         <p class="title has-text-weight-semibold">{{ title }}</p>
         <p class="mb-6">
-          When complete, this screen will update or you may close this window
-          and receive updates in the main site.
+          When complete, this screen will update or you may close this window and receive updates in the main site.
         </p>
-        <a :href="etherscanUrl" target="_blank">view on Etherscan</a>
+        <a :href="etherscanUrl" target="_blank">View on {{ explorerName }}</a>
       </div>
     </section>
     <footer class="modal-card-foot">
@@ -42,12 +41,8 @@ export default {
     LottieAnimation,
   },
   computed: {
-    ...mapGetters("protocolAction", [
-      "protocolAction",
-      "newHashtag",
-      "targetNft",
-    ]),
-    ...mapGetters("wallet", ["address", "transactionState"]),
+    ...mapGetters("protocolAction", ["protocolAction", "newHashtag", "targetNft"]),
+    ...mapGetters("wallet", ["address", "transactionState", "explorerName"]),
     etherscanUrl: function () {
       return `${this.$config.etherscanBaseUrl}/tx/${this.transactionState.hash}`;
     },
@@ -58,9 +53,7 @@ export default {
       return protocolActionMap[this.protocolAction].txnSentMsg;
     },
     animation: function () {
-      return `./animations/${
-        protocolActionMap[this.protocolAction].animationFile
-      }`;
+      return `./animations/${protocolActionMap[this.protocolAction].animationFile}`;
     },
   },
 };

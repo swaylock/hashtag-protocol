@@ -10,10 +10,7 @@
         <div class="tile hashtag-search-wrapper">
           <div class="box content form-wrapper">
             <p class="title is-5">Tag this asset</p>
-            <hashtag-search
-              v-on:select-hashtag="selectHashtag"
-              widget="tagging"
-            />
+            <hashtag-search v-on:select-hashtag="selectHashtag" widget="tagging" />
           </div>
         </div>
       </div>
@@ -44,38 +41,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("protocolAction", [
-      "protocolAction",
-      "targetNft",
-      "targetHashtag",
-    ]),
+    ...mapGetters("protocolAction", ["protocolAction", "targetNft", "targetHashtag"]),
     ...mapGetters("wallet", ["address", "transactionState"]),
   },
   methods: {
-    async connectWallet() {
-      await this.$store.dispatch("wallet/connectWallet");
-    },
     /**
      * Function to handle when user selects hashtag in HashtagSearch widget.
      */
     async selectHashtag(hashtag) {
       /* eslint-disable-next-line no-console */
       console.log("tagging selectHashtag", hashtag);
+
       await this.$store.dispatch("protocolAction/updateTargetHashtag", hashtag);
-      if (hashtag.id) {
-        await this.$store.dispatch(
-          "protocolAction/updateProtocolAction",
-          "tagContent"
-        );
-      } else {
-        await this.$store.dispatch(
-          "protocolAction/updateProtocolAction",
-          "mintAndTagContent"
-        );
-        await this.$store.dispatch("protocolAction/updateNewHashtag", hashtag);
-      }
-      // Updates the transaction fees grid.
-      await this.$store.dispatch("transactionFees/updateFees");
+      await this.$store.dispatch("protocolAction/updateProtocolAction", "tagContent");
+      await this.$store.dispatch("protocolAction/updateNewHashtag", hashtag);
     },
   },
 };

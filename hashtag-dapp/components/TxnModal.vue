@@ -6,10 +6,7 @@
       v-on:close-modal="closeModal"
     />
     <TxnModalTaggingSelectHashtag
-      v-if="
-        transactionState.eventCode == 'taggingSelectHashtag' &&
-        !hashtagSelectedForTagging
-      "
+      v-if="transactionState.eventCode == 'taggingSelectHashtag' && !hashtagSelectedForTagging"
       v-on:close-modal="closeModal"
     />
     <TxnModalConfirmTagging
@@ -21,21 +18,12 @@
       v-if="transactionState.eventCode == 'protocolActionConfirmed'"
       v-on:close-modal="closeModal"
     />
-    <TxnModalTxRejected
-      v-if="transactionState.eventCode == 'rejected'"
-      v-on:close-modal="closeModal"
-    />
+    <TxnModalTxRejected v-if="transactionState.eventCode == 'rejected'" v-on:close-modal="closeModal" />
     <TxnModalTxSent
-      v-if="
-        transactionState.eventCode == 'txSent' ||
-        transactionState.eventCode == 'txPool'
-      "
+      v-if="transactionState.eventCode == 'txSent' || transactionState.eventCode == 'txPool'"
       v-on:close-modal="closeModal"
     />
-    <TxnModalTxConfirmed
-      v-if="transactionState.eventCode == 'txConfirmed'"
-      v-on:close-modal="closeModal"
-    />
+    <TxnModalTxConfirmed v-if="transactionState.eventCode == 'txConfirmed'" v-on:close-modal="closeModal" />
   </span>
 </template>
 
@@ -70,19 +58,13 @@ export default {
     return {};
   },
   computed: {
-    ...mapGetters("protocolAction", [
-      "protocolAction",
-      "newHashtag",
-      "targetNft",
-      "targetHashtag",
-    ]),
+    ...mapGetters("protocolAction", ["protocolAction", "newHashtag", "targetNft", "targetHashtag"]),
     ...mapGetters("wallet", ["address", "transactionState"]),
     /**
      * Boolean on whether a hashtag was selected for tagging an NFT.
      */
     hashtagSelectedForTagging: function () {
-      return (this.protocolAction == "tagContent" ||
-        this.protocolAction == "mintAndTagContent") &&
+      return (this.protocolAction == "tagContent" || this.protocolAction == "mintAndTagContent") &&
         this.transactionState.eventCode == "taggingSelectHashtag" &&
         this.targetHashtag.displayHashtag
         ? true
@@ -90,10 +72,6 @@ export default {
     },
   },
   methods: {
-    // Update the transaction fees grid.
-    async updateFees() {
-      await this.$store.dispatch("transactionFees/updateFees");
-    },
     async connectWallet() {
       await this.$store.dispatch("wallet/connectWallet");
     },
@@ -116,43 +94,20 @@ export default {
       const hashtag = this.targetHashtag;
       /* eslint-disable-next-line no-console */
       console.log("tagContent", hashtag);
-      if (hashtag.id) {
-        // Tag with existing HASHTAG.
-        try {
-          await this.$store.dispatch("wallet/tag", {
-            hashtagId: hashtag.id,
-            nftContract: this.targetNft.contractAddress,
-            nftId: this.targetNft.tokenId,
+      // Tag with existing HASHTAG.
+      try {
+        await this.$store.dispatch("wallet/tag", {
+          hashtag: hashtag.displayHashtag,
+          nftContract: this.targetNft.contractAddress,
+          nftId: this.targetNft.tokenId,
+          nftChain: this.targetNft.chain,
+        });
+      } catch (e) {
+        if (e.code == 4001) {
+          // user rejected txn in metamask.
+          await this.$store.dispatch("wallet/updateTransactionState", {
+            eventCode: "rejected",
           });
-        } catch (e) {
-          if (e.code == 4001) {
-            // user rejected txn in metamask.
-            await this.$store.dispatch("wallet/updateTransactionState", {
-              eventCode: "rejected",
-            });
-          }
-        }
-      } else {
-        /* eslint-disable-next-line no-console */
-        console.log("mint and tag");
-        /* eslint-disable-next-line no-console */
-        console.log("nft", this.targetNft);
-        /* eslint-disable-next-line no-console */
-        console.log("hashtag", hashtag.displayHashtag);
-        // Mint new HASHTAG and tag with that.
-        try {
-          await this.$store.dispatch("wallet/mintAndTag", {
-            hashtag: hashtag.displayHashtag,
-            nftContract: this.targetNft.contractAddress,
-            nftId: this.targetNft.tokenId,
-          });
-        } catch (e) {
-          if (e.code == 4001) {
-            // user rejected txn in metamask.
-            await this.$store.dispatch("wallet/updateTransactionState", {
-              eventCode: "rejected",
-            });
-          }
         }
       }
     },
@@ -163,9 +118,6 @@ export default {
       this.$parent.close();
       await this.$store.dispatch("protocolAction/updateTargetHashtag", {});
     },
-  },
-  async mounted() {
-    this.updateFees();
   },
 };
 </script>

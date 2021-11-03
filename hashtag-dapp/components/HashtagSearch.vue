@@ -2,10 +2,10 @@
   <form>
     <div class="field">
       <div class="control">
-        <b-field v-if="hashtags">
+        <b-field>
           <b-taginput
             v-model="hashtag"
-            :data="hashtagInputTags"
+            :data="hashtags"
             attached
             autocomplete
             :allow-new="false"
@@ -18,23 +18,17 @@
             :has-counter="false"
             placeholder="Search for hashtag"
             :before-adding="selectHashtag"
-            @typing="getFilteredTags"
+            @typing="getHashtags"
             @keyup.native="checkIfEnterKey"
           >
             <template slot-scope="props">
               <b-taglist attached>
-                <b-tag type="is-primary" size="is-medium"
-                  >{{ props.option.displayHashtag }}
-                </b-tag>
-                <b-tag type="is-dark" size="is-medium"
-                  >{{ props.option.tagCount }}
-                </b-tag>
+                <b-tag type="is-primary" size="is-medium">{{ props.option.displayHashtag }} </b-tag>
+                <b-tag type="is-dark" size="is-medium">{{ props.option.tagCount }} </b-tag>
               </b-taglist>
             </template>
             <template slot="empty">
-              <span class="new-hashtag"
-                >Unique HASHTAG! Press enter to continue...</span
-              >
+              <span class="new-hashtag">Unique HASHTAG! Press enter to mint it...</span>
             </template>
           </b-taginput>
         </b-field>
@@ -44,23 +38,19 @@
 </template>
 <script>
 import HashtagValidationService from "~/services/HashtagValidationService";
-import { FIRST_THOUSAND_HASHTAGS } from "~/apollo/queries";
+import { HASHTAGS_SEARCH } from "~/apollo/queries";
+import debounce from "lodash/debounce";
+
 export default {
   name: "HashtagSearch",
   props: ["widget"],
   data() {
     return {
-      hashtagInputTags: [],
       nameContains: [],
       isFetching: false,
-      hashtag: null,
+      hashtag: [],
+      hashtags: [],
     };
-  },
-  apollo: {
-    hashtags: {
-      query: FIRST_THOUSAND_HASHTAGS,
-      pollInterval: 1000, // ms
-    },
   },
   methods: {
     /**
@@ -68,20 +58,29 @@ export default {
      *
      * @param string text entered into tagging widget
      */
-    getFilteredTags: function (text) {
-      const hashtags = this.hashtags || [];
-      this.hashtagInputTags = hashtags.filter((tag) => {
-        //console.log("getFilteredTags", tag);
-        return (
-          tag && `${tag.name.toLowerCase()}`.indexOf(text.toLowerCase()) === 1
-        );
-      });
-    },
+    getHashtags: debounce(async function (text) {
+      const variables = {
+        name: text.toLowerCase(),
+      };
+
+      this.$apollo
+        .query({
+          query: HASHTAGS_SEARCH,
+          variables,
+        })
+        .then(({ data }) => {
+          this.hashtags = data.hashtagsSearch;
+        });
+    }, 150),
     /**
      * Run the hashtag entered through validation.
      */
     validateTag(hashtag) {
-      return this.hashtagValidationService.validateTag(hashtag);
+      if (this.widget == "tagging") {
+        return this.hashtagValidationService.validateTag(hashtag);
+      }
+
+      return this.hashtagValidationService.validateTag(hashtag, this.hashtags);
     },
     /**
      * Hashtag is selected.
@@ -131,9 +130,7 @@ export default {
     },
   },
   created() {
-    this.hashtagValidationService = new HashtagValidationService(
-      this.$buefy.toast
-    );
+    this.hashtagValidationService = new HashtagValidationService(this.$buefy.toast);
   },
 };
 </script>

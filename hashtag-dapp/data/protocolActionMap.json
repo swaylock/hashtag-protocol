@@ -7,7 +7,7 @@
     "ethGasLimit": 145000
   },
   "mintAndTagContent": {
-    "actionLabel": "Mint HASHTAG & tag content",
+    "actionLabel": "Tag content",
     "txnSentMsg": "Mint & tag in progress",
     "txnConfirmedMsg": "Token minted & content tagged",
     "animationFile": "minting_tagging.json",

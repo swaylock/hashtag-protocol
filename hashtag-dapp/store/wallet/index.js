@@ -3,8 +3,8 @@ import { ethers } from "ethers";
 import Onboard from "bnc-onboard";
 import BlocknativeSdk from "bnc-sdk";
 import { ToastProgrammatic as Toast } from "buefy";
-import HashtagProtocolTruffleConf from "~/truffleconf/HashtagProtocol";
-import ERC721HashtagRegistry from "~/truffleconf/ERC721HashtagRegistry";
+import HashtagProtocolAbi from "../../../hashtag-contracts/abi/contracts/release/HashtagProtocol.sol/HashtagProtocol.json";
+import ERC721HashtagRegistryAbi from "../../../hashtag-contracts/abi/contracts/release/ERC721HashtagRegistry.sol/ERC721HashtagRegistry.json";
 import utils from "~/common/utils";
 import eventMap from "~/data/blocknativeEventMap";
 import onBoardChainMap from "~/data/onBoardChainMap";
@@ -42,10 +42,11 @@ const state = () => ({
     tagging: null,
     mintAndTag: null,
   },
-  accrued: null,
+  accrued: 0,
   openModalCloseFn: () => {},
-
   transactionState: {},
+  currencyName: "MATIC",
+  explorerName: "PolygonScan",
 });
 
 const getters = {
@@ -56,12 +57,20 @@ const getters = {
   networkInfo: (state) => {
     return onBoardChainMap[state.networkId];
   },
+  // The following two probably could use a better home
+  // as the dapp will be running on polygon for the forseeable future.
+  currencyName: (state) => state.currencyName,
+  explorerName: (state) => state.explorerName,
   balance: (state) => state.balance,
   name: (state) => state.name,
   transactionState: (state) => state.transactionState,
 };
 
 const actions = {
+  nuxtServerInit({ commit }, { $config }) {
+    commit("setWalletNetworkId", $config.onboardNetworkID);
+  },
+
   async initOnboard({ dispatch, commit }) {
     // Initialize onboard.
     onboard = Onboard({
@@ -84,6 +93,7 @@ const actions = {
       walletSelect: {
         heading: "Connect wallet",
         description: " ",
+        wallets: [{ walletName: "metamask", preferred: true }],
       },
     });
 
@@ -100,26 +110,16 @@ const actions = {
     const signer = provider.getSigner();
     const chain = state.networkId;
 
-    const hashtagProtocolContractAddress = utils.getContractAddressFromTruffleConf(
-      HashtagProtocolTruffleConf,
-      chain
-    );
+    const hashtagProtocolAddress = utils.getContractAddress("HashtagProtocol", chain);
 
-    const hashtagProtocolContract = new ethers.Contract(
-      hashtagProtocolContractAddress,
-      HashtagProtocolTruffleConf.abi,
-      signer
-    );
+    const hashtagProtocolContract = new ethers.Contract(hashtagProtocolAddress, HashtagProtocolAbi, signer);
 
-    const erc721HashtagRegistryAddress = utils.getContractAddressFromTruffleConf(
-      ERC721HashtagRegistry,
-      chain
-    );
+    const erc721HashtagRegistryAddress = utils.getContractAddress("ERC721HashtagRegistry", chain);
 
     const erc721HashtagRegistryContract = new ethers.Contract(
       erc721HashtagRegistryAddress,
-      ERC721HashtagRegistry.abi,
-      signer
+      ERC721HashtagRegistryAbi,
+      signer,
     );
 
     commit("setWeb3Objects", {
@@ -155,17 +155,13 @@ const actions = {
   // has been previously selected, it initializes
   // and checks the wallet.
   async reconnectWallet() {
-    const previouslySelectedWallet = window.localStorage.getItem(
-      this.$config.localstorageWalletKey
-    );
+    const previouslySelectedWallet = window.localStorage.getItem(this.$config.localstorageWalletKey);
     if (!previouslySelectedWallet) {
       return false;
     }
 
     if (previouslySelectedWallet && onboard) {
-      const walletSelected = await onboard.walletSelect(
-        previouslySelectedWallet
-      );
+      const walletSelected = await onboard.walletSelect(previouslySelectedWallet);
       return walletSelected;
     }
   },
@@ -245,18 +241,19 @@ const actions = {
     // The wallet has been popped and is waiting for user
     // to confirm or reject the transaction. When confirmed
     // we will have a txn object.
-    const txn = await hashtagProtocolContract.mint(
-      payload,
-      publisher,
-      state.address
-    );
+    const txn = await hashtagProtocolContract.mint(payload, publisher, state.address);
+    await txn.wait();
 
-    // We have a txn object. Start a blocknative SDK listener for blockchain events.
-    const { emitter } = blocknative.transaction(txn.hash);
-
-    emitter.on("all", (transaction) => {
-      dispatch("updateTransactionState", transaction);
+    dispatch("updateTransactionState", {
+      eventCode: "txConfirmed",
     });
+    // We have a txn object. Start a blocknative SDK listener for blockchain events.
+    // const { emitter } = blocknative.transaction(txn.hash);
+
+    // emitter.on("all", (transaction) => {
+    //   console.log("transsss", transaction);
+    //   dispatch("updateTransactionState", transaction);
+    // });
   },
 
   /**
@@ -268,7 +265,6 @@ const actions = {
   async tag({ state, dispatch }, payload) {
     const ready = await dispatch("readyToTransact");
     if (!ready) return;
-
     // Prompts user to complete transaction in their wallet.
     await dispatch("updateTransactionState", {
       eventCode: "protocolActionConfirmed",
@@ -277,26 +273,32 @@ const actions = {
     const { web3Objects, fees } = state;
     const { contracts, publisher } = web3Objects;
     const { erc721HashtagRegistryContract } = contracts;
-    const { hashtagId, nftContract, nftId } = payload;
+    const { hashtag, nftContract, nftId, nftChain } = payload;
 
     // function tag(uint256 _hashtagId, address _nftContract, uint256 _nftId, address _publisher, address _tagger) payable public {
     const txn = await erc721HashtagRegistryContract.tag(
-      hashtagId,
+      hashtag,
       nftContract,
       nftId,
       publisher,
       state.address,
+      nftChain,
       {
         value: ethers.BigNumber.from(fees.tagging),
-      }
+      },
     );
+    await txn.wait();
+
+    dispatch("updateTransactionState", {
+      eventCode: "txConfirmed",
+    });
 
     // We have a txn object. Start a blocknative SDK listener for blockchain events.
-    const { emitter } = blocknative.transaction(txn.hash);
+    // const { emitter } = blocknative.transaction(txn.hash);
 
-    emitter.on("all", (transaction) => {
-      dispatch("updateTransactionState", transaction);
-    });
+    // emitter.on("all", (transaction) => {
+    //   dispatch("updateTransactionState", transaction);
+    // });
   },
 
   async mintAndTag({ state, dispatch }, payload) {
@@ -311,7 +313,7 @@ const actions = {
     const { web3Objects, fees } = state;
     const { contracts, publisher } = web3Objects;
     const { erc721HashtagRegistryContract } = contracts;
-    const { hashtag, nftContract, nftId } = payload;
+    const { hashtag, nftContract, nftId, nftChain } = payload;
 
     const txn = await erc721HashtagRegistryContract.mintAndTag(
       hashtag.indexOf("#") === 0 ? hashtag : `#${hashtag}`,
@@ -319,17 +321,23 @@ const actions = {
       nftId,
       publisher,
       state.address,
+      nftChain,
       {
         value: ethers.BigNumber.from(fees.tagging),
-      }
+      },
     );
+    await txn.wait();
+
+    dispatch("updateTransactionState", {
+      eventCode: "txConfirmed",
+    });
 
     // We have a txn object. Start a blocknative SDK listener for blockchain events.
-    const { emitter } = blocknative.transaction(txn.hash);
+    // const { emitter } = blocknative.transaction(txn.hash);
 
-    emitter.on("all", (transaction) => {
-      dispatch("updateTransactionState", transaction);
-    });
+    // emitter.on("all", (transaction) => {
+    //   dispatch("updateTransactionState", transaction);
+    // });
   },
 
   /**

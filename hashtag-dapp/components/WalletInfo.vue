@@ -13,13 +13,13 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Balance</p>
-            <p class="subtitle">{{ balance | toEth(4) }} ETH</p>
+            <p class="subtitle">{{ balance | toEth(4) }} {{ currencyName }}</p>
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Network</p>
-            <p class="subtitle" v-if="networkInfo">{{ networkInfo.Name }}</p>
+            <p class="subtitle" v-if="networkInfo">{{ networkInfo.name }}</p>
           </div>
         </div>
         <div class="level-item has-text-centered">
@@ -29,9 +29,7 @@
           </div>
         </div>
       </nav>
-      <p
-        class="box has-text-weight-medium has-background-dark has-text-white address has-text-centered"
-      >
+      <p class="box has-text-weight-medium has-background-dark has-text-white address has-text-centered">
         {{ address }}
       </p>
     </section>
@@ -40,7 +38,7 @@
         <div class="level-item has-text-centered">
           <a :href="this.addressUrl" target="_blank">
             <b-icon icon="ethereum" size="is-small"> </b-icon>
-            View on Etherscan
+            View on {{ explorerName }}
           </a>
         </div>
         <div class="level-item has-text-centered">
@@ -64,13 +62,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("wallet", [
-      "address",
-      "balance",
-      "name",
-      "networkId",
-      "networkInfo",
-    ]),
+    ...mapGetters("wallet", ["address", "balance", "name", "networkId", "networkInfo", "currencyName", "explorerName"]),
   },
   methods: {
     disconnectWallet() {

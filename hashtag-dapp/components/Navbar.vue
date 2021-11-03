@@ -2,40 +2,28 @@
   <b-navbar :transparent="true">
     <template slot="brand">
       <b-navbar-item tag="nuxt-link" :to="{ path: '/' }">
-        <img
-          src="~/assets/logo-white.svg"
-          alt="Content tagging for the decentralized web"
-        />
+        <img src="~/assets/logo-white.svg" alt="Content tagging for the decentralized web" />
         <h1>Hashtag Protocol</h1>
       </b-navbar-item>
     </template>
     <template slot="end">
       <b-navbar-item tag="div">
         <div class="buttons" v-if="address !== null && address !== undefined">
-          <b-button
-            icon-left="bank"
-            type="is-primary"
-            @click="drawdown"
-            outlined
+          <b-button icon-left="bank" type="is-primary" @click="drawdown" outlined>
+            {{ accrued | toEth }} {{ currencyName }}</b-button
           >
-            {{ accrued | toEth }} ETH
-          </b-button>
           <b-button
             v-if="address !== null && address !== undefined"
             class="button is-primary is-outlined wallet-info"
             @click="walletInfo"
-            ><b-tag type="is-primary">{{ balance | toEth(4) }} ETH</b-tag>
+            ><b-tag type="is-primary">{{ balance | toEth(4) }} {{ currencyName }}</b-tag>
             <span class="address">
               {{ address | shortEth }}
             </span>
           </b-button>
         </div>
         <div class="buttons" v-else>
-          <b-button
-            icon-left="power-plug"
-            class="button is-primary is-outlined"
-            @click="connectWallet"
-          >
+          <b-button icon-left="power-plug" class="button is-primary is-outlined" @click="connectWallet">
             Connect wallet
           </b-button>
         </div>
@@ -43,12 +31,7 @@
 
       <b-navbar-dropdown :right="true" :arrowless="true">
         <template slot="label">
-          <b-button
-            class="button is-primary is-hidden-mobile"
-            type="button"
-            icon-left="menu"
-          >
-          </b-button>
+          <b-button class="button is-primary is-hidden-mobile" type="button" icon-left="menu"> </b-button>
         </template>
         <b-navbar-item
           v-for="(value, key) in sectionsMenuArr"
@@ -60,17 +43,10 @@
           {{ value.text }}
         </b-navbar-item>
         <hr class="dropdown-divider" />
-        <b-navbar-item
-          tag="div"
-          class="has-text-grey-dark has-text-weight-light is-capitalized is"
-        >
+        <b-navbar-item tag="div" class="has-text-grey-dark has-text-weight-light is-capitalized is">
           DEVELOPER RESOURCES
         </b-navbar-item>
-        <b-navbar-item
-          v-for="(value, key) in supportMenuArr"
-          :key="key"
-          :href="value.path"
-        >
+        <b-navbar-item v-for="(value, key) in supportMenuArr" :key="key" :href="value.path">
           {{ value.text }}
         </b-navbar-item>
       </b-navbar-dropdown>
@@ -119,7 +95,7 @@ export default {
       supportMenuArr: {
         docs: {
           text: "Docs",
-          path: this.$config.docs,
+          path: this.$store.state.docsBaseUrl,
         },
         discord: {
           text: "Discord",
@@ -131,7 +107,7 @@ export default {
         },
         website: {
           text: "Website",
-          path: this.$config.website,
+          path: this.$store.state.websiteBaseUrl,
         },
       },
     };
@@ -157,7 +133,7 @@ export default {
     this.unsubscribe();
   },
   computed: {
-    ...mapGetters("wallet", ["accrued", "balance", "address", "onboard"]),
+    ...mapGetters("wallet", ["accrued", "balance", "address", "onboard", "currencyName"]),
   },
   methods: {
     async initOnboard() {

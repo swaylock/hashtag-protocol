@@ -1,6 +1,4 @@
 import onBoardChainMap from "./data/onBoardChainMap.json";
-import HashtagProtocolTruffleConf from "./truffleconf/HashtagProtocol";
-import ERC721HashtagRegistry from "./truffleconf/ERC721HashtagRegistry";
 import utils from "./common/utils";
 
 export default {
@@ -38,6 +36,7 @@ export default {
     "~/plugins/vue-moment",
     "~/plugins/vue-screen",
     "~/plugins/htp-metadata-api",
+    "~/plugins/fallback-image",
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
@@ -57,33 +56,38 @@ export default {
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
-
   styleResources: {
     scss: ["~/assets/css/variables.scss"],
   },
 
   publicRuntimeConfig: {
-    website: "https://www.hashtag-protocol.org",
-    app: "https://app.hashtag-protocol.org",
-    docs: "https://docs.hashtag-protocol.org",
-    substack: "https://hashtagprotocol.substack.com",
-    imageApi: "https://api.hashtag-protocol.io/images/",
-    etherscanBaseUrl:
-      onBoardChainMap[process.env.VUE_APP_ONBOARD_NETWORK_ID].url,
-    hashtagProtocolContractAddress: utils.getContractAddressFromTruffleConf(
-      HashtagProtocolTruffleConf,
+    hashtagProtocolContractAddress: utils.getContractAddress(
+      "HashtagProtocol",
       process.env.VUE_APP_ONBOARD_NETWORK_ID
     ),
-    erc721HashtagRegistryAddress: utils.getContractAddressFromTruffleConf(
-      ERC721HashtagRegistry,
+    erc721HashtagRegistryAddress: utils.getContractAddress(
+      "ERC721HashtagRegistry",
       process.env.VUE_APP_ONBOARD_NETWORK_ID
     ),
     hashtagSubgraph:
       process.env.VUE_APP_HASHTAG_SUBGRAPH_URL ||
-      "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-rinkeby",
+      "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-polygon-mumbai",
     nftSearchSubgraph:
       process.env.VUE_APP_TOP_NFTS_SUBGRAPH_URL ||
       "https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens",
+    nftPortAPIKey: process.env.NFTPORT_API_KEY,
+
+    // These are set for development purposes only. See store/index.js
+    metadataApiBaseUrl: process.env.VUE_APP_HTP_METADATA_API_URL || false,
+    websiteBaseUrl:
+      process.env.VUE_APP_WEBSITE_URL || "https://www.hashtag-protocol.org",
+    dappBaseUrl:
+      process.env.VUE_APP_DAPP_URL || "https://app.hashtag-protocol.org",
+    docsBaseUrl:
+      process.env.VUE_APP_DOCS_URL || "https://docs.hashtag-protocol.org",
+
+    etherscanBaseUrl:
+      onBoardChainMap[process.env.VUE_APP_ONBOARD_NETWORK_ID].url,
     blocknativeApiKey: process.env.VUE_APP_BLOCKNATIVE_API_KEY || "",
     onboardNetworkID:
       Number(process.env.VUE_APP_ONBOARD_NETWORK_ID) || Number(5777),
@@ -93,8 +97,10 @@ export default {
     localstorageWalletKey:
       process.env.VUE_APP_ONBOARD_LOCALSTORAGE_WALLET_KEY ||
       "HashtagSelectedWallet",
+
     discordServer:
       process.env.VUE_APP_DISCORD_SERVER || "https://discord.gg/EyTJFRm",
+    substack: "https://hashtagprotocol.substack.com",
   },
   privateRuntimeConfig: {},
 
@@ -110,12 +116,12 @@ export default {
       default: {
         httpEndpoint:
           process.env.VUE_APP_HASHTAG_SUBGRAPH_URL ||
-          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-rinkeby",
+          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-polygon-mumbai",
       },
       hashtagClient: {
         httpEndpoint:
           process.env.VUE_APP_HASHTAG_SUBGRAPH_URL ||
-          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-rinkeby",
+          "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-polygon-mumbai",
       },
       nftsClient: {
         httpEndpoint:
