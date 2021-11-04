@@ -45,8 +45,8 @@ const state = () => ({
   accrued: 0,
   openModalCloseFn: () => {},
   transactionState: {},
-  currencyName: "MATIC",
-  explorerName: "PolygonScan",
+  currencyName: "ETH",
+  explorerName: "Etherscan",
 });
 
 const getters = {

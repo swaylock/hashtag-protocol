@@ -1,9 +1,7 @@
 <template>
   <b-tooltip label="Help" position="is-bottom" type="is-dark">
     <a class="has-text-grey">
-      <span class="icon"
-        ><i class="mdi mdi-help-circle-outline mdi-24px"></i
-      ></span>
+      <span class="icon"><i class="mdi mdi-help-circle-outline mdi-24px"></i></span>
     </a>
   </b-tooltip>
 </template>

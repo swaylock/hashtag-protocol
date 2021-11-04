@@ -73,13 +73,9 @@ export default {
         });
     }, 150),
     /**
-     * Run the hashtag entered through validation.
+     * Run a proposed hashtag through validation.
      */
     validateTag(hashtag) {
-      if (this.widget == "tagging") {
-        return this.hashtagValidationService.validateTag(hashtag);
-      }
-
       return this.hashtagValidationService.validateTag(hashtag, this.hashtags);
     },
     /**
@@ -94,12 +90,11 @@ export default {
      * @param { object } hashtag
      */
     selectHashtag(hashtag) {
-      /* eslint-disable-next-line no-console */
-      console.log("Hashtag Seatch selectHashtag");
-      if (this.validateTag(hashtag)) {
-        // Process the selected hashtag in the parent compoent.
+      const $validHashtag = this.validateTag(hashtag);
+      if ($validHashtag) {
+        // Process the selected hashtag in the parent component.
         // Passed to parent as an hashtag object.
-        this.$emit("select-hashtag", hashtag);
+        this.$emit("select-hashtag", $validHashtag);
       }
     },
     /**

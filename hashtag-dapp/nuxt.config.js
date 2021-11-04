@@ -14,13 +14,11 @@ export default {
       { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
       {
         rel: "stylesheet",
-        href:
-          "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap",
       },
       {
         rel: "stylesheet",
-        href:
-          "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css",
+        href: "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css",
       },
     ],
   },
@@ -61,45 +59,31 @@ export default {
   },
 
   publicRuntimeConfig: {
-    hashtagProtocolContractAddress: utils.getContractAddress(
-      "HashtagProtocol",
-      process.env.VUE_APP_ONBOARD_NETWORK_ID
-    ),
+    hashtagProtocolContractAddress: utils.getContractAddress("HashtagProtocol", process.env.VUE_APP_ONBOARD_NETWORK_ID),
     erc721HashtagRegistryAddress: utils.getContractAddress(
       "ERC721HashtagRegistry",
-      process.env.VUE_APP_ONBOARD_NETWORK_ID
+      process.env.VUE_APP_ONBOARD_NETWORK_ID,
     ),
     hashtagSubgraph:
       process.env.VUE_APP_HASHTAG_SUBGRAPH_URL ||
       "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-polygon-mumbai",
     nftSearchSubgraph:
-      process.env.VUE_APP_TOP_NFTS_SUBGRAPH_URL ||
-      "https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens",
+      process.env.VUE_APP_TOP_NFTS_SUBGRAPH_URL || "https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens",
     nftPortAPIKey: process.env.NFTPORT_API_KEY,
 
     // These are set for development purposes only. See store/index.js
     metadataApiBaseUrl: process.env.VUE_APP_HTP_METADATA_API_URL || false,
-    websiteBaseUrl:
-      process.env.VUE_APP_WEBSITE_URL || "https://www.hashtag-protocol.org",
-    dappBaseUrl:
-      process.env.VUE_APP_DAPP_URL || "https://app.hashtag-protocol.org",
-    docsBaseUrl:
-      process.env.VUE_APP_DOCS_URL || "https://docs.hashtag-protocol.org",
+    websiteBaseUrl: process.env.VUE_APP_WEBSITE_URL || "https://www.hashtag-protocol.org",
+    dappBaseUrl: process.env.VUE_APP_DAPP_URL || "https://app.hashtag-protocol.org",
+    docsBaseUrl: process.env.VUE_APP_DOCS_URL || "https://docs.hashtag-protocol.org",
 
-    etherscanBaseUrl:
-      onBoardChainMap[process.env.VUE_APP_ONBOARD_NETWORK_ID].url,
+    etherscanBaseUrl: onBoardChainMap[process.env.VUE_APP_ONBOARD_NETWORK_ID].url,
     blocknativeApiKey: process.env.VUE_APP_BLOCKNATIVE_API_KEY || "",
-    onboardNetworkID:
-      Number(process.env.VUE_APP_ONBOARD_NETWORK_ID) || Number(5777),
-    publisherWalletAddress:
-      process.env.VUE_APP_PUBLISHER_ADDRESS ||
-      "0xD677AEd0965AC9B54e709F01A99cEcA205aebC4B",
-    localstorageWalletKey:
-      process.env.VUE_APP_ONBOARD_LOCALSTORAGE_WALLET_KEY ||
-      "HashtagSelectedWallet",
+    onboardNetworkID: Number(process.env.VUE_APP_ONBOARD_NETWORK_ID),
+    publisherWalletAddress: process.env.VUE_APP_PUBLISHER_ADDRESS,
+    localstorageWalletKey: process.env.VUE_APP_ONBOARD_LOCALSTORAGE_WALLET_KEY || "HashtagSelectedWallet",
 
-    discordServer:
-      process.env.VUE_APP_DISCORD_SERVER || "https://discord.gg/EyTJFRm",
+    discordServer: process.env.VUE_APP_DISCORD_SERVER || "https://discord.gg/EyTJFRm",
     substack: "https://hashtagprotocol.substack.com",
   },
   privateRuntimeConfig: {},
