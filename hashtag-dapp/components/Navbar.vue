@@ -79,14 +79,6 @@ export default {
           text: "Publishers",
           path: "/publishers",
         },
-        taggers: {
-          text: "Taggers",
-          path: "/taggers",
-        },
-        nfts: {
-          text: "Tagged content",
-          path: "/nfts",
-        },
         auction: {
           text: "Auction",
           path: "/auction",

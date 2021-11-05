@@ -41,9 +41,6 @@ package-lock.json
 .platform/local/
 _www/
 
-.platform/local/
-_www/
-
 hashtag-docs/docs/.vuepress/dist/*
 
 # hashtag api

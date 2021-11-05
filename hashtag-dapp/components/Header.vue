@@ -2,15 +2,15 @@
   <section class="hero has-background-grey-dark is-bold">
     <div class="beta-warning has-text-white has-text-weight-medium has-text-centered">
       <p>
-        Hashtag Protocol is migrating to Polygon
+        Hashtag Protocol is migrating to Polygon!
         <span class="icon">
           <i class="mdi mdi-truck-fast mdi-24px"></i>
         </span>
         <a
           @click="
             cardModal({
-              type: 'faq',
-              content: '020-what-is-hashtag-token',
+              type: 'info',
+              content: 'why-polygon',
             })
           "
           >Learn more</a
@@ -53,5 +53,14 @@ export default {
   padding: 1rem;
   font-size: 1rem;
   margin-bottom: 1rem;
+}
+
+.beta-warning a {
+  color: $white;
+  text-decoration: underline;
+}
+
+.beta-warning .icon {
+  margin: 0 1rem;
 }
 </style>

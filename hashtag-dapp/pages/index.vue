@@ -20,7 +20,7 @@
               <a
                 @click="
                   cardModal({
-                    type: 'faq',
+                    type: 'faqs',
                     content: '020-what-is-hashtag-token',
                   })
                 "
@@ -60,7 +60,7 @@
               <a
                 @click="
                   cardModal({
-                    type: 'faq',
+                    type: 'faqs',
                     content: '045-what-is-creator',
                   })
                 "
@@ -102,7 +102,7 @@
               <a
                 @click="
                   cardModal({
-                    type: 'faq',
+                    type: 'faqs',
                     content: '050-what-is-an-owner',
                   })
                 "

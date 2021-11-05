@@ -14,6 +14,7 @@ export default {
      * Name of the doc file to load.
      */
     filename: String,
+    type: String,
   },
   data() {
     return {
@@ -25,7 +26,7 @@ export default {
   },
   methods: {
     async getDoc() {
-      let markdown = require(`raw-loader!../../hashtag-docs/docs/shared/faqs/${this.filename}.md`);
+      let markdown = require(`raw-loader!../../hashtag-docs/docs/shared/${this.type}/${this.filename}.md`);
       this.docBody = md.render(markdown.default);
     },
   },
