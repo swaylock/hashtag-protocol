@@ -101,9 +101,7 @@
                     <b-table :data="creators || []">
                       <template slot="footer" v-if="!isCustom">
                         <div class="has-text-right">
-                          <nuxt-link :to="{ name: 'creators' }">
-                            Browse creators
-                          </nuxt-link>
+                          <nuxt-link :to="{ name: 'creators' }"> Browse creators </nuxt-link>
                           &nbsp;
                           <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                         </div>
@@ -142,9 +140,7 @@
                     <b-table :data="publishers || []">
                       <template slot="footer" v-if="!isCustom">
                         <div class="has-text-right">
-                          <nuxt-link :to="{ name: 'publishers' }">
-                            Browse publishers
-                          </nuxt-link>
+                          <nuxt-link :to="{ name: 'publishers' }"> Browse publishers </nuxt-link>
                           &nbsp;
                           <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                         </div>
@@ -187,9 +183,7 @@
                     <b-table :data="taggers || []" focusable>
                       <template slot="footer" v-if="!isCustom">
                         <div class="has-text-right">
-                          <nuxt-link :to="{ name: 'taggers' }">
-                            Browse taggers
-                          </nuxt-link>
+                          <nuxt-link :to="{ name: 'taggers' }"> Browse taggers </nuxt-link>
                           &nbsp;
                           <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                         </div>
@@ -222,9 +216,7 @@
                     <b-table :data="popular || []" focusable>
                       <template slot="footer" v-if="!isCustom">
                         <div class="has-text-right">
-                          <nuxt-link :to="{ name: 'hashtags' }">
-                            Browse hashtags
-                          </nuxt-link>
+                          <nuxt-link :to="{ name: 'hashtags' }"> Browse hashtags </nuxt-link>
                           &nbsp;
                           <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                         </div>

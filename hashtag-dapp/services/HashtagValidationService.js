@@ -24,58 +24,50 @@ class HashtagValidationService {
    * @TODO move the existing hashtag check into its own function.
    *
    * @param {string || object} hashtag string or hashtag object.
-   * @param { object } hashtags json object containing first 1000 minted hashtags
-   * @returns { boolean} true for valid, false for invalid. And a toast notification.
+   * @param { object } hashtags json object containing hashtags returned in search
+   * @returns { object || boolean } returns existing hashtag token object or false.
    */
   validateTag(hashtag, hashtags) {
-    const inputValue =
-      hashtag && hashtag.hashtagWithoutHash
-        ? hashtag.hashtagWithoutHash
-        : hashtag;
+    const inputValue = hashtag && hashtag.hashtagWithoutHash ? hashtag.hashtagWithoutHash : hashtag;
     const machineName = inputValue.toLowerCase();
-    // console.log("input inputValue", inputValue);2
-    // console.log("machineName", machineName);
-    // console.log(hashtags);
+
+    // This first check, looks in the hashtags returned by the query for an
+    // exact if hashtag parameter is a string. If found, return that hashtag token object.
     if (
       (hashtags || []).filter((option) => {
         return option.hashtagWithoutHash === machineName;
       }).length !== 0
     ) {
-      this.dangerToast(
-        `Sorry, but '#${inputValue}' already exists. Please try another.`
-      );
-      return false;
+      return hashtags.filter((option) => {
+        return option.hashtagWithoutHash === machineName;
+      })[0];
     }
 
     if (inputValue.includes("#")) {
-      this.dangerToast(
-        `The hashtag character ("#") is not permitted anywhere in your hashtag.`
-      );
+      this.dangerToast(`The hashtag character ("#") is not permitted anywhere in your hashtag.`);
       return false;
     }
 
     if (inputValue.length < 3) {
-      this.dangerToast(
-        `Sorry, but '#${inputValue}' is an invalid tag as it's less than 3 characters long.`
-      );
+      this.dangerToast(`Sorry, but '#${inputValue}' is an invalid tag as it's less than 3 characters long.`);
       return false;
     }
 
     if (inputValue.length > 32) {
-      this.dangerToast(
-        `Sorry, but '#${inputValue}' is an invalid tag as it's more than 15 characters long.`
-      );
+      this.dangerToast(`Sorry, but '#${inputValue}' is an invalid tag as it's more than 15 characters long.`);
       return false;
     }
 
     if (!/^#*\d*[a-zA-Z][a-zA-Z0-9]*$/.test(inputValue)) {
       this.dangerToast(
-        `Sorry, but '#${inputValue}' is an invalid tag as it's either not alpha numeric or only numeric.`
+        `Sorry, but '#${inputValue}' is an invalid tag as it's either not alpha numeric or only numeric.`,
       );
       return false;
     }
 
-    return true;
+    // This is a genuinely new hashtag that passes validation; lets pass it
+    // through for handling.
+    return hashtag;
   }
 }
 
