@@ -1,7 +1,7 @@
 <template>
   <div class="modal-card markdown-modal">
     <section class="modal-card-body">
-      <markdown-doc :doc-type="type" :filename="content"></markdown-doc>
+      <markdown-doc :type="type" :filename="content"></markdown-doc>
     </section>
   </div>
 </template>

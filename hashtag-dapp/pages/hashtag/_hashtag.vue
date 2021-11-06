@@ -135,7 +135,7 @@
         <div class="columns is-tablet is-centered">
           <div class="column is-12">
             <article class="is-white box">
-              <h2 class="title is-4 is-spaced">Content tagged with {{ hashtag }}</h2>
+              <h2 class="title is-4 is-spaced">Content tagged with #{{ hashtag }}</h2>
               <b-tabs v-model="activeTab" :animated="true">
                 <b-tab-item label="ERC-721 NFTs">
                   <div class="b-table">

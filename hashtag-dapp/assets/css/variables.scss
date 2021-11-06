@@ -2,6 +2,8 @@
 @import "~bulma/sass/utilities/_all.sass";
 
 $primary: #24ae60;
+$purple: #8247E5;
+
 /* stylelint-disable function-name-case */
 $primary-invert: findColorInvert($primary);
 $primary-light: findLightColor($primary);
