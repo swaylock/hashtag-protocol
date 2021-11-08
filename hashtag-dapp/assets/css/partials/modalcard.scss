@@ -9,6 +9,9 @@
     h2 {
       font-size: $size-3;
     }
+    .modal-card-body {
+      padding: 50px;
+    }
   }
 
   &.transaction-modal {

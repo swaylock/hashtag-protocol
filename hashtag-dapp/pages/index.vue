@@ -13,7 +13,7 @@
           <div class="divider is-hidden-tablet">OR</div>
           <div class="column is-5 is-12-mobile">
             <article class="tile is-child">
-              <p class="title is-4 has-text-white">Tag some content</p>
+              <p class="title is-4 has-text-white">Tag an NFT</p>
               <TaggingWidget />
             </article>
           </div>
@@ -30,7 +30,7 @@
                   <a
                     @click="
                       cardModal({
-                        type: 'faq',
+                        type: 'faqs',
                         content: '020-what-is-hashtag-token',
                       })
                     "
@@ -69,7 +69,7 @@
                   <a
                     @click="
                       cardModal({
-                        type: 'faq',
+                        type: 'faqs',
                         content: '030-what-is-tagged-content',
                       })
                     "
@@ -90,7 +90,7 @@
                   <a
                     @click="
                       cardModal({
-                        type: 'faq',
+                        type: 'faqs',
                         content: '045-what-is-creator',
                       })
                     "
@@ -101,9 +101,7 @@
                     <b-table :data="creators || []">
                       <template slot="footer" v-if="!isCustom">
                         <div class="has-text-right">
-                          <nuxt-link :to="{ name: 'creators' }">
-                            Browse creators
-                          </nuxt-link>
+                          <nuxt-link :to="{ name: 'creators' }"> Browse creators </nuxt-link>
                           &nbsp;
                           <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                         </div>
@@ -131,7 +129,7 @@
                   <a
                     @click="
                       cardModal({
-                        type: 'faq',
+                        type: 'faqs',
                         content: '040-what-is-a-publisher',
                       })
                     "
@@ -142,9 +140,7 @@
                     <b-table :data="publishers || []">
                       <template slot="footer" v-if="!isCustom">
                         <div class="has-text-right">
-                          <nuxt-link :to="{ name: 'publishers' }">
-                            Browse publishers
-                          </nuxt-link>
+                          <nuxt-link :to="{ name: 'publishers' }"> Browse publishers </nuxt-link>
                           &nbsp;
                           <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                         </div>
@@ -175,7 +171,7 @@
                 <a
                   @click="
                     cardModal({
-                      type: 'faq',
+                      type: 'faqs',
                       content: '060-what-is-a-tagger',
                     })
                   "
@@ -187,9 +183,7 @@
                     <b-table :data="taggers || []" focusable>
                       <template slot="footer" v-if="!isCustom">
                         <div class="has-text-right">
-                          <nuxt-link :to="{ name: 'taggers' }">
-                            Browse taggers
-                          </nuxt-link>
+                          <nuxt-link :to="{ name: 'taggers' }"> Browse taggers </nuxt-link>
                           &nbsp;
                           <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                         </div>
@@ -211,7 +205,7 @@
                   <a
                     @click="
                       cardModal({
-                        type: 'faq',
+                        type: 'faqs',
                         content: '020-what-is-hashtag-token',
                       })
                     "
@@ -222,9 +216,7 @@
                     <b-table :data="popular || []" focusable>
                       <template slot="footer" v-if="!isCustom">
                         <div class="has-text-right">
-                          <nuxt-link :to="{ name: 'hashtags' }">
-                            Browse hashtags
-                          </nuxt-link>
+                          <nuxt-link :to="{ name: 'hashtags' }"> Browse hashtags </nuxt-link>
                           &nbsp;
                           <b-icon icon="arrow-right" type="is-dark" size="is-small"> </b-icon>
                         </div>
@@ -249,7 +241,7 @@
                 <a
                   @click="
                     cardModal({
-                      type: 'faq',
+                      type: 'faqs',
                       content: '050-what-is-an-owner',
                     })
                   "

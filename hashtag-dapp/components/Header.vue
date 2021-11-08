@@ -1,9 +1,18 @@
 <template>
   <section class="hero has-background-grey-dark is-bold">
-    <div
-      class="beta-warning has-background-primary has-text-white has-text-weight-medium has-text-centered"
-    >
-      <p>This protocol & interface is in beta. Use it at your own risk.</p>
+    <div class="beta-warning has-text-white has-text-weight-medium has-text-centered">
+      <p>
+        Hashtag Protocol is migrating to Polygon.&nbsp;
+        <a
+          @click="
+            cardModal({
+              type: 'info',
+              content: 'why-polygon',
+            })
+          "
+          >Learn more</a
+        >
+      </p>
     </div>
     <div class="hero-head">
       <div class="container">
@@ -15,17 +24,37 @@
 
 <script>
 import Navbar from "~/components/Navbar";
+import MarkdownModal from "~/components/MarkdownModal";
 export default {
   name: "Header",
   components: {
     Navbar,
   },
+  methods: {
+    cardModal(props) {
+      this.$buefy.modal.open({
+        parent: this,
+        component: MarkdownModal,
+        props: props,
+        hasModalCard: true,
+        trapFocus: true,
+      });
+    },
+  },
 };
 </script>
 <style scoped lang="scss">
 .beta-warning {
-  padding: 0.5rem;
-  font-size: 0.8rem;
-  margin-bottom: 0.7rem;
+  background-color: $purple;
+  padding: 1rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+.beta-warning a {
+  color: $white;
+  text-decoration: underline;
+}
+.beta-warning .icon {
+  margin: 0 1rem;
 }
 </style>
