@@ -2,10 +2,7 @@
   <section class="hero has-background-grey-dark is-bold">
     <div class="beta-warning has-text-white has-text-weight-medium has-text-centered">
       <p>
-        Hashtag Protocol is migrating to Polygon!
-        <span class="icon">
-          <i class="mdi mdi-truck-fast mdi-24px"></i>
-        </span>
+        Hashtag Protocol is migrating to Polygon.&nbsp;
         <a
           @click="
             cardModal({

@@ -47,6 +47,15 @@
 "https://hashtag-protocol.io/":
   type: redirect
   to: "https://api.hashtag-protocol.io/"
+
+# Hashtag Mumbai
+"https://dev.hashtag-protocol.org/":
+  type: redirect
+  to: "https://app.stage-y77w3ti-nv7d6mu5vsflk.us-2.platformsh.site/"
+
+"http://dev.hashtag-protocol.org/":
+  type: redirect
+  to: "https://dev.hashtag-protocol.org/"
 #http://{default}/:
 #  cache:
 #    cookies:
