@@ -138,3 +138,24 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+nav.search-bar {
+  margin-bottom: 2rem;
+}
+.level .search-widget {
+  flex: auto;
+  margin: 2rem 0;
+  @include from($tablet) {
+    margin: 0 3rem;
+  }
+
+  section {
+    .field {
+      margin: 0;
+    }
+    p {
+      display: none;
+    }
+  }
+}
+</style>

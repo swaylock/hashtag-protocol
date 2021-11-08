@@ -2,7 +2,7 @@
   <section class="main">
     <div class="container">
       <h1 class="title is-1">NFT search</h1>
-      <nav class="level">
+      <nav class="level search-bar">
         <!-- Left side -->
         <div class="level-left">
           <div class="level-item" v-if="this.$route.params.value">
@@ -12,14 +12,16 @@
           </div>
         </div>
         <!-- Right side -->
-        <div class="level">
+        <div class="level search-widget">
           <TaggingWidget />
         </div>
-        <div class="level">
-          <span class="is-size-6 has-text-weight-bold">
-            <nuxt-link :to="{ name: 'index' }">Dashboard</nuxt-link>&nbsp;
-            <b-icon icon="arrow-up" type="is-dark" size="is-small"></b-icon>
-          </span>
+        <div class="level-right">
+          <div class="level-item">
+            <span class="is-size-6 has-text-weight-bold">
+              <nuxt-link :to="{ name: 'index' }">Dashboard</nuxt-link>&nbsp;
+              <b-icon icon="arrow-up" type="is-dark" size="is-small"></b-icon>
+            </span>
+          </div>
         </div>
       </nav>
     </div>
