@@ -19,12 +19,12 @@ export default {
       if (hashtag.id) {
         /* eslint-disable-next-line no-console */
         console.log("minting widget existing Hashtag", hashtag);
+        this.$router.push({
+          path: `/hashtag/${hashtag.hashtagWithoutHash}`,
+        });
       } else {
         await this.$store.dispatch("protocolAction/updateNewHashtag", hashtag);
-        await this.$store.dispatch(
-          "protocolAction/updateProtocolAction",
-          "mintHashtag"
-        );
+        await this.$store.dispatch("protocolAction/updateProtocolAction", "mintHashtag");
         await this.$store.dispatch("wallet/updateTransactionState", {
           eventCode: "mintConfirm",
         });
@@ -37,8 +37,6 @@ export default {
         });
         this.$store.dispatch("wallet/captureOpenModalCloseFn", mintModal.close);
       }
-      // Updates the transaction fees grid.
-      await this.$store.dispatch("transactionFees/updateFees");
     },
 
     /**
@@ -66,10 +64,7 @@ export default {
         if (this.validateTag(newHashtag)) {
           // This is a valid, new hashtag, update the application.
           await this.$store.dispatch("wallet/updateNewHashtag", newHashtag);
-          await this.$store.dispatch(
-            "protocolAction/updateProtocolAction",
-            "mintHashtag"
-          );
+          await this.$store.dispatch("protocolAction/updateProtocolAction", "mintHashtag");
           // Web3 txn state.
           await this.$store.dispatch("wallet/updateTransactionState", {
             eventCode: "mintConfirm",
@@ -82,10 +77,7 @@ export default {
             trapFocus: true,
           });
 
-          this.$store.dispatch(
-            "wallet/captureOpenModalCloseFn",
-            mintModal.close
-          );
+          this.$store.dispatch("wallet/captureOpenModalCloseFn", mintModal.close);
         }
       }
     },

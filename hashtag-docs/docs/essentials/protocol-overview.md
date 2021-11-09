@@ -3,7 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 | Conventions used in documentation |                                                         |
 | -------------                     | -------------                                           |
-| **_bold italic_**                 | References [key participants](/essentials/participants) |
+| **_bold italic_**                 | References [key participants](/essentials/participants.html) |
 | `Constant width`                  | References protocol code and codish concepts            |
 |                                   |                                                         |
 
@@ -49,7 +49,7 @@ features:
    where they are held until released for auction.
 9. While pending release for auction, a `HASHTAG` may be used to tag digital
    assets by any user on any **_Publisher_** platform. The `HASHTAG` token
-   auction commences in Phase 3 of the [project roadmap](/essentials/roadmap)
+   auction commences in Phase 3 of the [project roadmap](/essentials/roadmap.html)
    and will run continually thereafter.
 10. Once released for auction, anyone may bid on a `HASHTAG` on any platform
     hosting auctions. See [`HASHTAG` Auction](#hashtag-auction) for more details
@@ -65,7 +65,7 @@ features:
     3. 20% **_**_Protocol_**_**
 
     See [revenue sharing](#revenue-sharing) and [key
-    participants](/essentials/participants) for more details.
+    participants](/essentials/participants.html) for more details.
 13. Participants may draw down earnings from their accrual account to their
     wallet at any time. Transaction gas fees apply.
 14. An **_Owner_** may sell/trade their `HASHTAG` tokens on the open market
@@ -115,7 +115,7 @@ features:
     3. 20% **_Protocol_**
 
     See [revenue sharing](#revenue-sharing) and [key
-    participants](/essentials/participants) for more details.
+    participants](/essentials/participants.html) for more details.
 
 8. Participants may draw down earnings from their accrual account to their
    personal wallet at any time. Transaction gas fees apply.
@@ -208,5 +208,5 @@ Please contact us at
 [contact@hashtag-protocol.org](mailto:contact@hashtag-protocol.org) if you would
 like to have your application enabled.
 
-See [Key Participants](/essentials/participants) for more details on participant
+See [Key Participants](/essentials/participants.html) for more details on participant
 use cases and financial incentives.

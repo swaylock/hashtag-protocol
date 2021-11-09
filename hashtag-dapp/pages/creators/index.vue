@@ -1,6 +1,5 @@
 <template>
-  <div class="body auction">
-    <Header />
+  <div class="auction">
     <section class="main">
       <div class="container">
         <h1 class="title is-1">Creators</h1>
@@ -54,19 +53,11 @@
                       <!---->
                     </thead>
                     <tbody v-if="pagedCreators">
-                      <tr
-                        draggable="false"
-                        class=""
-                        v-for="creator in pagedCreators"
-                        v-bind:key="creator.id"
-                      >
+                      <tr draggable="false" class="" v-for="creator in pagedCreators" v-bind:key="creator.id">
                         <!---->
                         <!---->
                         <td data-label="Owner" class="">
-                          <eth-account
-                            :value="creator.id"
-                            route="creator-address"
-                          ></eth-account>
+                          <eth-account :value="creator.id" route="creator-address"></eth-account>
                         </td>
                         <td data-label="Hashtags" class="has-text-centered">
                           {{ creator.mintCount }}
@@ -86,25 +77,18 @@
                 </div>
                 <!---->
               </div>
-              <Pagination
-                :entity-count="creatorsCount"
-                :page-size="pageSize"
-                @tabSelected="tabSelected"
-              />
+              <Pagination :entity-count="creatorsCount" :page-size="pageSize" @tabSelected="tabSelected" />
             </article>
           </div>
         </div>
       </div>
     </section>
-    <Footer></Footer>
   </div>
 </template>
 
 <script>
 import EthAccount from "~/components/EthAccount";
 import EthAmount from "~/components/EthAmount";
-import Footer from "hashtag-components/src/components/Footer.vue";
-import Header from "~/components/Header";
 import Pagination from "~/components/Pagination";
 import { PAGED_CREATORS, ALL_CREATORS } from "~/apollo/queries";
 
@@ -115,8 +99,6 @@ export default {
   components: {
     EthAmount,
     EthAccount,
-    Footer,
-    Header,
     Pagination,
   },
   data() {

@@ -41,8 +41,11 @@ package-lock.json
 .platform/local/
 _www/
 
-.platform/local/
-_www/
-
 hashtag-docs/docs/.vuepress/dist/*
+
+# hashtag api
+# Exclude public images directory, except for the pending image.
 hashtag-api/public/images/*
+!hashtag-api/public/images/pending.png
+
+.deployer

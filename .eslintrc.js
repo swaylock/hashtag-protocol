@@ -5,6 +5,7 @@ module.exports = {
     // (i.e are we running in a browser environment or a node.js env)
     node: true,
     browser: true,
+    mocha: true,
   },
   parserOptions: {
     parser: "babel-eslint",

@@ -16,4 +16,4 @@ node_modules*
 public
 src/assets
 src/styles
-src/truffleconf
+src/abis

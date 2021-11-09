@@ -2,11 +2,6 @@ import Vue from "vue";
 import VueGtm from "vue-gtm";
 import App from "./App.vue";
 import { router } from "./routes";
-import ApolloClient from "apollo-boost";
-import axios from "axios";
-import VueAxios from "vue-axios";
-import AxiosPlugin from "vue-axios-cors";
-import VueApollo from "vue-apollo";
 import VueMoment from "vue-moment";
 import VueScreen from "vue-screen";
 import Buefy from "buefy";
@@ -23,22 +18,8 @@ Vue.use(Buefy);
 Vue.use(VueMoment);
 Vue.use(VueScreen, "bulma");
 
-Vue.use(VueAxios, axios);
-Vue.use(AxiosPlugin);
-
 Vue.component("prism", Prism);
 
-// Connection for GraphQL.
-const client = new ApolloClient({
-  uri:
-    "https://api.thegraph.com/subgraphs/name/hashtag-protocol/hashtag-mainnet",
-});
-
-const apolloProvider = new VueApollo({
-  defaultClient: client,
-});
-
-Vue.use(VueApollo);
 Vue.config.productionTip = false;
 
 Vue.use(VueGtm, {
@@ -54,6 +35,5 @@ Vue.use(VueGtm, {
 
 new Vue({
   router,
-  apolloProvider,
   render: (h) => h(App),
 }).$mount("#app");

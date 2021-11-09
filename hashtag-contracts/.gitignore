@@ -3,6 +3,7 @@
 build/
 coverageEnv/
 coverage/
+.openzeppelin
 
 # General file ignores
 allFiredEvents
@@ -104,3 +105,10 @@ node_modules
 
 artifacts
 cache
+
+# only commit abis from release folder to source control.
+abi/*
+!abi/contracts
+abi/contracts/mocks
+abi/contracts/utils
+!abi/contracts/release/
