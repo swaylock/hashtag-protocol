@@ -1,24 +1,14 @@
 <template>
   <div class="body" v-if="!loading">
-    <SocialHead
-      :title="displayHashtag + ' | Hashtag Protocol'"
-      :description="randomSharingMessage"
-      :image="imageUrl"
-    />
+    <SocialHead :title="displayHashtag + ' | Hashtag Protocol'" :description="randomSharingMessage" :image="imageUrl" />
     <section class="main" v-if="hashtagsByName && hashtagsByName[0]">
       <div class="container">
         <div class="columns">
           <div class="column is-6">
-            <nuxt-link :to="{ name: 'hashtags' }">
-              Browse Hashtag tokens
-            </nuxt-link>
+            <nuxt-link :to="{ name: 'hashtags' }"> Browse Hashtag tokens </nuxt-link>
           </div>
           <div class="column is-6 has-text-right">
-            <b-dropdown
-              aria-role="list"
-              class="has-text-left"
-              position="is-bottom-left"
-            >
+            <b-dropdown aria-role="list" class="has-text-left" position="is-bottom-left">
               <template #trigger="{ active }">
                 <b-button type="is-primary" inverted>
                   <b-icon icon="share-variant-outline" size="is-small" />
@@ -27,21 +17,13 @@
               </template>
 
               <b-dropdown-item aria-role="listitem" has-link>
-                <a
-                  :href="twitterSharingUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a :href="twitterSharingUrl" target="_blank" rel="noopener noreferrer">
                   <b-icon icon="twitter" size="is-small" />
                   &nbsp;Tweet
                 </a>
               </b-dropdown-item>
               <b-dropdown-item aria-role="listitem" has-link>
-                <a
-                  :href="facebookSharingUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a :href="facebookSharingUrl" target="_blank" rel="noopener noreferrer">
                   <b-icon icon="facebook" size="is-small" />
                   &nbsp;Facebook
                 </a>
@@ -58,11 +40,7 @@
             <div class="tile is-parent is-4 is-12-mobile">
               <div class="tile is-child box">
                 <h1>
-                  <img
-                    v-if="imageUrl"
-                    :src="imageUrl"
-                    :alt="hashtagsByName[0].displayHashtag"
-                  />
+                  <img v-if="imageUrl" :src="imageUrl" :alt="hashtagsByName[0].displayHashtag" />
                 </h1>
               </div>
             </div>
@@ -85,18 +63,13 @@
                         <tr draggable="false" class="">
                           <td class="has-text-weight-bold">Created</td>
                           <td>
-                            <timestamp-formatted
-                              :value="parseInt(hashtagsByName[0].timestamp)"
-                            ></timestamp-formatted>
+                            <timestamp-formatted :value="parseInt(hashtagsByName[0].timestamp)"></timestamp-formatted>
                           </td>
                         </tr>
                         <tr draggable="false" class="">
                           <td class="has-text-weight-bold">Creator</td>
                           <td>
-                            <eth-account
-                              :value="hashtagsByName[0].creator"
-                              route="creator-address"
-                            ></eth-account>
+                            <eth-account :value="hashtagsByName[0].creator" route="creator-address"></eth-account>
                           </td>
                         </tr>
                         <tr draggable="false" class="">
@@ -106,19 +79,14 @@
                         <tr draggable="false" class="">
                           <td class="has-text-weight-bold">Publisher</td>
                           <td>
-                            <eth-account
-                              :value="hashtagsByName[0].publisher"
-                              route="publisher-address"
-                            ></eth-account>
+                            <eth-account :value="hashtagsByName[0].publisher" route="publisher-address"></eth-account>
                           </td>
                         </tr>
                         <tr draggable="false" class="">
                           <td class="has-text-weight-bold">Expires</td>
                           <td>
                             <timestamp-formatted
-                              :value="
-                                parseInt(hashtagsByName[0].timestamp) + 63113904
-                              "
+                              :value="parseInt(hashtagsByName[0].timestamp) + 63113904"
                             ></timestamp-formatted>
                           </td>
                         </tr>
@@ -151,12 +119,8 @@
                             {{ hashtagsByName[0].creatorRevenue | toEth }}
                             {{ currencyName }} Creator<br />
                             {{ hashtagsByName[0].ownerRevenue | toEth }}
-                            {{ currencyName }} Owner<br />{{
-                              hashtagsByName[0].publisherRevenue | toEth
-                            }}
-                            {{ currencyName }} Publisher<br />{{
-                              hashtagsByName[0].protocolRevenue | toEth
-                            }}
+                            {{ currencyName }} Owner<br />{{ hashtagsByName[0].publisherRevenue | toEth }}
+                            {{ currencyName }} Publisher<br />{{ hashtagsByName[0].protocolRevenue | toEth }}
                             {{ currencyName }} Protocol
                           </td>
                         </tr>
@@ -171,9 +135,7 @@
         <div class="columns is-tablet is-centered">
           <div class="column is-12">
             <article class="is-white box">
-              <h2 class="title is-4 is-spaced">
-                Content tagged with {{ hashtag }}
-              </h2>
+              <h2 class="title is-4 is-spaced">Content tagged with {{ hashtag }}</h2>
               <b-tabs v-model="activeTab" :animated="true">
                 <b-tab-item label="ERC-721 NFTs">
                   <div class="b-table">
@@ -202,12 +164,7 @@
                           </tr>
                         </thead>
                         <tbody v-if="nftInfo">
-                          <tr
-                            v-for="tag in nftInfo"
-                            v-bind:key="tag.id"
-                            draggable="false"
-                            class=""
-                          >
+                          <tr v-for="tag in nftInfo" v-bind:key="tag.id" draggable="false" class="">
                             <td class="has-text-centered">
                               <nuxt-link
                                 :to="{
@@ -230,11 +187,7 @@
                                   class="nft-thumb"
                                   muted=""
                                 >
-                                  <source
-                                    :src="tag.nftImage"
-                                    @error="setPendingImage"
-                                    type="video/mp4"
-                                  />
+                                  <source :src="tag.nftImage" @error="setPendingImage" type="video/mp4" />
                                 </video>
                                 <img
                                   v-else
@@ -258,39 +211,23 @@
                               {{ tag.nftChain }}
                             </td>
                             <td data-label="Tagged" class="">
-                              <timestamp-from
-                                :value="tag.timestamp"
-                              ></timestamp-from>
+                              <timestamp-from :value="tag.timestamp"></timestamp-from>
                             </td>
                             <td data-label="Tagger" class="">
-                              <eth-account
-                                :value="tag.tagger"
-                                route="tagger-address"
-                              ></eth-account>
+                              <eth-account :value="tag.tagger" route="tagger-address"></eth-account>
                             </td>
                             <td data-label="Publisher" class="">
-                              <eth-account
-                                :value="tag.publisher"
-                                route="publisher-address"
-                              ></eth-account>
+                              <eth-account :value="tag.publisher" route="publisher-address"></eth-account>
                             </td>
                           </tr>
                         </tbody>
                       </table>
-                      <Pagination
-                        :entity-count="tagsCount"
-                        :page-size="pageSize"
-                        @tabSelected="tabSelected"
-                      />
+                      <Pagination :entity-count="tagsCount" :page-size="pageSize" @tabSelected="tabSelected" />
                     </div>
                   </div>
                 </b-tab-item>
-                <b-tab-item label="IPFS" :disabled="true">
-                  Coming soon...
-                </b-tab-item>
-                <b-tab-item label="Unstoppable domains" :disabled="true">
-                  Coming soon...
-                </b-tab-item>
+                <b-tab-item label="IPFS" :disabled="true"> Coming soon... </b-tab-item>
+                <b-tab-item label="Unstoppable domains" :disabled="true"> Coming soon... </b-tab-item>
               </b-tabs>
             </article>
           </div>
@@ -306,11 +243,7 @@ import HashtagTokenId from "~/components/HashtagTokenId";
 import NftLink from "~/components/NftLink";
 import Pagination from "~/components/Pagination";
 import SocialHead from "~/components/SocialHead";
-import {
-  PAGED_TAGS_BY_HASHTAG,
-  HASHTAGS_BY_NAME,
-  ALL_TAGS_BY_HASHTAG,
-} from "~/apollo/queries";
+import { PAGED_TAGS_BY_HASHTAG, HASHTAGS_BY_NAME, ALL_TAGS_BY_HASHTAG } from "~/apollo/queries";
 import TimestampFrom from "~/components/TimestampFrom";
 import TimestampFormatted from "~/components/TimestampFormatted";
 import axios from "axios";
@@ -445,20 +378,17 @@ export default {
           chain = "polygon";
         }
         promises.push(
-          axios.get(
-            "https://api.nftport.xyz/nfts/" + nft.nftContract + "/" + nft.nftId,
-            {
-              params: {
-                chain: chain,
-                page_number: 1,
-                page_size: 50,
-              },
-              data: {
-                tagInfo: nft,
-              },
-              headers: headers,
-            }
-          )
+          axios.get("https://api.nftport.xyz/nfts/" + nft.nftContract + "/" + nft.nftId, {
+            params: {
+              chain: chain,
+              page_number: 1,
+              page_size: 50,
+            },
+            data: {
+              tagInfo: nft,
+            },
+            headers: headers,
+          }),
         );
       });
       await axios.all(promises).then((response) => {
@@ -470,8 +400,7 @@ export default {
             nft.data.nft.nftId = nft.data.nft.token_id;
             nft.data.nft.nftName = nft.data.nft.metadata.name;
             nft.data.nft.timestamp = config.tagInfo.timestamp;
-            nft.data.nft.hashtagDisplayHashtag =
-              config.tagInfo.hashtagDisplayHashtag;
+            nft.data.nft.hashtagDisplayHashtag = config.tagInfo.hashtagDisplayHashtag;
             nft.data.nft.publisher = config.tagInfo.publisher;
             nft.data.nft.nftContract = nft.data.nft.contract_address;
             nft.data.nft.nftChain = nft.config.params.chain;
@@ -508,7 +437,7 @@ export default {
       const encodedString = encodeURIComponent(
         `Check out the hashtag ${this.displayHashtag} on @HashtagProtoHQ\n\n${
           this.$store.state.dappBaseUrl + this.$route.path
-        }`
+        }`,
       );
       return "https://twitter.com/intent/tweet?text=" + encodedString;
     },
@@ -516,7 +445,7 @@ export default {
       const encodedString = encodeURIComponent(
         `Check out the hashtag ${this.displayHashtag} on Hashtag Protocol\n\n${
           this.$store.state.dappBaseUrl + this.$route.path
-        }`
+        }`,
       );
       return "https://www.facebook.com/share.php?u=" + encodedString;
     },
