@@ -5,11 +5,3 @@ shared:
   disk: 128
 headlessbrowser:
   type: chrome-headless:73
-varnish:
-  type: varnish:6.3
-  #relationships:
-  #  application: "dev:http"
-  configuration:
-    vcl: !include
-      type: string
-      path: config.vcl
