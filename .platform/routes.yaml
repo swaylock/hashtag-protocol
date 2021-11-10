@@ -47,3 +47,10 @@
 "https://hashtag-protocol.io/":
   type: redirect
   to: "https://api.hashtag-protocol.io/"
+
+# Mumbai/Dev instance
+"https://dev.{default}/":
+  type: upstream
+  upstream: "varnish:http"
+  cache:
+    enabled: false
