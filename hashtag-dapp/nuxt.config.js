@@ -71,7 +71,7 @@ export default {
       process.env.VUE_APP_TOP_NFTS_SUBGRAPH_URL || "https://api.thegraph.com/subgraphs/name/blockrockettech/nft-tokens",
     nftPortAPIKey: process.env.NFTPORT_API_KEY,
 
-    // These are set for development purposes only. See store/index.js
+    // These are set for local development purposes only. See store/index.js
     metadataApiBaseUrl: process.env.VUE_APP_HTP_METADATA_API_URL || false,
     websiteBaseUrl: process.env.VUE_APP_WEBSITE_URL || "https://www.hashtag-protocol.org",
     dappBaseUrl: process.env.VUE_APP_DAPP_URL || "https://app.hashtag-protocol.org",

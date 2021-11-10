@@ -43,14 +43,18 @@ export const actions = {
         metadataApiBaseUrl = platformConfig.getRoute("hashtag-api");
         metadataApiBaseUrl = metadataApiBaseUrl.url.replace(/\/$/, "");
 
-        websiteBaseUrl = platformConfig.getRoute("hashtag-web");
-        websiteBaseUrl = websiteBaseUrl.url.replace(/\/$/, "");
+        // If we on the mumbai dev server (eg. "stage" branch), let's continue to use environment
+        // variables for these global base URLs. Otherwise, map them to the currently built environments.
+        if (platformConfig.branch !== "stage") {
+          websiteBaseUrl = platformConfig.getRoute("hashtag-web");
+          websiteBaseUrl = websiteBaseUrl.url.replace(/\/$/, "");
 
-        docsBaseUrl = platformConfig.getRoute("hashtag-docs");
-        docsBaseUrl = docsBaseUrl.url.replace(/\/$/, "");
+          docsBaseUrl = platformConfig.getRoute("hashtag-docs");
+          docsBaseUrl = docsBaseUrl.url.replace(/\/$/, "");
 
-        dappBaseUrl = platformConfig.getRoute("hashtag-dapp");
-        dappBaseUrl = dappBaseUrl.url.replace(/\/$/, "");
+          dappBaseUrl = platformConfig.getRoute("hashtag-dapp");
+          dappBaseUrl = dappBaseUrl.url.replace(/\/$/, "");
+        }
       } catch (error) {
         console.error(error);
       }
