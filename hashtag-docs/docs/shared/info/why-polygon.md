@@ -1,6 +1,6 @@
 ## We're migrating to Polygon
 
-![image](/img/poly-hashtag.png)
+![image](https://user-images.githubusercontent.com/23582496/141384998-50b7c691-5f91-47ff-91a0-65a85a627029.png)
 
 ### Why the move?
 
