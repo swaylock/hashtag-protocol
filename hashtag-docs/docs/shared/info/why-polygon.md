@@ -28,9 +28,11 @@ Hashtag Protocol.
 
 ### Early adoption opportunity
 
-If you want to be an early adopter and mint HASHTAG tokens destined for
-real world, commercial use, you may continue to do so over on
-[app.hashtag-protocol.org](https://app.hashtag-protocol.org).
+For Publishers, we are seeking five "launch partners" who wish to implement
+decentralized tagging on their platform. As early adopters, launch partners will have
+opportunity to be publisher of record for the highest value HASHTAG tokens.
+If a HASHTAG token is purchased at auction, the Publisher of record will receive
+a portion of the sale revenue.
 
 Mind you, minting a HASHTAG token NFT on Ethereum Mainnet usually costs over
 $100 in gas. However, all HASHTAG tokens minted on Ethereum mainnet _will be
