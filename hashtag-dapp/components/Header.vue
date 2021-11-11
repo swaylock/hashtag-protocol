@@ -2,7 +2,7 @@
   <section class="hero has-background-grey-dark is-bold">
     <div class="beta-warning has-text-white has-text-weight-medium has-text-centered">
       <p>
-        Hashtag Protocol is migrating to Polygon.&nbsp;
+        Welcome to our new sandbox on Polygon Mumbai.&nbsp;
         <a
           @click="
             cardModal({

@@ -1,34 +1,49 @@
-## Welcome to our new sandbox on Polygon Mumbai
+## We're migrating to Polygon
 
-### What is this?
+![image](/img/poly-hashtag.png)
 
-This website is a sandbox implementation of Hashtag Protocol, a new Web3 tagging
-standard that aims to do for content tagging what ENS, Unstoppable Domains and
-Handshake have done for DNS.
+### Why the move?
+
+Simply put: faster & cheaper transactions.
+
+Sadly, a high-volume, Web3 tagging protocol and Ethereum Mainnet are
+incompatible. Therefore we are pivoting and redeploying Hashtag Protocol on
+Polygon, arguably the most decentralized, battle tested & scalable Layer 2.
+
+
+### Our new sandbox on Polygon Mumbai testnet
 
 Please use this interface to experiment with tagging any
 NFT on Ethereum or Polygon with any hashtag string you can imagine. If the
-hashtag you tag with is unique, a HASHTAG token (itself an NFT) will be minted and your
-address is logged within it as the Creator. In the future, Creators
+hashtag you tag with is unique, a HASHTAG token (itself an NFT) will be minted
+and your address is logged within it as the Creator. In the future, Creators
 will receive a royalty when the HASHTAG token is purchased at auction.
 
-[Learn more](https://docs.hashtag-protocol.org/essentials/participants.html) about Publishers, Creators & Taggers, the three
-early market participants of the Hashtag Protocol.
+Please note, the Mumbai sandbox is for **testing purposes only**. No tokens or
+tagging data will be migrated to Polygon Mainnet.
 
-### Front-running
+[Learn more](https://docs.hashtag-protocol.org/essentials/participants.html)
+about Publishers, Creators & Taggers, the three early market participants of the
+Hashtag Protocol.
 
-This sandbox is for **testing purposes only**. Nothing in it has **real
-world value** and no tokens or data will migrated to Polygon Mainnet.  
+### Early adoption opportunity
 
 If you want to be an early adopter and mint HASHTAG tokens destined for
 real world, commercial use, you may continue to do so over on
 [app.hashtag-protocol.org](https://app.hashtag-protocol.org).
 
-Mind you, minting a HASHTAG token NFT on Ethereum Mainnet usually costs over $100 in gas. However, all HASHTAG tokens minted on Ethereum mainnet _will be migrated_
-immediately prior to relaunch on Polygon Mainnet. Therefore all token provenance, including hashtag
-string, Creator address and Publisher address, will be preserved on Polygon.
+Mind you, minting a HASHTAG token NFT on Ethereum Mainnet usually costs over
+$100 in gas. However, all HASHTAG tokens minted on Ethereum mainnet _will be
+migrated_ immediately prior to relaunch on Polygon Mainnet. Therefore all token
+provenance, including hashtag string, Creator address and Publisher address,
+will be preserved on Polygon.
 
-### Feature requests and bug reports?
+### What is Hashtag Protocol?
 
-Please [drop by on our Discord](https://discord.com/invite/EyTJFRm) and contact
+A new Web3 tagging standard that aims to do for content tagging what ENS,
+Unstoppable Domains and Handshake have done for DNS.
+
+### Questions, feature requests or bug reports?
+
+Please drop by [our Discord](https://discord.com/invite/EyTJFRm) and contact
 us there.
