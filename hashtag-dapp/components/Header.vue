@@ -1,5 +1,20 @@
 <template>
   <section class="hero has-background-grey-dark is-bold">
+    <div class="beta-warning has-text-white has-text-weight-medium has-text-centered">
+      <p>
+        Hashtag Protocol is migrating to Polygon.&nbsp;
+        <a
+          @click="
+            cardModal({
+              type: 'info',
+              content: 'why-polygon',
+            })
+          "
+          >Learn more</a
+        >
+        or visit our new sandbox at <a href="https://dev.hashtag-protocol.org">dev.hashtag-protocol.org</a>
+      </p>
+    </div>
     <div class="hero-head">
       <div class="container">
         <Navbar />
