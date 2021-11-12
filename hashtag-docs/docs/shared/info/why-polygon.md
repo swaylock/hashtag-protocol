@@ -28,17 +28,23 @@ Hashtag Protocol.
 
 ### Early adoption opportunity
 
-For Publishers, we are seeking five "launch partners" who wish to implement
-decentralized tagging on their platform. As early adopters, launch partners will have
-opportunity to be publisher of record for the highest value HASHTAG tokens.
-If a HASHTAG token is purchased at auction, the Publisher of record will receive
-a portion of the sale revenue.
+For Creators, you can continue use this interface to mint HASHTAG tokens on
+Ethereum Mainnet. Mind you, it usually costs over $100 in gas.
 
-Mind you, minting a HASHTAG token NFT on Ethereum Mainnet usually costs over
-$100 in gas. However, all HASHTAG tokens minted on Ethereum mainnet _will be
-migrated_ immediately prior to relaunch on Polygon Mainnet. Therefore all token
-provenance, including hashtag string, Creator address and Publisher address,
-will be preserved on Polygon.
+All HASHTAG tokens on Ethereum Mainnet will be migrated immediately prior to our
+launch on Polygon Mainnet. All token provenance, including hashtag string,
+Creator address and Publisher address, will be preserved.
+
+For Publishers, we are seeking five "launch partners" who wish to implement
+decentralized tagging on their platform. Launch partners will act as exclusive
+Publishers for a limited time (time length tbd).
+
+As early adopters, launch partners will be publisher of record for any HASHTAG
+tokens minted on their implementation. If a HASHTAG token is purchased at
+auction, the publisher of record will receive a portion of the sale revenue. For
+early publishers, this could be quite lucrative.
+
+Learn more about [publisher revenue sharing](https://docs.hashtag-protocol.org/essentials/participants.html#publisher-phase-1-2).
 
 ### What is Hashtag Protocol?
 
