@@ -8,8 +8,8 @@
         size="is-medium"
         :loading="isFetching"
         @select="onNftSelected"
-        @typing="getAsyncData"
         :data="nameContains"
+        :value="this.searchString"
       >
         <template slot-scope="props">
           <div class="media">
@@ -58,7 +58,11 @@ export default {
     return {
       nameContains: [],
       isFetching: false,
+      searchString: null,
     };
+  },
+  mounted() {
+    this.searchString = this.$route.query.value;
   },
   methods: {
     onEnter: function (event) {
